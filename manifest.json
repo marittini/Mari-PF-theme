@@ -1,0 +1,15 @@
+{
+  "kind": "marinara.personal-extension",
+  "version": 1,
+  "config": {
+    "name": "마리나라 플랫폼화",
+    "version": "0.12.0",
+    "description": "콘보 메시지 간격과 프사 상단 정렬, 변경 메시지 단위 DOM 처리, 알림 갱신 병합 및 백그라운드 작업 중단.",
+    "runtime": "client",
+    "capabilities": [
+      "full_page_access"
+    ],
+    "jsPath": "extension.js",
+    "cssPath": "extension.css"
+  }
+}
