@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "마리나라 플랫폼화",
-    "version": "0.24.0",
-    "description": "설정 기본 접힘·탭 이동 초기화, 트래커 접기와 작은 아이콘, 검색 결과별 펼침, 카드 좌우 스크롤과 탭 이동 제스처 충돌 수정.",
+    "version": "0.29.0",
+    "description": "별도 번역문 크기 차이 조절·저장 추가, 디자인 설정을 색상·홈/라이브러리·채팅 글자/여백으로 정리.",
     "runtime": "client",
     "capabilities": [
       "full_page_access"
