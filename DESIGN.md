@@ -184,3 +184,30 @@ LorebookEntryRow.tsx, PresetEditor.tsx, SettingControls.tsx, App.tsx, globals.cs
   채팅/자체 화면에서는 관찰을 중단하며 도우미 자체 변경은 제외한다. 반복 타이머/가이드 네트워크 요청은 없다.
 - homeView/personaView는 mft-preferences에 각각 저장한다. banner preference 변경 시 같이 보존한다.
   data-catalog-view에 CSS만 적용하여 목록 카드의 상세 열기·폴더·검색·페이지 이동 계약을 보존한다.
+
+0.23.0 계약
+- retainedUnread를 mft-unread-ledger에 500개 상한으로 저장한다. 빈 native Map은 읽음 신호로 취급하지 않는다.
+  finishRoute(chat) 성공 시 해당 방을 비우며 toast/visibility/reload는 acknowledgeUnread를 호출하지 않는다.
+  readUnreadVersions와 chatVisits로 이전 서버 metadata 표시의 부활을 억제한다.
+- 홈 scroll(default)=original rail, gallery=grid; persona gallery(default)=original grid, scroll=horizontal rail.
+  v0.22의 vertical-list CSS를 제거한다. React 서버 데이터와 카드/폴더 계약을 변경하지 않는다.
+- design은 자체 Shadow UI로 My 탭에 속한다. banner/view/spacing 저장은 같은 preferences 객체를 보존한다.
+  range input은 즉시 CSS custom property를 갱신하고 change에서 저장한다. cleanup은 원래 변수를 복구한다.
+- SettingsSwitch checked property와 native translate-x-4 모두 12px 위치에 매핑하고 공통 30x18/14 geometry를 쓴다.
+- SettingsSection 원본 DOM 위치·필드·핸들러를 유지한다. header에 toggle만 추가하고 border-t content를 CSS로 접는다.
+  native 검색은 모든 해당 section을 펼친다. 설정 전체 분류/검색/저장은 순정이 담당한다.
+- 바로가기는 원래 DOM click을 실행하며 stale button을 label로 재탐색한다. hook/plugin API·chat payload를 수정하지 않는다.
+  fetch wrapper는 character resource write 성공 확인만 담당하며 chat generation/context 요청은 원본으로 통과한다.
+- observer/microtask batching과 lazy images/cache/cancel을 유지한다. interval, 반복 스캔 타이머를 추가하지 않는다.
+
+0.24.0 계약
+- own 재진입과 native settings tab/group 클릭에서 모든 설정을 접고 검색 요청을 초기화한다.
+- 검색 input은 전체 섹션을 펼치지 않는다. 검색 결과의 native 분류 제목으로 해당 section만 펼친다.
+  1.5초의 대상 식별 유효 기간은 React 지연 mount를 위한 값이며 반복 타이머는 없다.
+- roleplay-tracker wrapper 아래 native section + fieldset을 기존 SettingsSection 계약과 함께 처리한다.
+- fold button은 텍스트 대신 26x28px 화살표이며 aria-expanded/controls/label과 title을 유지한다.
+- touch composedPath에서 rail/gallery/persona/card 및 실제 overflow-x scroll 영역을 구분한다.
+  수평 컨테이너 안의 공백도 navigation swipe에서 제외하며 passive native scrolling을 유지한다.
+  자체 비주요 탭(persona/detail/design)은 일반 탭 스와이프 대상으로 계산하지 않는다.
+
+- 설정 content/header가 교체되면 연결이 끊긴 fold 상태를 해제하고 현재 DOM에 재연결한다. native handler와 값은 보존한다.
