@@ -357,3 +357,22 @@ html.mft-enabled [data-lorebook-entry-row-id]>div.group>div.relative>div.absolut
 html.mft-enabled .mari-chat-settings-drawer.mari-window{max-height:calc(var(--mft-available-height) - 24px)!important;min-height:0!important;overflow:hidden!important}
 html.mft-enabled .mari-chat-settings-drawer>.mari-window__body{min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain;padding-bottom:16px!important}
 @media(max-width:1023px){html.mft-enabled .mari-chat-settings-drawer.mari-window{position:fixed!important;top:calc(var(--mari-visual-viewport-offset-top,0px) + 12px)!important;bottom:auto!important;height:calc(var(--mft-available-height) - 24px)!important;left:8px!important;right:8px!important;width:calc(100% - 16px)!important;transform:none!important}}
+
+/* 0.23: one switch geometry in both panels and chat FloatingWindows. */
+html.mft-enabled label:has(>[data-settings-switch-track]){width:34px!important;min-height:28px!important;height:28px!important;align-items:center!important}
+html.mft-enabled [data-settings-switch-track]{width:30px!important;height:18px!important;padding:2px!important;flex-shrink:0!important;box-sizing:border-box!important}
+html.mft-enabled [data-settings-switch-thumb]{width:14px!important;height:14px!important;transform:translateX(0)!important;translate:none!important}
+html.mft-enabled label:has(>input:checked)>[data-settings-switch-track]>[data-settings-switch-thumb],html.mft-enabled [data-settings-switch-thumb].translate-x-4{transform:translateX(12px)!important}
+html.mft-enabled label:has(>[data-settings-switch-track])>input[type=checkbox]{min-height:0!important}
+/* User-selected typography wins for message prose, not settings labels or toolbars. */
+html.mft-enabled [data-chat-mode] :is(.mari-message-content,.mari-message-content p,.mari-message-content li,.mari-chat-resolved-text,.game-narration-prose,.texting-bubble){line-height:var(--mft-chat-line-height,1.8)!important;letter-spacing:var(--mft-chat-letter-spacing,0px)!important}
+html.mft-enabled [data-chat-mode="roleplay"] [data-mft-writing]>textarea[data-chat-composer]{line-height:var(--mft-chat-line-height,1.8)!important;letter-spacing:var(--mft-chat-letter-spacing,0px)!important}
+.mft-settings-fold{font:inherit;display:flex;flex:0 0 auto;max-width:90px;margin-left:auto!important;align-items:center;justify-content:space-between;gap:8px;width:100%;margin:0 0 4px;padding:9px 12px;border:0;border-radius:9px;background:var(--mft-soft);color:var(--mft-ink);text-align:left;cursor:pointer}
+html.mft-enabled [data-mft-settings-fold=closed]>div.border-t{display:none!important}
+.mft-settings-index{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.mft-settings-index button{font:inherit;font-size:.8rem;padding:7px 10px;border:1px solid var(--mft-line);border-radius:9px;background:var(--mft-card);color:var(--mft-ink)}
+
+/* 0.24: compact disclosure, including the tracker's native fieldset. */
+html.mft-enabled [data-mft-settings-fold=closed]>.border-t{display:none!important}
+html.mft-enabled .mft-settings-fold{width:26px!important;min-width:26px!important;max-width:26px!important;min-height:28px!important;height:28px!important;padding:2px!important;margin:0 0 0 auto!important;font-size:14px!important;line-height:1!important;justify-content:center!important;background:transparent!important}
+html.mft-enabled #settings-section-roleplay-tracker>section>div:first-child:has(.mft-settings-fold){display:flex!important;align-items:center!important}
+html.mft-enabled #settings-section-roleplay-tracker>section>div:first-child:has(.mft-settings-fold)>div:first-child{flex:1;min-width:0}
