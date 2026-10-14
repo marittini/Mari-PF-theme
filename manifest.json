@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "마리나라 플랫폼화",
-    "version": "0.22.0",
-    "description": "홈·페르소나 갤러리/스크롤 보기 설정, 로어북 설정 영역 잘림 수정, 프리셋 제목·도구 정돈 및 모바일 입력 폭 보완, 로어북 안내 표시와 에디터 검사 최적화.",
+    "version": "0.24.0",
+    "description": "설정 기본 접힘·탭 이동 초기화, 트래커 접기와 작은 아이콘, 검색 결과별 펼침, 카드 좌우 스크롤과 탭 이동 제스처 충돌 수정.",
     "runtime": "client",
     "capabilities": [
       "full_page_access"
