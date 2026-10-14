@@ -190,7 +190,7 @@ html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row:not(.mar
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row--rect-avatar .mari-message-avatar :is(button,.rpg-avatar-glow){width:76px!important;height:96px!important;border-radius:14px!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row--rect-avatar .mari-rp-bubble{border-radius:20px!important;border-top:2px solid var(--mft-line)!important}
 /* None: a spacious reading surface without a card around every paragraph. */
-html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row--wide:not(:has(.mari-roleplay-avatar-panel-rail)) .mari-rp-bubble{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:8px 14px 14px!important}
+html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row--wide:not(:has(.mari-roleplay-avatar-panel-rail)) .mari-rp-bubble{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:8px var(--mft-rp-text-padding,14px) 14px!important}
 /* Panel: full-width landscape portrait, then centered name, then the original message. */
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-body:has(>.mari-rp-bubble .mari-roleplay-avatar-panel-rail){display:grid!important;grid-template-columns:minmax(0,1fr);gap:0!important;background:var(--mft-card);border:1px solid var(--mft-line);border-radius:20px;overflow:hidden;align-items:stretch!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-body:has(>.mari-rp-bubble .mari-roleplay-avatar-panel-rail)>div:has(>.mari-message-name){grid-row:2;padding:12px 14px 4px!important}
@@ -221,9 +221,9 @@ html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row:not(.mar
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row{padding-inline:6px!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-body{width:min(100%,var(--mari-roleplay-message-column-width,720px))!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-rp-bubble{padding:4px!important}
-html.mft-enabled [data-chat-mode="roleplay"] .mari-rp-bubble>div:not(:has(>.mari-roleplay-avatar-panel-rail)){padding:10px 6px!important}
+html.mft-enabled [data-chat-mode="roleplay"] .mari-rp-bubble>div:not(:has(>.mari-roleplay-avatar-panel-rail)){padding:10px var(--mft-rp-text-padding,6px)!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-message-content,html.mft-enabled [data-chat-mode="roleplay"] .mari-message-content :is(p,li){line-height:1.95!important}
-html.mft-enabled [data-chat-mode="roleplay"] .mari-rp-bubble>div>.mari-roleplay-avatar-panel-rail+div{padding:12px 10px 14px!important}
+html.mft-enabled [data-chat-mode="roleplay"] .mari-rp-bubble>div>.mari-roleplay-avatar-panel-rail+div{padding:12px var(--mft-rp-text-padding,10px) 14px!important}
 /* Compact controls center the icon + text group while keeping every text row left aligned. */
 html.mft-enabled [data-component="ChatModeSelectorModal"]>button{align-items:center!important;justify-content:flex-start!important}
 html.mft-enabled [data-component="ChatModeSelectorModal"]>button>span:first-child{margin-top:0!important;align-self:center!important}
@@ -376,3 +376,13 @@ html.mft-enabled [data-mft-settings-fold=closed]>.border-t{display:none!importan
 html.mft-enabled .mft-settings-fold{width:26px!important;min-width:26px!important;max-width:26px!important;min-height:28px!important;height:28px!important;padding:2px!important;margin:0 0 0 auto!important;font-size:14px!important;line-height:1!important;justify-content:center!important;background:transparent!important}
 html.mft-enabled #settings-section-roleplay-tracker>section>div:first-child:has(.mft-settings-fold){display:flex!important;align-items:center!important}
 html.mft-enabled #settings-section-roleplay-tracker>section>div:first-child:has(.mft-settings-fold)>div:first-child{flex:1;min-width:0}
+
+/* 0.25: actual native Convo user bubble has its own fixed blue gradient. */
+html.mft-enabled [data-chat-mode="conversation"] .texting-bubble-user{background:var(--mft-accent)!important;background-image:none!important;color:var(--mft-on-accent)!important;box-shadow:none!important}
+
+/* 0.27: cropped portraits use the same unmasked full panel for both roles. */
+html.mft-enabled [data-chat-mode="roleplay"] img[data-mft-crop="true"]{mask-image:none!important;-webkit-mask-image:none!important}
+
+/* 0.28: translations follow the same message's computed user-selected size. */
+html.mft-enabled [data-chat-mode] .translation-text{font-size:var(--mft-translation-size,inherit)!important;line-height:var(--mft-chat-line-height,1.8)!important;letter-spacing:var(--mft-chat-letter-spacing,0px)!important}
+html.mft-enabled [data-chat-mode] .translation-text :is(p,li,span,div,blockquote,pre,code){font-size:inherit!important;line-height:inherit!important;letter-spacing:inherit!important}
