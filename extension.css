@@ -1,11 +1,11 @@
 /* Shared design for the engine UI. Native controls and editor state stay in place. */
 html.mft-enabled {
- --mft-bg:#f5f5f8;--mft-card:#ffffff;--mft-soft:#eeeef3;--mft-ink:#191921;--mft-muted:#747480;--mft-line:#e3e3eb;--mft-accent:#6656ec;--mft-on-accent:#ffffff;
+ --mft-bg:#f5f5f8;--mft-card:#ffffff;--mft-soft:#eeeef3;--mft-ink:#191921;--mft-muted:#747480;--mft-line:#e3e3eb;--mft-accent:var(--mft-user-accent,#6656ec);--mft-on-accent:#ffffff;
  --mft-ui-radius:14px;--mft-nav-height:72px;
  --mft-available-height:calc(var(--mari-visual-viewport-height,100dvh) - var(--mft-nav-height));
  color-scheme:light;
 }
-html.mft-enabled[data-theme="dark"]{--mft-bg:#111113;--mft-card:#19191c;--mft-soft:#232328;--mft-ink:#f4f4f7;--mft-muted:#a0a0ac;--mft-line:#303037;--mft-accent:#7969fa;color-scheme:dark}
+html.mft-enabled[data-theme="dark"]{--mft-bg:#111113;--mft-card:#19191c;--mft-soft:#232328;--mft-ink:#f4f4f7;--mft-muted:#a0a0ac;--mft-line:#303037;--mft-accent:var(--mft-user-accent,#7969fa);color-scheme:dark}
 html.mft-enabled[data-mari-software-keyboard-open]{--mft-available-height:var(--mari-visual-viewport-height,100dvh);--mft-native-nav-display:none}
 /* Important tokens override the engine's user-color inline declarations without changing saved settings. */
 html.mft-enabled:root, html.mft-enabled .mari-app,html.mft-enabled [data-chat-mode],html.mft-enabled .mari-editor-shell {
@@ -59,29 +59,28 @@ html.mft-enabled :is(.mari-editor-panel,.mari-editor-section,.mari-editor-empty,
 html.mft-enabled .mari-editor-panel{padding:14px!important}
 html.mft-enabled :is(.mari-editor-action,.mari-editor-section-jump,.mari-chrome-control,.mari-chat-style-control){border-radius:10px!important;box-shadow:none!important;backdrop-filter:none!important}
 html.mft-enabled .mari-editor-field,html.mft-enabled .mari-chrome-field{background:var(--mft-soft)!important;border-color:var(--mft-line)!important;color:var(--mft-ink)!important}
-html.mft-enabled :is(.mari-editor-title,.mari-editor-title-input){font-size:20px!important;font-weight:700!important;letter-spacing:-.4px!important}
-html.mft-enabled :is(.mari-editor-subtitle,.mari-editor-subtitle-input){font-size:13px!important;color:var(--mft-muted)!important}
+html.mft-enabled :is(.mari-editor-title,.mari-editor-title-input){font-weight:700!important;letter-spacing:-.4px!important}
+html.mft-enabled :is(.mari-editor-subtitle,.mari-editor-subtitle-input){color:var(--mft-muted)!important}
 html.mft-enabled :is([data-panel-key],.mari-modal) :is(input,select,textarea){max-width:100%;min-width:0;background:var(--mft-soft);color:var(--mft-ink);border-color:var(--mft-line);border-radius:10px}
-html.mft-enabled :is([data-panel-key],.mari-editor-shell,.mari-modal){font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif!important}
 html.mft-enabled :is(.marinara-chat-input-shell,.mari-chat-input-box){background:var(--mft-card)!important;color:var(--mft-ink)!important;border:1px solid var(--mft-line)!important;border-radius:18px!important;backdrop-filter:none!important;box-shadow:none!important;min-width:0!important}
-html.mft-enabled :is(.mari-chat-input-textarea,[data-chat-composer]){color:var(--mft-ink)!important;background:transparent!important;font-family:inherit!important;font-size:16px!important;line-height:1.6!important;min-width:0!important}
+html.mft-enabled :is(.mari-chat-input-textarea,[data-chat-composer]){color:var(--mft-ink)!important;background:transparent!important;font-family:inherit!important;line-height:1.6!important;min-width:0!important}
 html.mft-enabled .mari-chat-send-btn:not(:disabled){background:var(--mft-accent)!important;color:var(--mft-on-accent)!important}
 html.mft-enabled .mari-chat-style-surface{background:var(--mft-card)!important;border-color:var(--mft-line)!important;backdrop-filter:none!important;box-shadow:none!important}
 html.mft-enabled :is(.mari-conversation-bubble,.mari-rp-bubble,.texting-bubble-other){background:var(--mft-card)!important;border:1px solid var(--mft-line)!important;box-shadow:none!important;backdrop-filter:none!important;border-radius:18px!important;color:var(--mft-ink)!important}
-html.mft-enabled .mari-message-content{font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif!important;color:var(--mft-ink)!important;overflow-wrap:anywhere}
+html.mft-enabled .mari-message-content{color:var(--mft-ink)!important;overflow-wrap:anywhere}
 html.mft-enabled .mari-message-content :is(p,li){line-height:1.85}
 html.mft-enabled :is(.mari-message-user .mari-rp-bubble,.texting-bubble-self){background:var(--mft-soft)!important}
 html.mft-enabled :is([data-agent-card],[data-character-id],[data-chat-id]){border-radius:12px!important}
-html.mft-enabled [data-panel-key="settings"] [role="tab"]{min-height:34px!important;font-size:12px!important;box-shadow:none!important;background-image:none!important}
+html.mft-enabled [data-panel-key="settings"] [role="tab"]{min-height:34px!important;box-shadow:none!important;background-image:none!important}
 html.mft-enabled [data-panel-key="settings"] [role="tab"][aria-selected="true"]{background:var(--mft-soft)!important;color:var(--mft-accent)!important;border-color:var(--mft-line)!important}
 html.mft-enabled :is(.y2k-star,.y2k-star-md,.y2k-star-lg,.mari-home-starfield,.retro-scanlines::after,.noise-bg::before){display:none!important}
 html.mft-enabled :is(.mari-accent-animated,.mari-button-pulse,.retro-glow-text){animation:none!important;text-shadow:none!important}
 @media(max-width:767px){html.mft-enabled .mari-editor-content{padding:12px!important}html.mft-enabled .mari-game-narration-surface{padding:12px!important}html.mft-enabled .mari-modal{padding:8px!important}html.mft-enabled .mari-editor-panel{padding:12px!important}html.mft-enabled .mari-editor-content-inner{gap:12px!important}}
-html.mft-enabled .game-narration-prose{color:var(--mft-ink)!important;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif!important;font-size:15px!important;line-height:1.8!important;overflow-wrap:anywhere}
-html.mft-enabled .mari-game-narration-surface .mari-chat-resolved-text{color:var(--mft-ink)!important;font-size:15px!important;line-height:1.8!important}
+html.mft-enabled .game-narration-prose{color:var(--mft-ink)!important;line-height:1.8!important;overflow-wrap:anywhere}
+html.mft-enabled .mari-game-narration-surface .mari-chat-resolved-text{color:var(--mft-ink)!important;line-height:1.8!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row{--mari-roleplay-avatar-slot:48px;--mari-roleplay-avatar-gap:12px}
 html.mft-enabled .mari-rp-bubble{padding:14px!important}
-html.mft-enabled .mari-editor-panel textarea{width:100%;font-size:14px;line-height:1.6}
+html.mft-enabled .mari-editor-panel textarea{width:100%;line-height:1.6}
 html.mft-enabled :is(marinara-capability-noodle,marinara-capability-slurp,marinara-capability-slurp2,[data-marinara-capability-scope]){--primary:var(--mft-accent)!important;--background:var(--mft-bg)!important;--foreground:var(--mft-ink)!important;--card:var(--mft-card)!important;--secondary:var(--mft-soft)!important;--muted-foreground:var(--mft-muted)!important;--border:var(--mft-line)!important;--ring:var(--mft-accent)!important}
 
 html.mft-enabled .mari-modal-backdrop{backdrop-filter:none!important;background:rgba(0,0,0,.45)!important}
@@ -145,7 +144,7 @@ html.mft-enabled [data-connection-id]>div.min-w-0.flex-1{min-width:calc(100% - 8
 html.mft-enabled [data-connection-id]>[class*="pointer-events-none"]{margin-left:auto!important;flex-basis:auto!important}
 html.mft-enabled :is([data-panel-key],.mari-editor-content,[data-chat-scroll],.mari-modal-panel){scrollbar-width:none!important}
 html.mft-enabled :is([data-panel-key],.mari-editor-content,[data-chat-scroll],.mari-modal-panel)::-webkit-scrollbar{display:none!important}
-html.mft-enabled [data-panel-key] :is(input,select){font-size:13px!important;min-height:34px!important}
+html.mft-enabled [data-panel-key] :is(input,select){min-height:34px!important}
 html.mft-enabled [data-panel-key] :is(.mari-panel-gradient-button,.mari-chrome-control){min-height:30px!important;padding-block:6px!important;border-radius:9px!important}
 html.mft-enabled [data-panel-key] [class*="h-12"]{height:36px!important}
 html.mft-enabled .mari-right-panel-header{height:42px!important}
@@ -167,8 +166,8 @@ html.mft-enabled [data-connection-id]>div.min-w-0.flex-1>div:first-child{white-s
 html.mft-enabled [data-panel-key] [class~="h-12"][class~="w-12"]{width:36px!important;height:36px!important}
 /* 0.7: native management uses the existing sidebar, including drag and rename handlers. */
 html.mft-enabled [data-component="ChatSidebarPanel"][aria-hidden="false"]{position:fixed!important;inset:var(--mari-visual-viewport-offset-top,0px) 0 auto 0!important;width:100%!important;height:var(--mft-available-height)!important;max-height:var(--mft-available-height)!important;z-index:60!important;transform:none!important;background:var(--mft-bg)!important}
-html.mft-enabled [data-component="ChatSidebar"]{font-size:13px!important;min-height:0;overflow:hidden;background:var(--mft-bg)!important}
-html.mft-enabled [data-component="ChatSidebar"] :is(input,select){font-size:13px!important;min-height:32px!important}
+html.mft-enabled [data-component="ChatSidebar"]{min-height:0;overflow:hidden;background:var(--mft-bg)!important}
+html.mft-enabled [data-component="ChatSidebar"] :is(input,select){min-height:32px!important}
 html.mft-enabled [data-character-id]>div.min-w-0.flex-1{display:flex;flex-direction:column;justify-content:center;align-self:center;min-height:44px}
 html.mft-enabled [data-character-row-name]{line-height:1.45!important}
 /* AppShell already reserves Four Tabs height. Agent footers are in that shortened pane. */
@@ -185,7 +184,7 @@ html.mft-enabled mft-message-lines{margin-block:0;max-width:100%;min-width:0}
 /* RP labels have their own centered row: metadata cannot shift the name off-center. */
 html.mft-enabled [data-chat-mode="roleplay"] .mari-message-body>div:has(>.mari-message-name){display:grid!important;grid-template-columns:minmax(0,1fr)!important;justify-items:center!important;align-items:center!important;gap:2px!important;width:100%!important;text-align:center!important;flex-direction:column!important;min-height:25px;padding:6px 10px!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-message-name{justify-self:center!important;text-align:center!important;width:100%;color:var(--mft-ink)}
-html.mft-enabled [data-chat-mode="roleplay"] .mari-message-body>div:has(>.mari-message-name)>span:not(.mari-message-name){color:var(--mft-muted)!important;font-size:10px!important;max-width:100%!important;text-align:center}
+html.mft-enabled [data-chat-mode="roleplay"] .mari-message-body>div:has(>.mari-message-name)>span:not(.mari-message-name){color:var(--mft-muted)!important;max-width:100%!important;text-align:center}
 /* Circle: compact floating portrait; rectangle: a taller portrait above a framed bubble. */
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row:not(.mari-roleplay-message-row--rect-avatar) .mari-message-avatar :is(button,.rpg-avatar-glow){border-radius:50%!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row--rect-avatar .mari-message-avatar :is(button,.rpg-avatar-glow){width:76px!important;height:96px!important;border-radius:14px!important}
@@ -215,7 +214,7 @@ html.mft-enabled [data-chat-mode="conversation"] .mari-message-content:not(.mari
 html.mft-enabled [data-chat-mode="conversation"] .mari-message-bubble[data-mft-split]{pointer-events:none!important}
 /* RP metadata never takes visual space beside a character name. */
 html.mft-enabled [data-chat-mode="roleplay"] .mari-message-body>div:has(>.mari-message-name)>span:not(.mari-message-name){display:none!important}
-html.mft-enabled [data-chat-mode="roleplay"] .mari-message-name{font-size:17px!important;line-height:1.5!important}
+html.mft-enabled [data-chat-mode="roleplay"] .mari-message-name{line-height:1.5!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row--wide:not(:has(.mari-roleplay-avatar-panel-rail)) .mari-message-name{display:none!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row--wide:not(:has(.mari-roleplay-avatar-panel-rail)) .mari-message-body>div:has(>.mari-message-name){display:none!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-roleplay-message-row:not(.mari-roleplay-message-row--rect-avatar) .mari-message-avatar :is(button,.rpg-avatar-glow){width:64px!important;height:64px!important}
@@ -230,7 +229,7 @@ html.mft-enabled [data-component="ChatModeSelectorModal"]>button{align-items:cen
 html.mft-enabled [data-component="ChatModeSelectorModal"]>button>span:first-child{margin-top:0!important;align-self:center!important}
 html.mft-enabled [data-component="ChatModeSelectorModal"]>button>span:last-child{display:flex;flex-direction:column;justify-content:center;min-width:0;text-align:left}
 html.mft-enabled .mari-modal-panel>div:first-child:has(>h2){width:100%;margin-inline:0!important;align-items:center!important;justify-content:space-between!important;padding:14px 18px!important}
-html.mft-enabled .mari-modal-panel>div:first-child:has(>h2)>h2{margin:0!important;line-height:1.5!important;font-size:16px!important}
+html.mft-enabled .mari-modal-panel>div:first-child:has(>h2)>h2{margin:0!important;line-height:1.5!important;font-size:1.0rem!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-message-timestamp{display:none!important}
 html.mft-enabled .mari-chat-option-field{align-items:center!important}
 
@@ -240,7 +239,7 @@ html.mft-enabled [data-chat-mode="roleplay"] .mari-message-content :is(p,li,bloc
 html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm){text-align:center!important}
 html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:first-child:has(>h2){position:relative!important;display:block!important;text-align:center!important;padding-inline:48px!important}
 html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:first-child>h2{width:100%!important;text-align:center!important}
-html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:first-child>button{position:absolute!important;right:10px!important;top:50%!important;transform:translateY(-50%)!important}
+html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:first-child>button{position:absolute!important;right:10px!important;top:50%!important;transform:translateY(-50%)!important;width:32px!important;height:32px!important;display:grid!important;place-items:center!important;padding:6px!important}
 html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:last-child :is(p,button){text-align:center!important}
 html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:last-child div:has(>button){justify-content:center!important}
 
@@ -249,3 +248,112 @@ html.mft-enabled [data-chat-mode="conversation"] [data-message-id][data-message-
 html.mft-enabled [data-chat-mode="conversation"] .mari-message{padding-block:5px!important}
 html.mft-enabled [data-chat-mode="conversation"] .mari-message>div:has(>.mari-message-avatar):has(>.mari-message-body){align-items:flex-start!important}
 html.mft-enabled [data-chat-mode="conversation"] .mari-message-avatar{align-self:flex-start!important;margin-top:2px!important}
+
+/* 0.13: engine native panels cannot expose Home during their enter animation. */
+html.mft-enabled[data-mft-native-layer="panel"] [data-component="HomeBrowserHub"],html.mft-enabled[data-mft-native-layer="detail"] [data-component="HomeBrowserHub"]{visibility:hidden!important;pointer-events:none!important}
+html.mft-enabled .mari-modal{top:var(--mari-visual-viewport-offset-top,0px)!important;bottom:auto!important;height:calc(var(--mft-available-height) - 12px)!important;min-height:0!important;padding:12px!important}
+html.mft-enabled .mari-modal-panel{max-height:calc(var(--mft-available-height) - 36px)!important;min-height:0!important}
+@media(max-width:1023px){html.mft-enabled :is([data-component="RightPanelMobile"],[data-component="MobileDetailSheet"],[data-component="ChatSidebarPanel"]){height:calc(var(--mft-available-height) - 3rem - env(safe-area-inset-top,0px) - 12px)!important;max-height:calc(var(--mft-available-height) - 3rem - env(safe-area-inset-top,0px) - 12px)!important}}
+@media(min-width:1024px){html.mft-enabled .mari-modal{left:92px!important;right:0!important;width:calc(100% - 92px)!important}}
+
+/* 0.14: full-height management panels and a separate PeekPrompt backdrop. */
+html.mft-enabled :is([data-component="RightPanelMobile"],[data-component="MobileDetailSheet"],[data-component="ChatSidebarPanel"]){top:var(--mari-visual-viewport-offset-top,0px)!important;height:var(--mft-available-height)!important;max-height:var(--mft-available-height)!important;bottom:auto!important}
+html.mft-enabled [data-chat-floating-panel].fixed:has(>.mari-chat-action-panel){top:var(--mari-visual-viewport-offset-top,0px)!important;bottom:auto!important;height:calc(var(--mft-available-height) - 12px)!important;min-height:0!important;padding:12px!important}
+html.mft-enabled [data-chat-floating-panel].fixed>.mari-chat-action-panel{max-height:calc(var(--mft-available-height) - 36px)!important;min-height:0!important;margin-inline:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+html.mft-enabled [data-chat-floating-panel].fixed>.mari-chat-action-panel>div:last-child{min-height:0!important;overflow-y:auto!important}
+@media(min-width:1024px){html.mft-enabled [data-chat-floating-panel].fixed:has(>.mari-chat-action-panel){left:92px!important;right:0!important;width:calc(100% - 92px)!important}}
+
+html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:first-child>button>svg{width:18px!important;height:18px!important}
+
+/* 0.15: desktop RP textarea focus gives writing space; pointer exit restores controls. */
+html.mft-enabled [data-chat-mode="roleplay"] :is(.marinara-chat-input-shell,.mari-chat-input-box)[data-mft-writing]:not(:has([data-chat-input-popup]))>:not(textarea):not(.mft-writing-tools){display:none!important}
+html.mft-enabled [data-chat-mode="roleplay"] :is(.marinara-chat-input-shell,.mari-chat-input-box)[data-mft-writing]>textarea{flex:1 1 100%!important;width:100%!important}
+
+html.mft-enabled .mft-writing-tools{display:none!important}
+@media(hover:none),(pointer:coarse){html.mft-enabled [data-chat-mode="roleplay"] [data-mft-writing]>.mft-writing-tools{display:block!important;position:absolute!important;right:6px;top:-28px;padding:3px 10px;border:1px solid var(--mft-line);border-radius:9px;background:var(--mft-card);color:var(--mft-accent);font:inherit;z-index:2}}
+
+/* 0.18: only focused RP drafting without rewriting engine message/composer nodes. */
+html.mft-enabled [data-chat-mode="roleplay"] :is(.marinara-chat-input-shell,.mari-chat-input-box)[data-mft-writing]{padding:14px 16px!important;gap:10px!important;margin-block:12px!important;min-height:70px!important}
+html.mft-enabled [data-chat-mode="roleplay"] [data-mft-writing]>textarea[data-chat-composer]{padding-block:7px!important;min-height:38px!important;line-height:1.8!important}
+/* Real preset rows: reclaim padding reserved for floating controls. */
+html.mft-enabled [data-touch-drag-card="preset"]{padding:9px 5px!important;gap:7px!important;min-width:0!important}
+html.mft-enabled [data-touch-drag-card="preset"]>div:has([data-preset-open-action]){gap:7px!important;min-width:0!important}
+html.mft-enabled [data-preset-open-action]{padding-right:0!important;min-width:0!important}
+html.mft-enabled [data-touch-drag-card="preset"] :is([data-preset-image-action],.mari-panel-gradient--presets):not([data-preset-selected-indicator]){width:32px!important;height:32px!important;min-height:32px!important;border-radius:9px!important;padding:0!important;flex-shrink:0!important}
+html.mft-enabled [data-touch-drag-card="preset"]>[class*="absolute"][class*="pointer-events-none"]{position:static!important;transform:none!important;opacity:1!important;pointer-events:auto!important;flex:0 0 auto!important;gap:1px!important;padding:2px!important;box-shadow:none!important;margin-left:auto!important}
+html.mft-enabled [data-touch-drag-card="preset"]>[class*="pointer-events-none"] button{width:28px!important;height:28px!important;min-height:28px!important;padding:5px!important;border-radius:8px!important;pointer-events:auto!important}
+html.mft-enabled [data-touch-drag-card="preset"]>[class*="pointer-events-none"] svg{width:14px!important;height:14px!important}
+/* Smaller switch visuals retain an independent label hit area. */
+html.mft-enabled :is([data-panel-key],.mari-editor-shell) label:has(>[data-settings-switch-track]){width:34px!important;min-height:28px!important;height:28px!important;align-items:center!important}
+html.mft-enabled :is([data-panel-key],.mari-editor-shell) [data-settings-switch-track]{width:30px!important;height:18px!important;padding:2px!important;flex-shrink:0!important}
+html.mft-enabled :is([data-panel-key],.mari-editor-shell) [data-settings-switch-thumb]{width:14px!important;height:14px!important;transform:translateX(0)!important}
+html.mft-enabled :is([data-panel-key],.mari-editor-shell) label:has(>input:checked)>[data-settings-switch-track]>[data-settings-switch-thumb]{transform:translateX(12px)!important}
+html.mft-enabled :is([data-panel-key],.mari-editor-shell) label:has(>[data-settings-switch-track])>input[type="checkbox"]{min-height:0!important}
+
+/* 0.18: native resource-list compactness shared across all six management tabs. */
+html.mft-enabled :is([data-touch-drag-card="preset"],[data-touch-drag-card="lorebook"],[data-touch-drag-card="connection"],[data-touch-drag-card="persona"],[data-touch-drag-card="character"],[data-touch-drag-card="agent"]){padding:9px 5px!important;gap:7px!important;min-width:0!important}
+html.mft-enabled :is([data-touch-drag-card="preset"],[data-touch-drag-card="lorebook"],[data-touch-drag-card="connection"],[data-touch-drag-card="persona"],[data-touch-drag-card="character"],[data-touch-drag-card="agent"]) [class*="pr-"]{padding-right:0!important;min-width:0!important}
+html.mft-enabled :is([data-touch-drag-card="preset"],[data-touch-drag-card="lorebook"],[data-touch-drag-card="connection"],[data-touch-drag-card="persona"],[data-touch-drag-card="character"],[data-touch-drag-card="agent"]) :is(button,div)[class~="h-10"][class~="w-10"]{width:32px!important;height:32px!important;min-height:32px!important;flex-shrink:0!important;border-radius:9px!important;padding:0!important}
+html.mft-enabled :is([data-touch-drag-card="preset"],[data-touch-drag-card="lorebook"],[data-touch-drag-card="connection"],[data-touch-drag-card="persona"],[data-touch-drag-card="character"],[data-touch-drag-card="agent"])>[class*="absolute"][class*="pointer-events-none"]{position:static!important;transform:none!important;opacity:1!important;pointer-events:auto!important;flex:0 0 auto!important;gap:1px!important;padding:2px!important;box-shadow:none!important;margin-left:auto!important}
+html.mft-enabled :is(:is([data-touch-drag-card="preset"],[data-touch-drag-card="lorebook"],[data-touch-drag-card="connection"],[data-touch-drag-card="persona"],[data-touch-drag-card="character"],[data-touch-drag-card="agent"])>[class*="pointer-events-none"],[data-panel-key] [data-folder-actions]) button{width:24px!important;height:24px!important;min-height:24px!important;min-width:24px!important;padding:4px!important;border-radius:7px!important;pointer-events:auto!important}
+html.mft-enabled :is(:is([data-touch-drag-card="preset"],[data-touch-drag-card="lorebook"],[data-touch-drag-card="connection"],[data-touch-drag-card="persona"],[data-touch-drag-card="character"],[data-touch-drag-card="agent"])>[class*="pointer-events-none"],[data-panel-key] [data-folder-actions]) button svg{width:12px!important;height:12px!important}
+
+/* 0.19: round native character/persona portraits without glow or fixed teal. */
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona){--mari-avatar-placeholder-start:var(--mft-accent)!important;--mari-avatar-placeholder-end:var(--mft-accent)!important;--mari-avatar-placeholder-text:var(--mft-on-accent)!important;background:var(--mft-accent)!important;background-image:none!important;color:var(--mft-on-accent)!important;border-radius:50%!important;border:0!important;box-shadow:none!important;filter:none!important;text-shadow:none!important;animation:none!important}
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona)::before,html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona)::after{display:none!important;box-shadow:none!important;filter:none!important;animation:none!important}
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona)>:is(div,span):not([data-character-favorite-indicator]){border-radius:50%!important;box-shadow:none!important;filter:none!important}
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona):not(:has([data-character-favorite-indicator])){overflow:hidden!important}
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona) img{border-radius:0!important;box-shadow:none!important;filter:none!important}
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona) [data-character-favorite-indicator]{box-shadow:none!important}
+html.mft-enabled:root [data-touch-drag-card] .mari-avatar-placeholder:is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona){border-radius:50%!important}
+
+/* 0.20: neutralize independent Tailwind translate and keep the thumb inside the track. */
+html.mft-enabled [data-settings-switch-track]{box-sizing:border-box!important;overflow:hidden!important;align-items:center!important;justify-content:flex-start!important}
+html.mft-enabled [data-settings-switch-thumb]{box-sizing:border-box!important;translate:none!important;position:static!important;margin:0!important;flex:0 0 14px!important;transition:none!important}
+/* Respect engine/user font families, including a user-selected chat widget family. */
+html.mft-enabled .mari-app{font-family:var(--font-user,inherit)!important}
+html.mft-enabled :is(.mari-app,.mari-editor-shell,[data-panel-key]) :is(button,input,textarea,select,div,span,p,label,h1,h2,h3,h4,pre,code){font-family:inherit!important}
+html.mft-enabled [data-chat-mode]{font-family:var(--mari-widget-font-override,var(--font-user,inherit))!important}
+html.mft-enabled [data-chat-mode="roleplay"] .mari-message-name{font-size:calc(var(--mari-message-name-size,.75rem) + .3125rem)!important}
+/* Native list summaries are not profile descriptions. */
+html.mft-enabled [data-touch-drag-card="persona"]>div.min-w-0.flex-1>div.truncate:last-child:not(.italic){display:none!important}
+html.mft-enabled [data-mft-tag-duplicate]{display:none!important}
+/* Put full section titles on their own line; keep every existing control. */
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child{flex-wrap:wrap!important;gap:6px!important;padding:10px!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child>span.cursor-pointer{order:-1!important;flex:1 0 100%!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;line-height:1.55!important}
+.mft-lore-guide{padding:12px;border:1px solid var(--mft-line);border-radius:12px;background:var(--mft-soft);margin-bottom:16px;color:var(--mft-ink);font-family:inherit}.mft-lore-guide summary{cursor:pointer;font-weight:600}.mft-lore-guide p{margin:8px 0;line-height:1.7}.mft-field-help{margin:5px 0 10px;color:var(--mft-muted);line-height:1.6;font-family:inherit}
+html.mft-enabled [data-lorebook-entry-row-id] :is(input,textarea){min-width:0!important;line-height:1.65!important}
+
+html.mft-enabled [data-lorebook-entry-row-id]>div.border-t>div:first-of-type{padding:6px 8px!important;background:transparent!important;flex-wrap:wrap!important}
+
+/* 0.21: in-app suggestions, with touch and keyboard controls. */
+.mft-tag-list{width:100%;max-height:min(180px,30dvh);overflow:auto;overscroll-behavior:contain;margin:6px 0 12px;padding:5px;border:1px solid var(--mft-line);border-radius:12px;background:var(--mft-card);color:var(--mft-ink);font-family:inherit}.mft-tag-option{display:block;width:100%;padding:9px 12px;min-height:36px;text-align:left;border:0;border-radius:8px;background:transparent;color:inherit;font:inherit;cursor:pointer}.mft-tag-option:hover,.mft-tag-option[aria-selected=true]{background:var(--mft-soft);color:var(--mft-accent)}.mft-tag-empty{margin:5px;padding:6px;color:var(--mft-muted);font-size:.8rem;line-height:1.5}
+.mft-lore-guide,.mft-field-help{font-size:.78rem!important}.mft-lore-guide summary{font-size:.8rem!important}
+/* 0.22: cohesive title row and a compact shared tool row. */
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 8px!important;align-items:center!important;padding:10px 12px!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child>[data-preset-section-toggle]{grid-row:1;grid-column:1;padding:3px!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child>span.cursor-pointer{grid-row:1;grid-column:2/-1;order:0!important;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child>div:first-child{grid-row:2;grid-column:1;justify-self:start;gap:2px!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child>div:last-child{grid-row:2;grid-column:3;justify-self:end;display:flex;gap:2px!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child>svg{display:none!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child>[data-preset-section-group-badge]{grid-row:2;grid-column:2;justify-self:start;min-width:0;max-width:100%;white-space:normal!important;overflow-wrap:anywhere!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child>[data-preset-marker-badge]{grid-row:3;grid-column:2;justify-self:start}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child>span.hidden{display:none!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div:first-child button{min-width:26px;min-height:28px;padding:4px!important}
+/* Flexible form fields, including a long section name beside the role selector. */
+html.mft-enabled [data-touch-reorder-item="preset-section"]{min-width:0!important;max-width:100%!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div.border-t :is(div,input,textarea,select){min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+html.mft-enabled [data-touch-reorder-item="preset-section"]>div.border-t>div:has(>[data-preset-section-role]){display:grid!important;grid-template-columns:minmax(0,1fr) minmax(90px,.4fr);gap:8px!important}
+html.mft-enabled [data-preset-section-role]{width:100%!important}
+@media(max-width:380px){html.mft-enabled [data-touch-reorder-item="preset-section"]>div.border-t>div:has(>[data-preset-section-role]){grid-template-columns:minmax(0,1fr)!important}}
+/* Lorebook tools retain native callbacks; quick settings expand within the card. */
+html.mft-enabled [data-lorebook-entry-row-id]>div.group{flex-wrap:wrap!important;gap:4px!important;padding:10px 12px!important;min-width:0!important}
+html.mft-enabled [data-lorebook-entry-row-id]>div.group>input{order:-1;flex:1 0 100%!important;width:100%!important;min-width:0!important;margin-bottom:4px!important}
+html.mft-enabled [data-lorebook-entry-row-id]>div.group>button{min-height:28px;min-width:24px}
+html.mft-enabled [data-lorebook-entry-row-id]>div.group>div.relative:has(>div.absolute.right-0.top-full){display:contents!important}
+html.mft-enabled [data-lorebook-entry-row-id]>div.group>div.relative>div.absolute.right-0.top-full{position:static!important;inset:auto!important;transform:none!important;order:100!important;flex:1 0 100%!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;min-width:0!important;margin:8px 0 0!important;box-shadow:none!important;background:var(--mft-soft)!important}
+html.mft-enabled [data-lorebook-entry-row-id]>div.group>div.relative>div.absolute.right-0.top-full :is(div,input,select){min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+/* Actual FloatingWindow settings sheet fits above the theme's navigation. */
+html.mft-enabled .mari-chat-settings-drawer.mari-window{max-height:calc(var(--mft-available-height) - 24px)!important;min-height:0!important;overflow:hidden!important}
+html.mft-enabled .mari-chat-settings-drawer>.mari-window__body{min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain;padding-bottom:16px!important}
+@media(max-width:1023px){html.mft-enabled .mari-chat-settings-drawer.mari-window{position:fixed!important;top:calc(var(--mari-visual-viewport-offset-top,0px) + 12px)!important;bottom:auto!important;height:calc(var(--mft-available-height) - 24px)!important;left:8px!important;right:8px!important;width:calc(100% - 16px)!important;transform:none!important}}
