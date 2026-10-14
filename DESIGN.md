@@ -1,4 +1,4 @@
-# 마리나라 플랫폼화 0.12.0
+# 마리나라 플랫폼화 0.21.0
 
 표시 계층은 Shadow DOM, 순정 기능과 저장 데이터는 엔진이 소유한다.
 
@@ -75,3 +75,112 @@ verification/tts-dom-reference.js는 검사에 필요한 원본 표시 함수 �
 - 드래그 이동 중 레이아웃 읽기를 반복하지 않고 줄바꿈 위치 탐색을 순차 처리한다.
 - 주기적 폴링이나 항상 실행하는 requestAnimationFrame 루프를 추가하지 않는다.
 실제 온도, 배터리 및 모바일 CPU 프로파일은 측정하지 않았다.
+
+0.13.0 데이터/표시 계약
+- 페르소나 폴더는 /characters/persona-groups/list의 personaIds를 읽는다. 별도 폴더를 만들거나 소속을 수정하지 않는다.
+- 최근 조회 ID/시간만 기기에 저장하고 서버 대화 날짜/폴더 순서는 변경하지 않는다.
+- 초기 읽지 않음 복원에는 기존 QueryCache의 chats/list를 우선 사용한다. 수신/읽음 갱신은 기존 순정 query 이벤트와 metadata를 따른다.
+- --marinara-app-accent-static을 읽어 공통 컬러를 연결한다. 동일한 정적 컬러/테마에서는 DOM 색상 값을 다시 쓰지 않는다.
+- native panel/detail 화면에서만 순정 홈을 숨긴다. 패널의 기능/상태/원래 클릭 핸들러는 유지한다.
+- 팝업 높이는 visual viewport에서 실제 하단 메뉴와 여백을 제외한다. 데스크톱은 왼쪽 메뉴를 제외한다.
+참조한 공식 소스: PersonasPanel.tsx, use-characters.ts, App.tsx, shared/types/chat.ts, server/services/storage/chats.storage.ts.
+
+0.14.0 설정과 레이아웃 계약
+- 메인컬러는 순정 setAppAccentColor를 사용한다. 액션이 아직 노출되지 않으면 숨겨진 Appearance 화면을 준비해 같은 setter를 호출한다.
+- 색상은 change 시 한 번만 저장하며 입력 중 지속 갱신/폴링을 추가하지 않는다.
+- 홈 배너 표시만 mft-preferences에 저장한다. 메시지와 엔진 설정을 복제 저장하지 않는다.
+- 확장 폰트 종류는 --font-user/상속, 크기는 rem을 사용한다. 분리 표시본에는 현재 소스의 인라인 서식만 전달한다.
+- PeekPromptModal의 실제 data-chat-floating-panel + mari-chat-action-panel 구조에 여백을 적용한다.
+  RightPanelMobile/MobileDetailSheet/ChatSidebarPanel은 하단 메뉴 위 사용 영역 전체를 채운다.
+- 갤러리와 헤더 변경은 CSS로 처리하며 추가 관찰자/타이머를 만들지 않는다.
+참조: 공식 App.tsx, SettingsPanel.tsx, PeekPromptModal.tsx, FloatingWindow.tsx (2026-10-14).
+
+0.15.0 계약
+- 피커는 CSS HSV 색상판 + 범위 입력 + HEX/RGB 입력이다. Pointer capture로 드래그하고 키보드 방향키로 채도/밝기를 조정한다.
+- 색상 변경은 로컬 draft이며 Apply에만 기존 순정 setAppAccentColor를 호출한다. OS input[type=color]를 사용하지 않는다.
+- 토스트 lifetime은 chatId+count/kind/callId/name 단위로 6500ms다. 화면 전환/다른 알림 변경으로 재시작하지 않는다.
+  알림 제거 시 타이머를 정리하고 확장 해제 시 모두 정리한다. 만료 시 순정 읽지 않음 상태를 변경하지 않는다.
+- RP 입력 집중 표시를 순정 ChatInput의 입력바 직계 자식과 CSS :focus와 사용자 포커스/입력/포인터 이벤트에 한정한다.
+  원본 React DOM/핸들러를 교체하지 않으며 마우스 이탈/포커스 해제/Esc로 모든 컨트롤이 복귀한다. 포인터가 돌아와 버튼을 클릭할 때 재접힘을 막는다.
+- 홈은 /characters/groups/list의 characterIds를 현재 catalog 페이지와 결합한다. 추가 전체 카탈로그/프로필 조회는 하지 않는다.
+- 확장 페르소나 화면의 부모는 제작 화면이며 CloseWatcher/popstate 양쪽 분기를 명시한다.
+참조: 공식 ChatInput.tsx, chat-input-styles.ts, chat.store.ts, use-characters.ts, characters.routes.ts.
+
+0.16.0 계약
+- 미분류 shelf/페르소나 section은 h2를 만들지 않고 첫 폴더 앞에 배치한다. 저장 폴더 소속은 변경하지 않는다.
+- 색상 draft는 --mft-user-accent/banner로 프레임 단위 미리보기한다. 엔진 setter는 Apply에서만 호출한다.
+  Cancel/화면 전환은 RAF를 취소하고 기존 엔진 static 색상으로 복귀한다.
+- 모바일은 focus/input에서 집중 표시하고 pointerout을 무시한다 (터치 후 pointerout 발생으로 즉시 해제되는 것 방지).
+- 모바일 입력바의 도구 버튼은 원래 React 자식을 변경하지 않고 별도 클래스의 버튼으로 추가한다.
+  pointerdown 기본 포커스 이동을 막아 키보드를 유지하며 도구 복귀만 수행한다.
+  순정 재렌더로 버튼이 사라지면 다음 입력 이벤트에서만 복구한다. 해제 시 버튼과 모든 이벤트를 정리한다.
+- 선톡 토스트 타이머는 5200ms이며 원래 unread state/notification callback은 변경하지 않는다.
+
+0.17.0 계약
+- 폴더 밖 section의 제목을 캐릭터/페르소나로 지정하고 첫 section 배치를 유지한다.
+- 입력 집중 상태는 data-mft-writing 속성이다. 순정 hasInput className 변경에 덮어써지지 않는다.
+  focusout은 microtask에서 현재 textarea 포커스를 다시 확인하며 실제 포커스 해제만 복귀한다.
+  삭제된 노드의 pointerout/focusout은 상태를 해제하지 않는다.
+- 입력바는 padding 14px 16px, margin-block 12px, min-height 70px; 입력칸 min-height 38px/세로 패딩 7px다.
+- PresetsPanel의 실제 data-touch-drag-card=preset/data-preset-open-action/data-preset-image-action에 CSS를 한정한다.
+  절대 위치 액션을 flex 항목으로 표시하고 pr-36 예약 공간을 없앤다. React 노드/핸들러는 교체하지 않는다.
+- SettingControls의 실제 switch-track/thumb 및 checkbox:checked 관계를 사용한다.
+  트랙 30×18px, thumb 14px/이동 12px, label 34×28px이며 체크 동작은 원래 input을 사용한다.
+참조: 공식 PresetsPanel.tsx, settings/SettingControls.tsx, ChatInput.tsx.
+
+0.18.0 계약
+- 순정 data-touch-drag-card의 preset/lorebook/connection/persona/character/agent 값에 공통 목록 CSS를 한정한다.
+- 제목 우측 pointer-events-none 액션 그룹은 static flex, 버튼 24px/SVG 12px이다. 원래 콜백/접근성 라벨을 보존한다.
+- 행 내부 모바일용 pr-* 예약 공간과 40px 대표 이미지 크기를 줄인다. 필터/설정/채팅 메시지 버튼에는 적용하지 않는다.
+- RP 넓은 패딩/여백/최소 높이는 data-mft-writing에만 적용한다. 일반 상태의 엔진 여백·입력 크기 규칙을 재사용한다.
+- 채팅 목록 선택 버튼만 세로 패딩 7px/바 패딩 3px/세로 마진 9px이며 equal grid columns는 유지한다.
+참조: 공식 PersonasPanel.tsx, LorebooksPanel.tsx, CharactersPanel.tsx, ConnectionsPanel.tsx, AgentsPanel.tsx, PresetsPanel.tsx.
+
+0.19.0 계약
+- 순정 mari-avatar-placeholder--character/persona 클래스에 원형/무글로우 디자인을 적용한다.
+- placeholder-start/end/text를 mft-accent/on-accent에 연결해 고정 teal을 제거한다.
+- 이미지의 크롭/transform/좌표는 수정하지 않는다. 내부 클립 래퍼를 원형으로 만들고 큰 crop 이미지 자체의 radius는 0으로 둔다.
+- 즐겨찾기 배지가 있는 컨테이너는 바깥 overflow를 유지해 배지가 잘리지 않게 한다.
+  배지 없는 프사/직접 이미지 렌더 컨테이너는 원형 overflow clip을 적용한다.
+- 페르소나 카메라 overlay/원래 클릭 핸들러를 유지하고 CSS로만 형태/글로우를 바꾼다.
+참조: 공식 globals.css의 mari-avatar-placeholder--persona 고정 색상과 CharactersPanel/PersonasPanel 내부 클립 구조.
+
+0.20.0 계약
+- SettingsSwitchTrack/thumb의 Tailwind independent translate를 none으로 중화하고 transform 한 번만 적용한다.
+  트랙 내부 box sizing/overflow를 고정하고 불필요한 thumb 이동 애니메이션을 제거한다.
+- persona 목록 description 마지막 줄만 CSS로 숨긴다. profile editor의 원문과 저장 데이터는 건드리지 않는다.
+- character row의 비 italic 메타데이터 텍스트가 실제 태그 배지와 같을 때 표시 속성으로만 숨긴다.
+  title/comment/버전은 삭제하지 않고 React DOM 텍스트를 다시 쓰지 않는다.
+- 활성 관리/편집 root에만 childList/characterData 관찰을 붙이고 own/chat 진입 시 해제한다.
+  도움말 추가 중 관찰을 해제하고 즉시 재연결해 자기 생성 DOM의 반복 처리를 막는다.
+- LorebookEntryRow ExpandedDrawer에 별도 details 안내와 Field label 도움말을 추가한다.
+- PresetEditor data-touch-reorder-item=preset-section header의 제목을 독립 flex 행으로 표시한다.
+- native 글자 크기 강제를 제거하고 family를 inherit/엔진 --font-user 및 --mari-widget-font-override로 연결한다.
+- 기존 태그는 metadata 입력 focus에서만 catalog/personas/list를 100개 페이지로 조회해 datalist를 만든다.
+  중복 요청 공유/캐시/해제 시 AbortController 정리를 사용한다. 입력값과 순정 추가 핸들러를 변경하지 않는다.
+참조: 공식 PersonaEditor.tsx, CharacterEditor.tsx, PersonasPanel.tsx, CharactersPanel.tsx,
+LorebookEntryRow.tsx, PresetEditor.tsx, SettingControls.tsx, App.tsx, globals.css.
+
+0.21.0 계약
+- 태그 combobox/listbox는 입력 행 다음에 별도 노드로 추가한다. React 입력값은 native value setter + input 이벤트로 전달한다.
+  원래 Add/Enter 등록 기능은 유지하며 키보드 추천 선택 시에만 이벤트를 소비한다.
+  목록 닫기/이동/해제 시 노드와 이벤트를 정리하고 원래 ARIA/list/autocomplete 속성을 복구한다.
+- 추천 목록의 childList 변경을 nativeUiObserver에서 제외해 키 입력이 전체 에디터 검사로 이어지지 않게 한다.
+- 태그 자료는 기존 QueryCache의 완전한 personas/characters list 배열이 있으면 재사용한다.
+  raw storage JSON/decoded data/top-level tags를 해석하고 조회와 결과는 중복 공유·캐시한다.
+- viewRequests 집합으로 독립 자료/폴더 GET을 병렬 실행하고 stop에서 모두 abort한다. cache는 12개 상한이다.
+- 프리셋 header는 movement/title-row/metadata grid, 로어북은 title-first flex wrap으로 배치한다.
+  원본 React 노드/콜백 순서를 변경하지 않는다.
+- 실제 .mari-chat-settings-drawer.mari-window와 .mari-window__body에 높이/스크롤을 적용한다.
+  모바일 viewport/nav 높이 변화에 CSS 변수로 대응하고 PC 창 geometry는 원래 엔진을 따른다.
+참조: 공식 FloatingWindow.tsx, ChatSettingsDrawer.tsx, persona-cache.ts, PresetEditor.tsx, LorebookEntryRow.tsx.
+
+0.22.0 계약
+- 로어북 quick-controls relative wrapper는 열렸을 때 display:contents; 실제 popup은 static/full-basis로 card flow에 둔다.
+  React 노드 이동, 필드 값 재작성, 원래 토글/완료/저장 콜백 변경은 없다.
+- 프리셋 title+toggle / movement+group+actions 두 줄. 역할 장식 glyph는 숨기며 role select는 유지한다.
+  expanded name/role grid는 minmax(0,…)로 폭 제한하고 380px 이하는 한 열로 배치한다.
+- CenterContent도 native editing 동안 mount 관찰에 포함한다. 추가/변경된 row의 부모 영역만 즉시 microtask로 검사한다.
+  채팅/자체 화면에서는 관찰을 중단하며 도우미 자체 변경은 제외한다. 반복 타이머/가이드 네트워크 요청은 없다.
+- homeView/personaView는 mft-preferences에 각각 저장한다. banner preference 변경 시 같이 보존한다.
+  data-catalog-view에 CSS만 적용하여 목록 카드의 상세 열기·폴더·검색·페이지 이동 계약을 보존한다.
