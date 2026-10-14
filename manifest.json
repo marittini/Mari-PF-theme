@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "마리나라 플랫폼화",
-    "version": "0.12.0",
-    "description": "콘보 메시지 간격과 프사 상단 정렬, 변경 메시지 단위 DOM 처리, 알림 갱신 병합 및 백그라운드 작업 중단.",
+    "version": "0.22.0",
+    "description": "홈·페르소나 갤러리/스크롤 보기 설정, 로어북 설정 영역 잘림 수정, 프리셋 제목·도구 정돈 및 모바일 입력 폭 보완, 로어북 안내 표시와 에디터 검사 최적화.",
     "runtime": "client",
     "capabilities": [
       "full_page_access"
