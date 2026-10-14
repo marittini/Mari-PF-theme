@@ -211,3 +211,39 @@ LorebookEntryRow.tsx, PresetEditor.tsx, SettingControls.tsx, App.tsx, globals.cs
   자체 비주요 탭(persona/detail/design)은 일반 탭 스와이프 대상으로 계산하지 않는다.
 
 - 설정 content/header가 교체되면 연결이 끊긴 fold 상태를 해제하고 현재 DOM에 재연결한다. native handler와 값은 보존한다.
+
+0.25.0 계약
+- 공식 Convo .texting-bubble-user 직접 선택자로 background를 --mft-accent에 연결한다.
+- background-image:none으로 native fixed-blue gradient를 제거하며 message DOM/서식/외부 처리본을 바꾸지 않는다.
+- bubble selector만 사용하여 linear 메시지의 투명 배경을 보존한다. 새 관찰자나 타이머는 없다.
+
+0.26.0 계약
+- RP image의 현재 React memoizedProps 조상에서 해당 message/personaInfo만 최대 24단계 확인한다.
+- user message.extra의 personaSnapshot 우선, 없으면 personaInfo를 사용한다. 이미지 URL과 일치할 때만 crop을 적용한다.
+- URL-only character crop cache보다 메시지별 persona crop을 우선하여 같은 사진/다른 크롭을 보존한다.
+- 기존 applyNativeCrops/cropStyle/100ms event batching을 재사용한다. user rpg-avatar-panel-media도 적용한다.
+- roleplayPadding은 null일 때 원래 형식별 여백을 유지하며 숫자일 때 0~40px로 제한한다.
+  기존 RP 본문 padding 규칙의 horizontal 값만 변수로 연결한다. 세로 여백/프사 크기는 유지한다.
+- range 입력은 실시간 CSS, change는 preferences 저장; cleanup은 원래 CSS 변수를 복원한다.
+
+0.27.0 계약
+- 현재 personaInfo.id와 snapshot.personaId가 일치하거나 snapshot ID가 없고, 표시 URL이 같을 때 현재 crop 우선.
+- 다른 메시지 페르소나/사진은 snapshot crop 유지. 현재·스냅샷 사진과 다른 expression은 보정하지 않는다.
+- nearest DOM fiber까지 부모 5단계, 이후 memoizedProps 조상 최대 32단계; message 객체 여부도 검사한다.
+- 실제 rpg-avatar-panel-stack/media 구조에서 캐릭터와 동일 cropStyle 및 aspect-cover 계산을 사용한다.
+- cropped img의 native fade mask를 제거한다. 추가 조회/관찰자/타이머는 없다.
+
+0.28.0 계약
+- native chat 모드 루트에 scoped translation observer를 연결한다. 자체/비활성/백그라운드 화면에서는 중단한다.
+- 원문과 번역이 sibling이면 해당 메시지 원문의 computed font-size를 translation CSS property로 연결한다.
+- 이미 같은 값이면 쓰지 않고 source style/class 또는 신규 translation DOM만 갱신한다.
+- root가 같고 관찰 중이면 재검색하지 않는다. characterData/polling은 사용하지 않는다.
+- cleanup/root 교체 시 원래 translation CSS property를 복원한다. 메시지·번역 데이터/React 핸들러는 그대로 둔다.
+
+0.29.0 계약
+- translationReduction preference(0~12px, default 0)를 다른 디자인 값과 함께 저장한다.
+- separate translation size = max(1px, original computed px - CSS reduction variable).
+  range preview는 CSS 변수만 바꾸며 추가 메시지 스캔은 하지 않는다.
+- sibling 번역 또는 VN mt-2/border-t 번역이 감소 대상; in-place 본문은 원래 크기를 유지한다.
+- 디자인 DOM을 세 그룹으로 구성하고 동일 preference-row/range/value/preview 구조를 사용한다.
+- 저장을 saveDesignPreferences 함수로 통일하여 설정 변경 시 다른 값이 누락되지 않도록 한다.
