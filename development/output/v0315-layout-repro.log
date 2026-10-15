@@ -1,0 +1,9 @@
+AssertionError [ERR_ASSERTION]: {"viewport":{"width":320,"height":568},"large":false,"keyboard":false,"panel":{"top":12,"bottom":556,"left":12,"right":308,"width":296,"height":544},"footer":{"top":448,"bottom":555,"left":13,"right":307,"width":294,"height":107},"next":{"top":496,"bottom":539,"left":247.796875,"right":291,"width":43.203125,"height":43},"nav":{"top":496,"bottom":568,"left":0,"right":320,"width":320,"height":72},"last":{"top":385,"bottom":428,"left":33,"right":110.09375,"width":77.09375,"height":43},"body":{"top":88,"bottom":448,"left":13,"right":307,"width":294,"height":360},"scrollable":true,"htmlOverflow":false,"available":568}
+    at /workspace/scratch/da7efaa31822/tests/game-setup-layout.cjs:10:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}

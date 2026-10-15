@@ -1,11 +1,67 @@
-## 0.31.4 loading and refresh invariants
+# 현재 0.35 · 다음 0.36
 
-- data.get merges option-free GETs only within the same view epoch. Writes never share a pending read or read cache. Each pending entry removes only itself on completion.
-- Catalog and folder requests run concurrently. Cards render independently; late folders reuse per-ID card pools (including membership in multiple folders) and must check the epoch before touching the view.
-- Chat refresh uses maps for rendered/stored rows and a cursor for minimal reorder. Keep unchanged rows in place to preserve focus, scroll and foreign DOM.
-- Preview lookup starts from rendered nodes, not the whole room list. Single-room message changes preserve unrelated cached previews.
-- Image IntersectionObserver is retained and disconnected on view stop; do not introduce periodic scans.
-- Regressions: tests/performance.cjs, tests/list-updates.cjs, tests/v031.cjs, tests/v031-compat.cjs and tests/start-flow.cjs. Performance fixtures do not measure physical device heat.
+- 홈 검색 모양 영역은 온라인 순정 봇카드 화면 진입 버튼입니다. 별도 다운로드 버튼/로컬 검색 input을 복원하지 마세요.
+- 돋보기는 이모지가 아닌 U+2315 텍스트이며 오른쪽 정렬과 전체 영역 클릭/키보드 동작을 유지합니다.
+- 순정 진입/복귀 경로는 0.34 그대로 유지합니다.
+
+# 현재 0.34 · 다음 0.35
+
+- 순정 목록 검색/정렬 숨김은 공통 toolbar 행에만 적용합니다. 온라인 카드 검색·설정 검색·편집 필드는 대상이 아닙니다.
+- 홈 봇카드는 순정 openBotBrowser를 사용합니다. 비동기 취소/기존 방 해제/열린 화면 확인을 건너뛰지 마세요.
+- 닫힌 retained BotBrowserView를 열린 화면으로 오인하지 않습니다. 필요한 class 감시는 이 라우트 대기 동안에만 사용합니다.
+- 설정 전체 접기/펼치기는 생성하지 않습니다. 개별 섹션 토글은 유지합니다.
+
+# 현재 0.33 · 다음 0.34
+
+- 폴더 관리 진입은 선택한 테마 모드를 캡처하고, 순정 모드 버튼의 실제 선택을 확인합니다. 새 라우트가 시작되면 이전 요청의 취소를 존중합니다.
+- 로컬 모델 숨김은 테마 활성 상태의 연결 패널 SidecarCard에만 적용합니다. API/TTS 및 설치/연결 데이터는 보존합니다.
+- 오늘의 캐릭터 위 padding은 30px, 좌우/아래는 18px입니다.
+
+# 버전 정책 / 0.32 수정 제약
+
+- 사용자 지정 버전: 이번 0.32, 이후 0.33, 0.34 순서.
+- 전체 목록에서 미리보기 필드 누락은 undefined로 전달합니다. null은 순정 응답이 명시한 빈 최신 메시지에만 사용합니다.
+- 이 수정은 features/chats.js의 호출 인수 한 곳으로 한정합니다. 다른 실행 소스와 CSS는 0.31.14 그대로입니다.
+
+# 0.31.14 유지 제약
+
+- lastMessageAt:null만으로 빈 방을 판정하거나 미리보기 조회를 건너뛰지 않습니다. 필드 누락은 빈 값이 아닙니다.
+- 갱신 중 표시한 내용은 유지합니다. metadata 갱신은 같은 버전 요청을 공유하지만, 실제 메시지 편집은 해당 방의 이전 요청을 취소해야 합니다.
+- 이전 읽음 개수로 새 알림을 억제하지 않습니다. 실제 보이는 방만 읽음 대상으로 취급합니다.
+- 지연 wizard 상태 정리는 현재 트리의 순정 콜백만 사용합니다. 게임 취소 로직을 대체하지 않습니다.
+
+# 0.31.13 유지보수 제약
+
+- 순정 삭제 성공 context와 ID를 확인하기 전에 게임 생성/취소를 끝내거나 방을 강제로 닫지 마세요. 삭제 실패·다른 방·다른 route에는 복구 setter를 호출하지 않습니다.
+- 스트리밍은 가장 가까운 메시지 상태로 판정합니다. 상위 화면의 스트리밍 상태로 완료 메시지를 다시 합치지 않습니다.
+- 데스크톱 패널 대응은 실제 열린 슬롯에 적용합니다. 순정 분기를 테마 레일의 1024px과 혼동하지 않습니다.
+- 빈 미리보기와 조회 실패를 로딩으로 남기지 않습니다. 초기 로딩 최적화는 별도 측정 후 진행합니다.
+- 변경 범위·요구사항·회귀 결과·실환경 미검증을 RELEASE_AUDIT에 기록합니다. 기존 완료 선언은 증거가 아닙니다.
+
+# 0.31.8 native-home invariant
+
+- A visible own screen must not retain an active engine room. engineHome must verify clearActiveChat success; callers may not ignore failure then show own UI.
+- Adapter retains only the previously observed native setActiveChatId function, not the React tree. Fresh anchors may disappear while ChatArea is mounted. Dispose releases the reference. No localStorage key is written by the adapter to fake success.
+- go retries unresolved closure at most three times, guarded by the view epoch. It does not perform an unbounded poll. Own-route resume rechecks an unexpectedly restored native room; visible native B stays open.
+- Returning from chat and following a toast invalidate only chat data. Do not flush character/catalog/folder caches without an actual resource write/TTL. Resource writes still invalidate their existing caches; non-chat native management can expire installed-package metadata.
+- Tests: adapter-session.cjs, home-session.cjs (including detached native action anchors and history Back), plus all unread/launch/layout compatibility suites.
+
+# 0.31.6 setup invariants
+
+- GameSetupWizard is a separate fixed portal (not .mari-modal). Its direct fixed parent uses --mft-available-height, which already reserves navigation and follows the engine visual viewport/keyboard variables. Its header/footer do not shrink; only its body scrolls. Do not apply this rule to resource panels or unrelated dialogs.
+- No theme launch deadline: users may configure a room or wait for model generation arbitrarily long. Native generation failures/cancellation remain authoritative.
+- A close click tracks the exact closingDialog. If that nested dialog unmounts while the outer wizard remains, clear closing state. Do not mistake nested picker cancellation for full creation cancellation.
+- GameSetupWizard/connection-gate mount state counts during opacity-zero animations. Never finish launch merely because a mounted setup is not yet visually opaque.
+- Tests: launch-lifecycle.cjs (virtual time), game-setup-layout.cjs (Chromium viewports/fonts/keyboard), start-flow.cjs, v031.cjs and v0315-compat.cjs. iOS real-device/WebKit validation remains outstanding.
+
+# 0.31.5 recovery invariants
+
+- Global data, query updates, avatar observer and preview lookup return to the 0.31.3 implementation. Do not reintroduce the 0.31.4 global optimizations without reproducing real extension integration and mobile lifecycle ordering.
+- Forced unread hydration replaces a pending non-fresh/aborted controller. A response must still own the hydration slot and not be aborted before ingesting metadata. A hidden transition releases the slot immediately.
+- Resume failure retry is bounded to two retries (350/1200ms), cancelled on hide/cleanup or newer resume, and never scheduled after success.
+- PTX owns its message presentation. Convo must skip source/TTS normalization before examining a PTX-owned row, ignore internal view mutations, and never remove cloned foreign descendants. CSS hiding requires an adjacent theme presentation and excludes PTX view descendants.
+- Catalog/folder requests remain independent; late folders reuse cards and check epoch before updates.
+- Added tests: resume-races.cjs and v0315-compat.cjs. Existing v031.cjs, start-flow.cjs and performance.cjs remain applicable. Historical performance reports describe their version only.
 
 # 유지보수 안내 · 0.31.0
 

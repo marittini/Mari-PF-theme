@@ -1,0 +1,19 @@
+/* native / catalog; cascade order: style-order.json. */
+/* @mft-part catalog-014 */
+html.mft-enabled :is([data-agent-card],[data-character-id],[data-chat-id]){border-radius:12px!important}/* @mft-end */
+/* @mft-part catalog-045 */
+html.mft-enabled [data-character-id]>div.min-w-0.flex-1{display:flex;flex-direction:column;justify-content:center;align-self:center;min-height:44px}
+html.mft-enabled [data-character-row-name]{line-height:1.45!important}/* @mft-end */
+/* @mft-part catalog-070 */
+
+/* 0.19: round native character/persona portraits without glow or fixed teal. */
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona){--mari-avatar-placeholder-start:var(--mft-accent)!important;--mari-avatar-placeholder-end:var(--mft-accent)!important;--mari-avatar-placeholder-text:var(--mft-on-accent)!important;background:var(--mft-accent)!important;background-image:none!important;color:var(--mft-on-accent)!important;border-radius:50%!important;border:0!important;box-shadow:none!important;filter:none!important;text-shadow:none!important;animation:none!important}
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona)::before,html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona)::after{display:none!important;box-shadow:none!important;filter:none!important;animation:none!important}
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona)>:is(div,span):not([data-character-favorite-indicator]){border-radius:50%!important;box-shadow:none!important;filter:none!important}
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona):not(:has([data-character-favorite-indicator])){overflow:hidden!important}
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona) img{border-radius:0!important;box-shadow:none!important;filter:none!important}
+html.mft-enabled :is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona) [data-character-favorite-indicator]{box-shadow:none!important}
+html.mft-enabled:root [data-touch-drag-card] .mari-avatar-placeholder:is(.mari-avatar-placeholder--character,.mari-avatar-placeholder--persona){border-radius:50%!important}/* @mft-end */
+/* @mft-part catalog-075 */
+/* Native list summaries are not profile descriptions. */
+html.mft-enabled [data-touch-drag-card="persona"]>div.min-w-0.flex-1>div.truncate:last-child:not(.italic){display:none!important}/* @mft-end */

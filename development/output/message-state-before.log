@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: another stream must preserve user split node identity
+
+false !== true
+
+    at /workspace/scratch/da7efaa31822/tests/message-state-regressions.cjs:15:8 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

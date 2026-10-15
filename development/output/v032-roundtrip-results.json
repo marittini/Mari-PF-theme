@@ -1,0 +1,98 @@
+[
+  {
+    "touch": false,
+    "mode": "conversation",
+    "round": 1,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": false,
+    "mode": "roleplay",
+    "round": 1,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": false,
+    "mode": "game",
+    "round": 1,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": false,
+    "mode": "conversation",
+    "round": 2,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": false,
+    "mode": "roleplay",
+    "round": 2,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": false,
+    "mode": "game",
+    "round": 2,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": true,
+    "mode": "conversation",
+    "round": 1,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": true,
+    "mode": "roleplay",
+    "round": 1,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": true,
+    "mode": "game",
+    "round": 1,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": true,
+    "mode": "conversation",
+    "round": 2,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": true,
+    "mode": "roleplay",
+    "round": 2,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  },
+  {
+    "touch": true,
+    "mode": "game",
+    "round": 2,
+    "recent": true,
+    "full": true,
+    "freshFullRead": true
+  }
+]

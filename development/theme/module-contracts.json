@@ -1,0 +1,1311 @@
+{
+  "format": 1,
+  "modules": [
+    {
+      "id": "ui",
+      "file": "src/ui/shell.js",
+      "factory": "createUi",
+      "dependencies": [
+        "core",
+        "gestures",
+        "nativeUi",
+        "navigation",
+        "settings"
+      ],
+      "crossStateWrites": [
+        "navigation.nativeGrace",
+        "navigation.returnView"
+      ],
+      "state": [
+        "root",
+        "shadow",
+        "css",
+        "body",
+        "html",
+        "paths",
+        "el",
+        "header",
+        "brand",
+        "logo",
+        "headerAgents",
+        "brandGroup",
+        "refreshButton",
+        "main",
+        "status",
+        "nav",
+        "tabs",
+        "pausedMedia",
+        "visible",
+        "navSizeObserver"
+      ],
+      "exports": [
+        "button",
+        "icon",
+        "notice",
+        "resumeMedia",
+        "own",
+        "native",
+        "error"
+      ],
+      "initialize": [
+        200,
+        400,
+        500,
+        800,
+        1100,
+        1400,
+        1500,
+        3700,
+        3800,
+        3900,
+        4000,
+        4100,
+        4200,
+        4300,
+        4400,
+        4500,
+        4600,
+        4700,
+        4800,
+        4900,
+        5000,
+        5100,
+        5200,
+        5300,
+        5400,
+        5500,
+        5600,
+        5700,
+        5800,
+        5900,
+        6000,
+        6100,
+        6200,
+        6300,
+        6500,
+        6900,
+        13200,
+        13300,
+        13400
+      ],
+      "cleanup": [
+        29,
+        41,
+        52,
+        58,
+        59,
+        60,
+        61,
+        69,
+        70,
+        72
+      ]
+    },
+    {
+      "id": "theme",
+      "file": "src/ui/theme.js",
+      "factory": "createTheme",
+      "dependencies": [
+        "design",
+        "navigation",
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "themes",
+        "themeObserver",
+        "accentPaint",
+        "themePaintSignature",
+        "previousAccent",
+        "previousBanner",
+        "themeStateObserver"
+      ],
+      "exports": [
+        "isolate",
+        "syncTheme"
+      ],
+      "initialize": [
+        1101,
+        2100,
+        2200,
+        2300,
+        12500,
+        12501,
+        12600,
+        12700,
+        12900,
+        13000,
+        13100
+      ],
+      "cleanup": [
+        30,
+        31,
+        50,
+        51,
+        64,
+        68
+      ]
+    },
+    {
+      "id": "data",
+      "file": "src/core/data.js",
+      "factory": "createData",
+      "dependencies": [
+        "catalog",
+        "core",
+        "navigation",
+        "tags",
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "cache",
+        "viewRequests",
+        "request",
+        "refreshWriteQueued",
+        "resourceFetch"
+      ],
+      "exports": [
+        "resourceFetchWrapper",
+        "compact",
+        "get",
+        "jsonRequest"
+      ],
+      "initialize": [
+        1102,
+        1104,
+        1302,
+        8700,
+        8800,
+        9000
+      ],
+      "cleanup": [
+        34,
+        65
+      ]
+    },
+    {
+      "id": "core",
+      "file": "src/core/runtime.js",
+      "factory": "createCore",
+      "dependencies": [
+        "avatars",
+        "convo",
+        "data",
+        "design",
+        "previews",
+        "tags",
+        "translations",
+        "ui",
+        "updates"
+      ],
+      "crossStateWrites": [
+        "avatars.cropTimer",
+        "convo.splitConnected",
+        "convo.splitTask",
+        "data.request",
+        "translations.translationConnected"
+      ],
+      "state": [
+        "timers",
+        "disposed",
+        "epoch",
+        "bootstrapTimers"
+      ],
+      "exports": [
+        "later",
+        "stop",
+        "bindLater"
+      ],
+      "initialize": [
+        300,
+        600,
+        700,
+        900,
+        1000,
+        1103,
+        1300,
+        1301,
+        14500
+      ],
+      "cleanup": [
+        0,
+        17,
+        22,
+        25,
+        42,
+        55
+      ]
+    },
+    {
+      "id": "navigation",
+      "file": "src/engine/navigation.js",
+      "factory": "createNavigation",
+      "dependencies": [
+        "adapter",
+        "avatars",
+        "catalog",
+        "chats",
+        "convo",
+        "core",
+        "data",
+        "extensions",
+        "gestures",
+        "help",
+        "history",
+        "hub",
+        "launch",
+        "nativeUi",
+        "notifications",
+        "ui",
+        "updates"
+      ],
+      "crossStateWrites": [
+        "avatars.nativeCharacterIds",
+        "chats.chatMode",
+        "extensions.installedMetaAt",
+        "history.exitUntil",
+        "history.nativeBackArmed"
+      ],
+      "state": [
+        "engineHomeIntent",
+        "agentActive",
+        "bridgeBusy",
+        "view",
+        "returnView",
+        "nativeGrace",
+        "nativeOrigin",
+        "restoreScrollTarget",
+        "navController",
+        "routeIntent",
+        "roomId",
+        "expectedEnginePops",
+        "expectedEnginePopUntil",
+        "engineOverlayOwned"
+      ],
+      "exports": [
+        "waitEngine",
+        "beginRoute",
+        "finishRoute",
+        "routeFailure",
+        "actionsReady",
+        "clearLayers",
+        "openNative",
+        "bridge",
+        "engineHome",
+        "settings",
+        "go",
+        "onModeClick",
+        "openBotBrowser"
+      ],
+      "initialize": [
+        1200,
+        1202,
+        1203,
+        1304,
+        1305,
+        1306,
+        7400,
+        7401,
+        7500,
+        7501,
+        7502,
+        7503,
+        7504,
+        7505,
+        16100,
+        16200
+      ],
+      "cleanup": [
+        40,
+        45
+      ]
+    },
+    {
+      "id": "history",
+      "file": "src/engine/history.js",
+      "factory": "createHistory",
+      "dependencies": [
+        "catalog",
+        "core",
+        "gestures",
+        "navigation",
+        "ui",
+        "launch"
+      ],
+      "crossStateWrites": [
+        "navigation.engineOverlayOwned",
+        "navigation.expectedEnginePopUntil",
+        "navigation.expectedEnginePops"
+      ],
+      "state": [
+        "nativeBackArmed",
+        "historyOwned",
+        "historyToken",
+        "closeWatcher",
+        "exitUntil",
+        "exitTimer",
+        "engineBack",
+        "cleanupPops"
+      ],
+      "exports": [
+        "armNativeBack",
+        "remember",
+        "onBack",
+        "onNativeHome",
+        "installBackWatcher"
+      ],
+      "initialize": [
+        1201,
+        13500,
+        13600,
+        13899,
+        13900,
+        14100,
+        23200,
+        23201,
+        23202
+      ],
+      "cleanup": [
+        35,
+        73,
+        56,
+        57,
+        71
+      ]
+    },
+    {
+      "id": "avatars",
+      "file": "src/features/avatars.js",
+      "factory": "createAvatars",
+      "dependencies": [
+        "adapter",
+        "core",
+        "navigation",
+        "ui"
+      ],
+      "crossStateWrites": [
+        "navigation.restoreScrollTarget"
+      ],
+      "state": [
+        "nativeCharacterIds",
+        "imageObserver",
+        "cropTimer",
+        "cropRequest",
+        "cropOriginals",
+        "nativeCrops"
+      ],
+      "exports": [
+        "observeImages",
+        "cropStyle",
+        "avatar",
+        "scheduleCrops",
+        "imageKey",
+        "applyNativeCrops",
+        "refreshNativeCrops",
+        "onImageLoad"
+      ],
+      "initialize": [
+        1204,
+        1312,
+        15200,
+        15201,
+        15300,
+        15301
+      ],
+      "cleanup": [
+        43,
+        44,
+        49,
+        67
+      ]
+    },
+    {
+      "id": "catalog",
+      "file": "src/features/catalog.js",
+      "factory": "createCatalog",
+      "dependencies": [
+        "avatars",
+        "core",
+        "daily",
+        "data",
+        "design",
+        "extensions",
+        "history",
+        "markdown",
+        "navigation",
+        "ui"
+      ],
+      "crossStateWrites": [
+        "navigation.view"
+      ],
+      "state": [
+        "searchTimer",
+        "pageOffset",
+        "query",
+        "filter",
+        "detailCard",
+        "personaOffset",
+        "personaSearch"
+      ],
+      "exports": [
+        "card",
+        "section",
+        "dailySection",
+        "officialBannerLogo",
+        "homeChrome",
+        "loadHome",
+        "detail",
+        "personaGallery"
+      ],
+      "initialize": [
+        1303,
+        1309,
+        1310,
+        1311,
+        17300,
+        17301,
+        17302
+      ],
+      "cleanup": []
+    },
+    {
+      "id": "chats",
+      "file": "src/features/chats.js",
+      "factory": "createChats",
+      "dependencies": [
+        "avatars",
+        "core",
+        "data",
+        "navigation",
+        "notifications",
+        "previews",
+        "ui",
+        "updates"
+      ],
+      "crossStateWrites": [
+        "notifications.unreadHydration"
+      ],
+      "state": [
+        "chatMode",
+        "chatsAll",
+        "chatRegistry",
+        "chatVisits",
+        "folderFilter",
+        "folderRows",
+        "roomRows"
+      ],
+      "exports": [
+        "rememberChatVisit",
+        "normalizedChat",
+        "ingestChats",
+        "orderedChats",
+        "hydrateSavedUnread",
+        "chats",
+        "chatFolders"
+      ],
+      "initialize": [
+        1307,
+        1308,
+        10400,
+        10600,
+        10700,
+        17303,
+        17304,
+        17305
+      ],
+      "cleanup": []
+    },
+    {
+      "id": "design",
+      "file": "src/features/design.js",
+      "factory": "createDesign",
+      "dependencies": [
+        "adapter",
+        "core",
+        "navigation",
+        "theme",
+        "ui"
+      ],
+      "crossStateWrites": [
+        "navigation.bridgeBusy",
+        "navigation.routeIntent",
+        "theme.themePaintSignature"
+      ],
+      "state": [
+        "showHomeBanner",
+        "homeView",
+        "personaView",
+        "chatLetterSpacing",
+        "chatLineHeight",
+        "roleplayPadding",
+        "translationReduction",
+        "previousLetterSpacing",
+        "previousLineHeight",
+        "previousRpPadding",
+        "previousTranslationReduction",
+        "previewAccent",
+        "previewFrame"
+      ],
+      "exports": [
+        "applyChatTypography",
+        "pickerColor",
+        "setMainColor",
+        "liveColorPreview",
+        "clearColorPreview",
+        "colorPicker",
+        "saveDesignPreferences",
+        "themePreferences"
+      ],
+      "initialize": [
+        2400,
+        2401,
+        2402,
+        2403,
+        2404,
+        2405,
+        2406,
+        2500,
+        2600,
+        2601,
+        2602,
+        2603,
+        2800,
+        3100,
+        3101
+      ],
+      "cleanup": [
+        3,
+        23,
+        24
+      ]
+    },
+    {
+      "id": "adapter",
+      "file": "src/engine/adapter.js",
+      "factory": "createAdapter",
+      "dependencies": [
+        "avatars"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "actionNames",
+        "lastChatSetter",
+        "cachedChatActions"
+      ],
+      "exports": [
+        "nativeTarget",
+        "engineActions",
+        "surfaceHasChatId",
+        "prepareChat",
+        "personaCropForImage",
+        "engineNavigator",
+        "eachHook",
+        "liveBubble",
+        "chatSurface",
+        "activeSession",
+        "roomReady",
+        "clearActiveChat",
+        "dismissChatSetup",
+        "chatDeletionCache"
+      ],
+      "initialize": [
+        7100
+      ],
+      "cleanup": [
+        76
+      ]
+    },
+    {
+      "id": "notifications",
+      "file": "src/features/notifications.js",
+      "factory": "createNotifications",
+      "dependencies": [
+        "adapter",
+        "avatars",
+        "chats",
+        "core",
+        "navigation",
+        "ui",
+        "updates"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "unreadHydration",
+        "notificationObserver",
+        "notificationRail",
+        "notificationGetter",
+        "notificationSignature",
+        "alertTray",
+        "unreadGetter",
+        "retainedUnread",
+        "readUnreadVersions",
+        "readLiveCounts",
+        "unreadStorageSignature",
+        "dismissedToasts",
+        "toastClocks",
+        "notificationsQueued",
+        "resumeUnreadRoom",
+        "resumeUnreadSince",
+        "readNotificationRefs"
+      ],
+      "exports": [
+        "notificationSnapshot",
+        "nativeNotificationAction",
+        "notificationCopy",
+        "saveUnreadLedger",
+        "chatUnreadMetadata",
+        "acknowledgeUnread",
+        "persistedUnread",
+        "unreadSnapshot",
+        "syncUnreadBadges",
+        "toastLifetime",
+        "toastKey",
+        "dismissToast",
+        "bindToastSwipe",
+        "scheduleNotifications",
+        "syncNotifications",
+        "refreshUnreadSources",
+        "captureUnreadMetadata",
+        "suspendUnread",
+        "acknowledgeVisibleUnread"
+      ],
+      "initialize": [
+        20901,
+        10500,
+        18600,
+        18601,
+        18602,
+        18603,
+        18700,
+        18800,
+        18900,
+        19400,
+        19500,
+        19501,
+        19502,
+        19600,
+        19700,
+        20400,
+        20401,
+        20900
+      ],
+      "cleanup": [
+        75,
+        26,
+        27,
+        28,
+        37
+      ]
+    },
+    {
+      "id": "hub",
+      "file": "src/ui/hub.js",
+      "factory": "createHub",
+      "dependencies": [
+        "catalog",
+        "design",
+        "extensions",
+        "navigation",
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [],
+      "exports": [
+        "menu",
+        "hub",
+        "designScreen"
+      ],
+      "initialize": [],
+      "cleanup": []
+    },
+    {
+      "id": "extensions",
+      "file": "src/engine/extensions.js",
+      "factory": "createExtensions",
+      "dependencies": [
+        "adapter",
+        "core",
+        "data",
+        "history",
+        "navigation",
+        "theme",
+        "ui"
+      ],
+      "crossStateWrites": [
+        "navigation.agentActive",
+        "navigation.bridgeBusy",
+        "navigation.navController",
+        "navigation.routeIntent"
+      ],
+      "state": [
+        "installedMeta",
+        "installedMetaAt",
+        "installedMetaPending",
+        "agentRender"
+      ],
+      "exports": [
+        "agentShortcuts",
+        "retryNative",
+        "setEngineTheme",
+        "openAgent",
+        "runExtension",
+        "extensionShortcuts",
+        "homeAgents"
+      ],
+      "initialize": [
+        18000,
+        18001,
+        18002,
+        18003
+      ],
+      "cleanup": []
+    },
+    {
+      "id": "mounts",
+      "file": "src/engine/mounts.js",
+      "factory": "createMounts",
+      "dependencies": [
+        "adapter",
+        "avatars",
+        "chats",
+        "convo",
+        "core",
+        "launch",
+        "navigation",
+        "notifications",
+        "ui",
+        "updates"
+      ],
+      "crossStateWrites": [
+        "notifications.unreadHydration"
+      ],
+      "state": [
+        "shellObserver",
+        "centerObserver",
+        "notificationMountObserver",
+        "resumeTimer",
+        "resumeAt"
+      ],
+      "exports": [
+        "checkEngineHome",
+        "bindShell",
+        "visibility",
+        "resumeActivity",
+        "suspendActivity"
+      ],
+      "initialize": [
+        14200,
+        14201,
+        14202,
+        14800,
+        14900
+      ],
+      "cleanup": [
+        36,
+        53,
+        54,
+        62,
+        63
+      ]
+    },
+    {
+      "id": "markdown",
+      "file": "src/ui/markdown.js",
+      "factory": "createMarkdown",
+      "dependencies": [
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [],
+      "exports": [
+        "renderMarkdown"
+      ],
+      "initialize": [],
+      "cleanup": []
+    },
+    {
+      "id": "gestures",
+      "file": "src/ui/gestures.js",
+      "factory": "createGestures",
+      "dependencies": [
+        "adapter",
+        "catalog",
+        "chats",
+        "core",
+        "history",
+        "navigation",
+        "ui",
+        "updates"
+      ],
+      "crossStateWrites": [
+        "chats.chatMode",
+        "chats.chatsAll",
+        "chats.folderFilter",
+        "navigation.agentActive",
+        "navigation.bridgeBusy",
+        "navigation.nativeOrigin",
+        "navigation.restoreScrollTarget",
+        "navigation.routeIntent"
+      ],
+      "state": [
+        "swipe",
+        "phone"
+      ],
+      "exports": [
+        "refreshCurrentView",
+        "returnFromNative",
+        "onSwipeStart",
+        "onSwipeCancel",
+        "onSwipeEnd"
+      ],
+      "initialize": [
+        16300,
+        16400,
+        17000,
+        17100,
+        17200
+      ],
+      "cleanup": [
+        46,
+        47,
+        48
+      ]
+    },
+    {
+      "id": "previews",
+      "file": "src/features/previews.js",
+      "factory": "createPreviews",
+      "dependencies": [
+        "chats",
+        "core",
+        "data",
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "previewCache",
+        "previewRequests",
+        "previewObserver",
+        "previewGeneration"
+      ],
+      "exports": [
+        "fillPreviews"
+      ],
+      "initialize": [
+        17700,
+        17701,
+        17800,
+        17801
+      ],
+      "cleanup": [
+        66
+      ]
+    },
+    {
+      "id": "daily",
+      "file": "src/features/daily.js",
+      "factory": "createDaily",
+      "dependencies": [
+        "data"
+      ],
+      "crossStateWrites": [],
+      "state": [],
+      "exports": [
+        "localDay",
+        "dailyRank",
+        "characterOfDay"
+      ],
+      "initialize": [],
+      "cleanup": []
+    },
+    {
+      "id": "updates",
+      "file": "src/engine/query-updates.js",
+      "factory": "createUpdates",
+      "dependencies": [
+        "adapter",
+        "avatars",
+        "chats",
+        "core",
+        "data",
+        "navigation",
+        "notifications",
+        "previews",
+        "ui"
+      ],
+      "crossStateWrites": [
+        "navigation.restoreScrollTarget"
+      ],
+      "state": [
+        "queryCache",
+        "queryUnsubscribe",
+        "chatRefreshTimer",
+        "chatRefreshRequest",
+        "chatRevision",
+        "chatRefreshBurst"
+      ],
+      "exports": [
+        "invalidateChats",
+        "queueChatRefresh",
+        "refreshChatRows",
+        "bindQueryUpdates"
+      ],
+      "initialize": [
+        21200,
+        21201,
+        21202,
+        21203,
+        21204,
+        21205
+      ],
+      "cleanup": [
+        32,
+        33
+      ]
+    },
+    {
+      "id": "translations",
+      "file": "src/features/translations.js",
+      "factory": "createTranslations",
+      "dependencies": [
+        "core",
+        "navigation",
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "translationRoots",
+        "translationObserver",
+        "translationConnected",
+        "translationSizes"
+      ],
+      "exports": [
+        "restoreTranslationSizes",
+        "sizeTranslation",
+        "bindTranslationSizes"
+      ],
+      "initialize": [
+        21700,
+        21701,
+        21702,
+        21800
+      ],
+      "cleanup": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "convo",
+      "file": "src/features/convo.js",
+      "factory": "createConvo",
+      "dependencies": [
+        "adapter",
+        "core",
+        "translations",
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "splitObserver",
+        "splitRoot",
+        "splitTask",
+        "splitConnected",
+        "splitFull",
+        "splitDirty",
+        "splitSources",
+        "presentationOwners"
+      ],
+      "exports": [
+        "resetSplit",
+        "displayedBubble",
+        "renderedLineFragments",
+        "makeSplit",
+        "syncSplits",
+        "bindSplits"
+      ],
+      "initialize": [
+        22200,
+        22201,
+        22202,
+        22203,
+        22204,
+        22300,
+        22400,
+        22401
+      ],
+      "cleanup": [
+        38,
+        39
+      ]
+    },
+    {
+      "id": "writing",
+      "file": "src/features/writing.js",
+      "factory": "createWriting",
+      "dependencies": [
+        "core",
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "writingDesktop"
+      ],
+      "exports": [
+        "writingShell",
+        "onWritingStart",
+        "onWritingExit",
+        "onWritingOutside",
+        "onWritingEscape"
+      ],
+      "initialize": [
+        23300,
+        23900,
+        24000,
+        24100,
+        24200
+      ],
+      "cleanup": [
+        18,
+        19,
+        20,
+        21
+      ]
+    },
+    {
+      "id": "nativeUi",
+      "file": "src/features/native-ui.js",
+      "factory": "createNativeUi",
+      "dependencies": [
+        "core",
+        "navigation",
+        "settings",
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "nativeUiObserver",
+        "nativeUiRoots",
+        "nativeUiQueued",
+        "duplicateTagNodes",
+        "nativeUiAdditions"
+      ],
+      "exports": [
+        "enhanceNativeUi",
+        "bindNativeUi"
+      ],
+      "initialize": [
+        24300,
+        24301,
+        24302,
+        24400,
+        24401
+      ],
+      "cleanup": [
+        12,
+        14,
+        15
+      ]
+    },
+    {
+      "id": "tags",
+      "file": "src/features/tags.js",
+      "factory": "createTags",
+      "dependencies": [
+        "core",
+        "data",
+        "ui",
+        "updates"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "tagInputLists",
+        "tagOptionCache",
+        "tagOptionsPending",
+        "tagFetchControllers",
+        "activeTagMenu",
+        "tagMenuSequence"
+      ],
+      "exports": [
+        "collectExistingTags",
+        "existingTags",
+        "closeTagMenu",
+        "drawTagMenu",
+        "chooseTag",
+        "onTagFocus",
+        "onTagInput",
+        "onTagKey",
+        "onTagOutside",
+        "onTagBlur"
+      ],
+      "initialize": [
+        24402,
+        24403,
+        24404,
+        24405,
+        26000,
+        26001,
+        26900,
+        27000,
+        27100,
+        27200,
+        27300
+      ],
+      "cleanup": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        13,
+        16
+      ]
+    },
+    {
+      "id": "settings",
+      "file": "src/features/settings.js",
+      "factory": "createSettings",
+      "dependencies": [
+        "nativeUi",
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [
+        "settingsFolds",
+        "settingsRevealUntil",
+        "settingsSearchTarget"
+      ],
+      "exports": [
+        "setSettingsFold",
+        "restoreSettingsFolds",
+        "revealSettings",
+        "resetSettingsFolds",
+        "onSettingsSearch",
+        "onSettingsSearchClick",
+        "enhanceSettingsFolds"
+      ],
+      "initialize": [
+        24500,
+        24600,
+        24601,
+        25400,
+        25500
+      ],
+      "cleanup": [
+        4
+      ]
+    },
+    {
+      "id": "bootstrap",
+      "file": "src/core/bootstrap.js",
+      "factory": "createBootstrap",
+      "dependencies": [
+        "chats",
+        "history",
+        "mounts",
+        "navigation",
+        "notifications"
+      ],
+      "crossStateWrites": [],
+      "state": [],
+      "exports": [],
+      "initialize": [
+        27600,
+        27700,
+        27800,
+        27900,
+        28000
+      ],
+      "cleanup": []
+    },
+    {
+      "id": "lifecycle",
+      "file": "src/core/lifecycle.js",
+      "factory": "createLifecycle",
+      "dependencies": [],
+      "crossStateWrites": [],
+      "state": [
+        "started",
+        "disposed",
+        "initialization",
+        "teardown"
+      ],
+      "exports": [
+        "configure",
+        "start",
+        "dispose"
+      ],
+      "initialize": [],
+      "cleanup": []
+    },
+    {
+      "id": "help",
+      "file": "src/features/help.js",
+      "factory": "createHelp",
+      "dependencies": [
+        "markdown",
+        "navigation",
+        "ui"
+      ],
+      "crossStateWrites": [],
+      "state": [],
+      "exports": [
+        "show"
+      ],
+      "initialize": [],
+      "cleanup": []
+    },
+    {
+      "id": "launch",
+      "file": "src/engine/launch.js",
+      "factory": "createLaunch",
+      "dependencies": [
+        "adapter",
+        "chats",
+        "core",
+        "gestures",
+        "navigation",
+        "ui"
+      ],
+      "crossStateWrites": [
+        "navigation.roomId",
+        "chats.chatMode",
+        "navigation.expectedEnginePops",
+        "navigation.expectedEnginePopUntil"
+      ],
+      "state": [
+        "observer",
+        "signal",
+        "previousId",
+        "selectedMode",
+        "phase",
+        "sawSetup",
+        "closing",
+        "settleTimer",
+        "closingDialog",
+        "backRequested",
+        "createdId",
+        "deletionUnsubscribe"
+      ],
+      "exports": [
+        "begin",
+        "reconcile",
+        "stop",
+        "onClick",
+        "checkExit",
+        "requestBack"
+      ],
+      "initialize": [],
+      "cleanup": [
+        74
+      ]
+    }
+  ],
+  "notes": [
+    "State is owned by each factory; cross-module access is explicit through deps.",
+    "Startup and cleanup retain original sequence. No remote module loading."
+  ]
+}

@@ -1,0 +1,9 @@
+AssertionError [ERR_ASSERTION]: {"width":944,"touch":false,"panelWidth":280,"comp":"RightPanelDesktop","rect":{"x":560,"y":0,"width":384,"height":1008},"expected":0}
+    at /workspace/scratch/da7efaa31822/tests/panel-environments.cjs:10:719 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}

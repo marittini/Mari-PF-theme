@@ -1,0 +1,1 @@
+PASS 84 viewport/input/panel-width combinations, verified native media+capacity branch, settings/connections/extensions first+last controls, resize round trips, 768px desktop slot, reload, closed and disabled-theme containment. Chromium layout harness, not full React engine.

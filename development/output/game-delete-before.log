@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: lost-callback: confirmed deletion must release its stale active ID
+
+'game-new' !== null
+
+    at /workspace/scratch/da7efaa31822/tests/game-delete-settlement.cjs:37:14 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'game-new',
+  expected: null,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

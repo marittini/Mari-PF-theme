@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "marinara-platform-development",
+  "version": "0.35",
+  "scripts": {
+    "build": "python3 build.py",
+    "check": "python3 build.py --check"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,690 @@
+{
+  "native": [
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-000"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-001"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-002"
+    },
+    {
+      "file": "styles/native/game.css",
+      "part": "game-003"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-004"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-005"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-006"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-007"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-008"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-009"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-010"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-011"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-012"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-013"
+    },
+    {
+      "file": "styles/native/catalog.css",
+      "part": "catalog-014"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-015"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-016"
+    },
+    {
+      "file": "styles/native/game.css",
+      "part": "game-017"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-018"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-019"
+    },
+    {
+      "file": "styles/native/game.css",
+      "part": "game-020"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-021"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-022"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-023"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-024"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-025"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-026"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-027"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-028"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-029"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-030"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-031"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-032"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-033"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-034"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-035"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-036"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-037"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-038"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-039"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-040"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-041"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-042"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-043"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-044"
+    },
+    {
+      "file": "styles/native/catalog.css",
+      "part": "catalog-045"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-046"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-047"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-048"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-049"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-050"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-051"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-052"
+    },
+    {
+      "file": "styles/native/notifications.css",
+      "part": "notifications-053"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-054"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-055"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-056"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-057"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-058"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-059"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-060"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-061"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-062"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-063"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-064"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-065"
+    },
+    {
+      "file": "styles/native/writing.css",
+      "part": "writing-066"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-067"
+    },
+    {
+      "file": "styles/native/writing.css",
+      "part": "writing-068"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-069"
+    },
+    {
+      "file": "styles/native/catalog.css",
+      "part": "catalog-070"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-071"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-072"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-073"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-074"
+    },
+    {
+      "file": "styles/native/catalog.css",
+      "part": "catalog-075"
+    },
+    {
+      "file": "styles/native/tags.css",
+      "part": "tags-076"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-077"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-078"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-079"
+    },
+    {
+      "file": "styles/native/tags.css",
+      "part": "tags-080"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-081"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-082"
+    },
+    {
+      "file": "styles/native/resources.css",
+      "part": "resources-083"
+    },
+    {
+      "file": "styles/native/chats.css",
+      "part": "chats-084"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-085"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-086"
+    },
+    {
+      "file": "styles/native/writing.css",
+      "part": "writing-087"
+    },
+    {
+      "file": "styles/native/native-settings.css",
+      "part": "native-settings-088"
+    },
+    {
+      "file": "styles/native/messages.css",
+      "part": "messages-089"
+    },
+    {
+      "file": "styles/native/roleplay.css",
+      "part": "roleplay-090"
+    },
+    {
+      "file": "styles/native/translations.css",
+      "part": "translations-091"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-092"
+    },
+    {
+      "file": "styles/native/foundation.css",
+      "part": "foundation-036-game-setup"
+    }
+  ],
+  "shadow": [
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-000"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-001"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-002"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-003"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-004"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-005"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-006"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-007"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-008"
+    },
+    {
+      "file": "styles/shadow/chats.css",
+      "part": "chats-009"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-010"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-011"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-012"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-013"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-014"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-015"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-016"
+    },
+    {
+      "file": "styles/shadow/chats.css",
+      "part": "chats-017"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-018"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-019"
+    },
+    {
+      "file": "styles/shadow/chats.css",
+      "part": "chats-020"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-021"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-022"
+    },
+    {
+      "file": "styles/shadow/notifications.css",
+      "part": "notifications-023"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-024"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-025"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-026"
+    },
+    {
+      "file": "styles/shadow/notifications.css",
+      "part": "notifications-027"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-028"
+    },
+    {
+      "file": "styles/shadow/notifications.css",
+      "part": "notifications-029"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-030"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-031"
+    },
+    {
+      "file": "styles/shadow/notifications.css",
+      "part": "notifications-032"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-033"
+    },
+    {
+      "file": "styles/shadow/notifications.css",
+      "part": "notifications-034"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-035"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-036"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-037"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-038"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-039"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-040"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-041"
+    },
+    {
+      "file": "styles/shadow/notifications.css",
+      "part": "notifications-042"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-043"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-044"
+    },
+    {
+      "file": "styles/shadow/notifications.css",
+      "part": "notifications-045"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-046"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-047"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-048"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-049"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-050"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-051"
+    },
+    {
+      "file": "styles/shadow/notifications.css",
+      "part": "notifications-052"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-053"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-054"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-055"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-056"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-057"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-058"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-059"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-060"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-061"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-062"
+    },
+    {
+      "file": "styles/shadow/resources.css",
+      "part": "resources-063"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-064"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-065"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-066"
+    },
+    {
+      "file": "styles/shadow/chats.css",
+      "part": "chats-067"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-068"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-069"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-070"
+    },
+    {
+      "file": "styles/shadow/catalog.css",
+      "part": "catalog-071"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-072"
+    },
+    {
+      "file": "styles/shadow/design.css",
+      "part": "design-073"
+    },
+    {
+      "file": "styles/shadow/translations.css",
+      "part": "translations-074"
+    },
+    {
+      "file": "styles/shadow/foundation.css",
+      "part": "foundation-075"
+    },
+    {
+      "file": "styles/shadow/help.css",
+      "part": "help-031"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+--- checkpoints/theme-v0.34/src/features/catalog.js	2026-10-15 22:32:12.436966795 +0900
++++ theme/src/features/catalog.js	2026-10-15 22:51:11.642038343 +0900
+@@ -107,20 +107,11 @@
+   function homeChrome() {
+     deps.ui.state.main.dataset.catalogView = deps.design.state.homeView;
+     deps.ui.state.main.replaceChildren();
+-    const search = deps.ui.state.el('input', 'search');
+-    search.type = 'search';
+-    search.placeholder = '캐릭터 이름이나 태그 검색';
+-    search.setAttribute('aria-label', '캐릭터 검색');
+-    search.value = mftModuleState.query;
+-    search.oninput = () => {
+-      clearTimeout(mftModuleState.searchTimer);
+-      deps.core.state.timers.delete(mftModuleState.searchTimer);
+-      mftModuleState.searchTimer = deps.core.later(() => {
+-        mftModuleState.query = search.value.trim();
+-        mftModuleState.pageOffset = 0;
+-        loadHome();
+-      }, 280);
+-    };
++    const search = deps.ui.button('', () => deps.navigation.openBotBrowser(), 'search home-bot-search');
++    search.setAttribute('aria-label', '온라인에서 봇카드 찾아보기');
++    const searchIcon = deps.ui.state.el('span', 'home-search-icon', '⌕');
++    searchIcon.setAttribute('aria-hidden', 'true');
++    search.append(deps.ui.state.el('span', '', '온라인에서 봇카드 찾아보기'), searchIcon);
+     const banner = deps.ui.state.el('section', 'banner');
+     banner.append(deps.ui.state.el('small', '', '나만의 이야기, 여기서부터'), deps.ui.state.el('h1', '', '오늘은 누구와\n이야기할까요?'), officialBannerLogo());
+     const chips = deps.ui.state.el('div', 'chips');
+@@ -134,9 +125,7 @@
+       chips.append(b);
+     }
+     deps.extensions.homeAgents(deps.ui.state.headerAgents);
+-    const shortcuts = deps.ui.state.el('div', 'home-shortcuts');
+-    shortcuts.append(deps.ui.button('봇카드 다운로드', () => deps.navigation.openBotBrowser(), 'quiet'));
+-    deps.ui.state.main.append(search, shortcuts);
++    deps.ui.state.main.append(search);
+     if (deps.design.state.showHomeBanner) deps.ui.state.main.append(banner);
+     deps.ui.state.main.append(chips);
+     return search;
+@@ -147,11 +136,8 @@
+     deps.ui.own();
+     const ticket = deps.core.state.epoch;
+     const focused = deps.ui.state.shadow.activeElement?.classList.contains('search');
+-    const input = homeChrome();
+-    if (focused) {
+-      input.focus();
+-      input.setSelectionRange?.(input.value.length, input.value.length);
+-    }
++    const search = homeChrome();
++    if (focused) search.focus();
+     const loading = deps.ui.state.el('p', 'muted', '캐릭터를 불러오는 중…');
+     deps.ui.state.main.append(loading);
+     try {
+--- checkpoints/theme-v0.34/styles/shadow/catalog.css	2026-10-15 22:32:13.451618263 +0900
++++ theme/styles/shadow/catalog.css	2026-10-15 22:51:11.646038446 +0900
+@@ -1,5 +1,5 @@
+ /* shadow / catalog; cascade order: style-order.json. */
+-/* @mft-part catalog-001 */.banner{position:relative;background:linear-gradient(110deg,var(--banner),var(--surface));border:1px solid var(--line);border-radius:24px;padding:24px;overflow:hidden;margin-bottom:22px}.banner h1{white-space:pre-line;margin:8px 0;font-size:1.6875rem}.banner h2{margin:10px 0}.home-shortcuts{display:flex;justify-content:flex-end;margin:8px 0 16px}.home-shortcuts button{max-width:100%;white-space:normal}
++/* @mft-part catalog-001 */.banner{position:relative;background:linear-gradient(110deg,var(--banner),var(--surface));border:1px solid var(--line);border-radius:24px;padding:24px;overflow:hidden;margin-bottom:22px}.banner h1{white-space:pre-line;margin:8px 0;font-size:1.6875rem}.banner h2{margin:10px 0}.home-bot-search{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;color:var(--muted);white-space:normal}.home-search-icon{flex:0 0 auto;font-size:1.5em;line-height:1}
+ /* @mft-end */
+ /* @mft-part catalog-003 */.shelf{margin:20px 0 32px}.rail{display:flex;gap:16px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding-bottom:8px;scroll-snap-type:x proximity}.card{flex:0 0 clamp(156px,39vw,210px);width:clamp(156px,39vw,210px);padding:0;scroll-snap-align:start;min-width:0}/* @mft-end */
+ /* @mft-part catalog-005 */.card strong{font-size:1.0rem;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}/* @mft-end */

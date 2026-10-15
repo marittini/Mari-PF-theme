@@ -1,0 +1,1 @@
+PASS 90s setup, nested cancel, 10min generation: no theme warning or navigation; completion once; empty-game cancellation waits for native deletion; abort/cleanup releases listeners/timers.

@@ -62,6 +62,12 @@ html.mft-enabled .mari-editor-field,html.mft-enabled .mari-chrome-field{backgrou
 html.mft-enabled :is(.mari-editor-title,.mari-editor-title-input){font-weight:700!important;letter-spacing:-.4px!important}
 html.mft-enabled :is(.mari-editor-subtitle,.mari-editor-subtitle-input){color:var(--mft-muted)!important}
 html.mft-enabled :is([data-panel-key],.mari-modal) :is(input,select,textarea){max-width:100%;min-width:0;background:var(--mft-soft);color:var(--mft-ink);border-color:var(--mft-line);border-radius:10px}
+/* Hide only the native Sidecar local-model installation card while the theme is enabled. */
+html.mft-enabled [data-panel-key="connections"] div.rounded-xl:has(>div>div>svg.lucide-brain-circuit){display:none!important}
+
+/* Native resource lists: hide only the shared search/sort toolbar, not editor fields or bot-browser search. */
+html.mft-enabled :is([data-panel-key="characters"],[data-panel-key="personas"],[data-panel-key="lorebooks"],[data-panel-key="presets"],[data-panel-key="connections"],[data-panel-key="agents"],[data-component="ChatSidebar"]) div.flex:has(>div>input.mari-chrome-field):has(>div>select.mari-chrome-sort-field){display:none!important}
+
 html.mft-enabled :is(.marinara-chat-input-shell,.mari-chat-input-box){background:var(--mft-card)!important;color:var(--mft-ink)!important;border:1px solid var(--mft-line)!important;border-radius:18px!important;backdrop-filter:none!important;box-shadow:none!important;min-width:0!important}
 html.mft-enabled :is(.mari-chat-input-textarea,[data-chat-composer]){color:var(--mft-ink)!important;background:transparent!important;font-family:inherit!important;line-height:1.6!important;min-width:0!important}
 html.mft-enabled .mari-chat-send-btn:not(:disabled){background:var(--mft-accent)!important;color:var(--mft-on-accent)!important}
@@ -152,7 +158,7 @@ html.mft-enabled .mari-modal-panel button:has(svg.lucide-message-circle),html.mf
 html.mft-enabled .mari-modal-panel>div{max-width:100%;margin-inline:auto}
 html.mft-enabled [data-chat-mode="roleplay"] :is(.mari-message-name,.mari-roleplay-message-body>div:first-child){text-align:center!important;justify-content:center!important}
 html.mft-enabled [data-chat-mode="roleplay"] [class*="swipe"]{justify-content:center!important;text-align:center!important}
-html.mft-enabled [data-mft-split]:not(.ptx-view){position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+html.mft-enabled [data-mft-split]:not(.ptx-view):not(.ptx-view *):has(+mft-message-lines){position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
 html.mft-enabled .mft-split-display{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:100%}
 html.mft-enabled .mft-line{display:block;background:var(--mft-card);color:var(--mft-ink);padding:8px 12px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;font:inherit}
 html.mft-enabled .mari-message-user .mft-split-display{align-items:flex-end}
@@ -162,7 +168,10 @@ html.mft-enabled [data-component="ChatModeSelectorModal"]{display:flex!important
 html.mft-enabled [data-component="ChatModeSelectorModal"]>button{width:100%!important;min-height:88px!important;text-align:left!important;align-items:flex-start!important;gap:12px!important;padding:14px!important;border-radius:14px!important}
 html.mft-enabled [data-connection-id]>div.min-w-0.flex-1>div:first-child{white-space:normal!important;overflow-wrap:anywhere;line-height:1.45!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 @media(min-width:1024px){html.mft-enabled{--mft-nav-height:0px!important}}
-@media(min-width:1024px){html.mft-enabled [data-component="RightPanelDesktop"][aria-hidden="false"]{position:fixed!important;left:92px!important;right:0!important;top:var(--mari-visual-viewport-offset-top,0px)!important;bottom:auto!important;width:calc(100% - 92px)!important;height:var(--mft-available-height)!important;max-height:var(--mft-available-height)!important;z-index:60!important;background:var(--mft-bg)!important}html.mft-enabled [data-component="RightPanelDesktop"] [data-panel-key]{padding-inline:max(20px,calc((100vw - 1120px)/2))!important}}
+/* The fixed full-canvas panel must escape its native narrow slot's containing block/paint clip. */
+html.mft-enabled [data-component="RightPanelDesktopSlot"][aria-hidden="false"]{contain:none!important}
+html.mft-enabled [data-component="RightPanelDesktop"][aria-hidden="false"]{position:fixed!important;left:0!important;right:0!important;top:var(--mari-visual-viewport-offset-top,0px)!important;bottom:auto!important;width:100%!important;height:var(--mft-available-height)!important;max-height:var(--mft-available-height)!important;z-index:60!important;background:var(--mft-bg)!important}
+@media(min-width:1024px){html.mft-enabled [data-component="RightPanelDesktop"][aria-hidden="false"]{left:92px!important;width:calc(100% - 92px)!important}html.mft-enabled [data-component="RightPanelDesktop"] [data-panel-key]{padding-inline:max(20px,calc((100vw - 1120px)/2))!important}}
 html.mft-enabled [data-panel-key] [class~="h-12"][class~="w-12"]{width:36px!important;height:36px!important}
 /* 0.7: native management uses the existing sidebar, including drag and rename handlers. */
 html.mft-enabled [data-component="ChatSidebarPanel"][aria-hidden="false"]{position:fixed!important;inset:var(--mari-visual-viewport-offset-top,0px) 0 auto 0!important;width:100%!important;height:var(--mft-available-height)!important;max-height:var(--mft-available-height)!important;z-index:60!important;transform:none!important;background:var(--mft-bg)!important}
@@ -176,7 +185,7 @@ html.mft-enabled[data-mft-agent] [data-component="HomeBrowserHub"],html.mft-enab
 html.mft-enabled[data-mft-agent] :is(marinara-capability-noodle,marinara-capability-slurp,marinara-capability-slurp2,[data-marinara-capability-scope]){min-height:0!important;max-height:100%!important;--mari-visual-viewport-height:var(--mft-available-height)}
 html.mft-enabled [data-component="HomeBrowserHub"] [data-component*="MobileBottomNav"]{bottom:0!important}
 /* Generated lines are isolated from third-party message scanners. Exactly one presentation. */
-html.mft-enabled [data-chat-mode="conversation"] .mari-message-bubble[data-mft-split]:not(.ptx-view){display:none!important;position:static!important;width:auto!important;height:auto!important;clip-path:none!important}
+html.mft-enabled [data-chat-mode="conversation"] .mari-message-bubble[data-mft-split]:not(.ptx-view):not(.ptx-view *):has(+mft-message-lines){display:none!important;position:static!important;width:auto!important;height:auto!important;clip-path:none!important}
 html.mft-enabled [data-chat-mode="conversation"] .mari-convo-viewer-split-display{display:none!important}
 html.mft-enabled [data-chat-mode="conversation"] [data-mari-convo-viewer-split-source]:not([data-mft-split]){display:revert!important}
 html.mft-enabled mft-message-lines{margin-block:0;max-width:100%;min-width:0}
@@ -211,7 +220,7 @@ html.mft-enabled [data-chat-mode="conversation"] .mari-message-user .mari-messag
 html.mft-enabled [data-chat-mode="conversation"] .mari-message-body:has(>.mari-message-meta){min-width:0;align-self:center}
 html.mft-enabled [data-chat-mode="conversation"] .mari-message-content:not(.mari-message-bubble){line-height:1.8!important;white-space:pre-wrap;overflow-wrap:anywhere}
 /* Bubble input is hidden only while its one generated presentation is present. */
-html.mft-enabled [data-chat-mode="conversation"] .mari-message-bubble[data-mft-split]:not(.ptx-view){pointer-events:none!important}
+html.mft-enabled [data-chat-mode="conversation"] .mari-message-bubble[data-mft-split]:not(.ptx-view):not(.ptx-view *):has(+mft-message-lines){pointer-events:none!important}
 /* RP metadata never takes visual space beside a character name. */
 html.mft-enabled [data-chat-mode="roleplay"] .mari-message-body>div:has(>.mari-message-name)>span:not(.mari-message-name){display:none!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-message-name{line-height:1.5!important}
@@ -386,3 +395,11 @@ html.mft-enabled [data-chat-mode="roleplay"] img[data-mft-crop="true"]{mask-imag
 /* 0.28: translations follow the same message's computed user-selected size. */
 html.mft-enabled [data-chat-mode] .translation-text{font-size:var(--mft-translation-size,inherit)!important;line-height:var(--mft-chat-line-height,1.8)!important;letter-spacing:var(--mft-chat-letter-spacing,0px)!important}
 html.mft-enabled [data-chat-mode] .translation-text :is(p,li,span,div,blockquote,pre,code){font-size:inherit!important;line-height:inherit!important;letter-spacing:inherit!important}
+
+/* GameSetupWizard uses its own portal shell, not .mari-modal. Reserve navigation once. */
+html.mft-enabled div.fixed:has(>[data-component="GameSetupWizard"]){top:var(--mari-visual-viewport-offset-top,0px)!important;bottom:auto!important;height:var(--mft-available-height)!important;min-height:0!important;box-sizing:border-box!important;padding:12px!important;align-items:center!important}
+html.mft-enabled [data-component="GameSetupWizard"]{box-sizing:border-box!important;display:flex!important;flex-direction:column!important;min-height:0!important;max-height:calc(var(--mft-available-height) - 24px)!important;overflow:hidden!important}
+html.mft-enabled [data-component="GameSetupWizard"]>div:first-child{flex-shrink:0!important}
+html.mft-enabled [data-component="GameSetupWizard"]>div:nth-child(2){min-height:0!important;flex:1 1 auto!important;overflow-y:auto!important;overscroll-behavior:contain}
+html.mft-enabled [data-component="GameSetupWizard"]>div:last-child{flex-shrink:0!important;max-height:50%;overflow-y:auto;box-sizing:border-box}
+@media(min-width:1024px){html.mft-enabled div.fixed:has(>[data-component="GameSetupWizard"]){left:92px!important;right:0!important;width:calc(100% - 92px)!important}}

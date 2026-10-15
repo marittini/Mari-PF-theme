@@ -1,0 +1,76 @@
+/* native / chats; cascade order: style-order.json. */
+/* @mft-part chats-001 */
+/* Important tokens override the engine's user-color inline declarations without changing saved settings. */
+html.mft-enabled:root, html.mft-enabled .mari-app,html.mft-enabled [data-chat-mode],html.mft-enabled .mari-editor-shell {
+ --background:var(--mft-bg)!important;--foreground:var(--mft-ink)!important;
+ --card:var(--mft-card)!important;--card-foreground:var(--mft-ink)!important;
+ --popover:var(--mft-card)!important;--popover-foreground:var(--mft-ink)!important;
+ --primary:var(--mft-accent)!important;--primary-foreground:var(--mft-on-accent)!important;
+ --secondary:var(--mft-soft)!important;--secondary-foreground:var(--mft-ink)!important;
+ --muted:var(--mft-soft)!important;--muted-foreground:var(--mft-muted)!important;
+ --accent:var(--mft-soft)!important;--accent-foreground:var(--mft-ink)!important;
+ --border:var(--mft-line)!important;--input:var(--mft-line)!important;--ring:var(--mft-accent)!important;
+ --sidebar:var(--mft-card)!important;--sidebar-foreground:var(--mft-ink)!important;--sidebar-accent:var(--mft-soft)!important;--sidebar-accent-foreground:var(--mft-accent)!important;--sidebar-border:var(--mft-line)!important;
+ --radius:var(--mft-ui-radius)!important;--font-y2k:system-ui,-apple-system,'Noto Sans KR',sans-serif!important;--font-mono:ui-monospace,monospace!important;
+ --marinara-app-background-paint:var(--mft-bg)!important;--marinara-page-backing:var(--mft-bg)!important;--marinara-shell-surface:var(--mft-card)!important;
+ --marinara-app-accent-solid:var(--mft-accent)!important;--marinara-app-accent-static:var(--mft-accent)!important;
+ --marinara-app-accent-gradient:linear-gradient(var(--mft-accent),var(--mft-accent))!important;--marinara-app-accent-static-gradient:linear-gradient(var(--mft-accent),var(--mft-accent))!important;
+ --marinara-conversation-gradient-from:var(--mft-bg)!important;--marinara-conversation-gradient-to:var(--mft-bg)!important;
+ --marinara-mode-conversation-accent:var(--mft-accent)!important;--marinara-mode-roleplay-accent:var(--mft-accent)!important;--marinara-mode-game-accent:var(--mft-accent)!important;
+ --marinara-topbar-surface:var(--mft-card)!important;--marinara-topbar-border:var(--mft-line)!important;--marinara-shell-edge-border:var(--mft-line)!important;
+ --marinara-chat-chrome-accent:var(--mft-accent)!important;--marinara-chat-chrome-accent-gradient:linear-gradient(var(--mft-accent),var(--mft-accent))!important;
+ --marinara-chat-chrome-text:var(--mft-ink)!important;
+ --marinara-chat-chrome-surface-bg:var(--mft-card)!important;--marinara-chat-chrome-surface-bg-hover:var(--mft-soft)!important;--marinara-chat-chrome-surface-bg-active:var(--mft-soft)!important;
+ --marinara-chat-chrome-button-bg:var(--mft-card)!important;--marinara-chat-chrome-button-bg-hover:var(--mft-soft)!important;--marinara-chat-chrome-button-bg-active:var(--mft-soft)!important;
+ --marinara-chat-chrome-button-border:var(--mft-line)!important;--marinara-chat-chrome-button-border-hover:var(--mft-accent)!important;--marinara-chat-chrome-button-border-active:var(--mft-accent)!important;
+ --marinara-chat-chrome-button-text-base:var(--mft-ink)!important;--marinara-chat-chrome-button-text:var(--mft-muted)!important;--marinara-chat-chrome-button-text-hover:var(--mft-ink)!important;--marinara-chat-chrome-button-text-active:var(--mft-accent)!important;
+ --marinara-chat-chrome-panel-bg:var(--mft-card)!important;--marinara-chat-chrome-panel-border:var(--mft-line)!important;--marinara-chat-chrome-panel-divider:var(--mft-line)!important;--marinara-chat-chrome-panel-text:var(--mft-ink)!important;--marinara-chat-chrome-panel-title:var(--mft-ink)!important;--marinara-chat-chrome-panel-muted:var(--mft-muted)!important;
+ --marinara-chat-chrome-input-bg:var(--mft-card)!important;--marinara-chat-chrome-input-border:var(--mft-line)!important;--marinara-chat-chrome-input-border-focus:var(--mft-accent)!important;
+ --marinara-chat-chrome-highlight-bg:var(--mft-soft)!important;--marinara-chat-chrome-highlight-bg-hover:var(--mft-soft)!important;--marinara-chat-chrome-highlight-text-base:var(--mft-accent)!important;--marinara-chat-chrome-highlight-text:var(--mft-accent)!important;
+ --marinara-chat-chrome-focus-ring:var(--mft-accent)!important;
+ --marinara-editor-bg:var(--mft-bg)!important;--marinara-editor-surface-bg:var(--mft-card)!important;--marinara-editor-surface-bg-hover:var(--mft-soft)!important;--marinara-editor-surface-bg-active:var(--mft-soft)!important;
+ --marinara-editor-control-bg:var(--mft-soft)!important;--marinara-editor-control-bg-hover:var(--mft-soft)!important;--marinara-editor-border:var(--mft-line)!important;--marinara-editor-border-strong:var(--mft-line)!important;--marinara-editor-divider:var(--mft-line)!important;--marinara-editor-text:var(--mft-ink)!important;--marinara-editor-muted:var(--mft-muted)!important;--marinara-editor-accent:var(--mft-accent)!important;--marinara-editor-focus-ring:var(--mft-accent)!important;--marinara-editor-shadow:none!important;
+ --mari-chat-existing-bg:var(--mft-card)!important;--mari-chat-surface-bg:var(--mft-card)!important;--mari-chat-input-bg:var(--mft-card)!important;--mari-chat-control-bg:var(--mft-soft)!important;
+ --mari-logo-title-pink:var(--mft-accent)!important;--mari-logo-title-orange:var(--mft-accent)!important;--mari-logo-title-cyan:var(--mft-accent)!important;
+ --y2k-pink:var(--mft-accent)!important;--y2k-purple:var(--mft-accent)!important;--y2k-cyan:var(--mft-accent)!important;--y2k-lime:var(--mft-accent)!important;
+ --glow-primary:transparent!important;--glow-accent:transparent!important;
+}/* @mft-end */
+/* @mft-part chats-005 */
+html.mft-enabled :is(.mari-editor-panel,.mari-editor-section,.mari-editor-empty,.mari-chrome-panel,.mari-chat-settings-drawer,.mari-chat-settings-popover,.marinara-chat-popover,.mari-modal-panel){background:var(--mft-card)!important;border-color:var(--mft-line)!important;border-radius:var(--mft-ui-radius)!important;box-shadow:none!important;backdrop-filter:none!important}/* @mft-end */
+/* @mft-part chats-007 */
+html.mft-enabled :is(.mari-editor-action,.mari-editor-section-jump,.mari-chrome-control,.mari-chat-style-control){border-radius:10px!important;box-shadow:none!important;backdrop-filter:none!important}/* @mft-end */
+/* @mft-part chats-010 */
+html.mft-enabled :is(.marinara-chat-input-shell,.mari-chat-input-box){background:var(--mft-card)!important;color:var(--mft-ink)!important;border:1px solid var(--mft-line)!important;border-radius:18px!important;backdrop-filter:none!important;box-shadow:none!important;min-width:0!important}
+html.mft-enabled :is(.mari-chat-input-textarea,[data-chat-composer]){color:var(--mft-ink)!important;background:transparent!important;font-family:inherit!important;line-height:1.6!important;min-width:0!important}
+html.mft-enabled .mari-chat-send-btn:not(:disabled){background:var(--mft-accent)!important;color:var(--mft-on-accent)!important}
+html.mft-enabled .mari-chat-style-surface{background:var(--mft-card)!important;border-color:var(--mft-line)!important;backdrop-filter:none!important;box-shadow:none!important}/* @mft-end */
+/* @mft-part chats-048 */
+html.mft-enabled [data-chat-mode="conversation"] .mari-convo-viewer-split-display{display:none!important}
+html.mft-enabled [data-chat-mode="conversation"] [data-mari-convo-viewer-split-source]:not([data-mft-split]){display:revert!important}/* @mft-end */
+/* @mft-part chats-052 */
+/* Native side-line surfaces were recolored but kept white descendant text. */
+html.mft-enabled[data-theme="light"] [data-chat-mode="game"] .experience-side-line{background:var(--mft-card)!important;border-color:var(--mft-line)!important;color:var(--mft-ink)!important;box-shadow:none!important}
+html.mft-enabled[data-theme="light"] [data-chat-mode="game"] .experience-side-line :is(p,span,strong,em,b,div,button){color:var(--mft-ink)!important;-webkit-text-fill-color:var(--mft-ink)!important;text-shadow:none!important}
+html.mft-enabled[data-theme="light"] [data-chat-mode="game"] .experience-side-line [style*="background-clip"]{background-image:none!important}/* @mft-end */
+/* @mft-part chats-058 */
+html.mft-enabled .mari-chat-option-field{align-items:center!important}/* @mft-end */
+/* @mft-part chats-060 */
+html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm){text-align:center!important}
+html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:first-child:has(>h2){position:relative!important;display:block!important;text-align:center!important;padding-inline:48px!important}
+html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:first-child>h2{width:100%!important;text-align:center!important}
+html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:first-child>button{position:absolute!important;right:10px!important;top:50%!important;transform:translateY(-50%)!important;width:32px!important;height:32px!important;display:grid!important;place-items:center!important;padding:6px!important}
+html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:last-child :is(p,button){text-align:center!important}
+html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:last-child div:has(>button){justify-content:center!important}/* @mft-end */
+/* @mft-part chats-063 */
+html.mft-enabled [data-chat-floating-panel].fixed:has(>.mari-chat-action-panel){top:var(--mari-visual-viewport-offset-top,0px)!important;bottom:auto!important;height:calc(var(--mft-available-height) - 12px)!important;min-height:0!important;padding:12px!important}
+html.mft-enabled [data-chat-floating-panel].fixed>.mari-chat-action-panel{max-height:calc(var(--mft-available-height) - 36px)!important;min-height:0!important;margin-inline:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+html.mft-enabled [data-chat-floating-panel].fixed>.mari-chat-action-panel>div:last-child{min-height:0!important;overflow-y:auto!important}/* @mft-end */
+/* @mft-part chats-065 */
+
+html.mft-enabled .mari-modal-panel:is(.mari-chat-action-panel,.max-w-sm)>div:first-child>button>svg{width:18px!important;height:18px!important}/* @mft-end */
+/* @mft-part chats-073 */
+html.mft-enabled [data-chat-mode]{font-family:var(--mari-widget-font-override,var(--font-user,inherit))!important}/* @mft-end */
+/* @mft-part chats-084 */
+/* Actual FloatingWindow settings sheet fits above the theme's navigation. */
+html.mft-enabled .mari-chat-settings-drawer.mari-window{max-height:calc(var(--mft-available-height) - 24px)!important;min-height:0!important;overflow:hidden!important}
+html.mft-enabled .mari-chat-settings-drawer>.mari-window__body{min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain;padding-bottom:16px!important}/* @mft-end */

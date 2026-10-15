@@ -1,0 +1,1 @@
+PASS existing-room setup: native retained wizard callback before lazy DOM mount, finish-opened settings closed through native callback, game setup untouched.

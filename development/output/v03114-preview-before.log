@@ -1,0 +1,14 @@
+AssertionError [ERR_ASSERTION]: timestamp null must not suppress populated room lookup
++ actual - expected
+
++ '불러오는 중…'
+- '저장된 내용'
+
+    at /workspace/scratch/da7efaa31822/tests/v03114-regressions.cjs:13:235 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '불러오는 중…',
+  expected: '저장된 내용',
+  operator: 'strictEqual',
+  diff: 'simple'
+}

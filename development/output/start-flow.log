@@ -1,0 +1,1 @@
+PASS native start flow PC/mobile: all 3 modes -> visible setup options -> preset/scenario -> matching room; no duplicate creation; setup flags untouched; cancel returns to card; cleanup.

@@ -1,0 +1,1 @@
+PASS game wizard PC/mobile 320/390/430/600/767/768/769/844/960/1024/1280/1920/2560, 16/20px font, keyboard/viewport offset: footer/Next visible and clickable, body independently scrolls to last field, no horizontal overflow. Chromium touch emulation; not iOS WebKit or physical iPhone.

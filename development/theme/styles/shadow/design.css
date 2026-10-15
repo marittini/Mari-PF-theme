@@ -1,0 +1,26 @@
+/* shadow / design; cascade order: style-order.json. */
+/* @mft-part design-011 */
+.color-settings .chip{margin-right:8px}/* @mft-end */
+/* @mft-part design-018 */.color-settings{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px 0}.color-settings h2{margin:0;font-size:0.9375rem}.color-settings .chip{margin:0;padding:7px 13px}/* @mft-end */
+/* @mft-part design-038 */.color-settings{justify-content:space-between;flex-wrap:nowrap;gap:8px}/* @mft-end */
+/* @mft-part design-040 */.color-settings strong{white-space:nowrap}/* @mft-end */
+/* @mft-part design-055 */
+.theme-preferences{margin:12px 0 24px}.preference-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}.preference-controls{display:flex;align-items:center;gap:8px}/* @mft-end */
+/* @mft-part design-057 */.preference-controls .quiet{font-size:.8125rem;padding:6px 8px}/* @mft-end */
+/* @mft-part design-060 */
+
+/* 0.15: in-app pointer/keyboard color picker; engine writes only on Apply. */
+.color-picker[hidden]{display:none}.color-picker{padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--card);max-width:420px;margin:10px 0 18px}.color-trigger{width:36px;height:32px;border:2px solid var(--line);border-radius:9px;padding:0;cursor:pointer}.color-plane{height:180px;position:relative;border-radius:10px;background:linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,transparent),var(--picker-hue);touch-action:none;cursor:crosshair;outline-offset:3px}.color-point{position:absolute;width:14px;height:14px;border:2px solid white;border-radius:50%;box-shadow:0 0 0 1px #333;transform:translate(-50%,-50%);pointer-events:none}/* @mft-end */
+/* @mft-part design-062 */.color-fields{display:flex;gap:5px;align-items:center}.color-fields input{font:inherit;min-width:0;padding:7px 4px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);width:46px}.color-fields .main-color{width:86px;height:auto;font-size:.8125rem}.color-preview{width:24px;height:24px;flex:none;border-radius:50%;border:1px solid var(--line)}/* @mft-end */
+/* @mft-part design-064 */.color-swatch{width:23px;height:23px;border-radius:50%;border:1px solid var(--line);padding:0}/* @mft-end */
+/* @mft-part design-066 */.color-fields input{width:38px}.color-fields .main-color{width:74px}.color-picker{background:var(--bg)}
+
+.color-fields{align-items:flex-end}.color-field{display:flex;flex-direction:column;min-width:0;gap:3px}.color-field>span{font-size:.625rem;color:var(--muted)}.color-fields input{font-size:.75rem;appearance:textfield;-moz-appearance:textfield}.color-fields input::-webkit-inner-spin-button,.color-fields input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.color-preview{margin-bottom:7px}/* @mft-end */
+/* @mft-part design-070 */.view-preference strong{min-width:0}/* @mft-end */
+/* @mft-part design-073 */
+.spacing-setting{display:grid;grid-template-columns:1fr auto;gap:10px;margin:22px 0;font:inherit}.spacing-setting input{grid-column:1/-1;width:100%;accent-color:var(--accent)}.spacing-setting output{grid-row:1;grid-column:2;color:var(--muted)}.typography-preview{padding:16px;border:1px solid var(--line);border-radius:14px;white-space:pre-line;letter-spacing:var(--chat-letter-spacing,0px);line-height:var(--chat-line-height,1.8)}
+
+.typography-preview{padding-inline:var(--rp-text-padding,16px)}
+
+/* 0.29: three consistent design groups. */
+.theme-preferences{display:grid;gap:18px}.design-group{border:1px solid var(--line);border-radius:16px;background:var(--bg);padding:16px;min-width:0}.design-group h2{font-size:1rem;margin:0 0 6px}.design-description{color:var(--muted);font-size:.8125rem;line-height:1.6;margin:0 0 12px}.design-group .preference-row{padding:12px 0}.design-group .preference-row:last-child{border-bottom:0}.design-group .spacing-setting{margin:0;padding:14px 0;border-bottom:1px solid var(--line)}.design-group .typography-preview{margin:16px 0 0}.typography-preview p{margin:0}/* @mft-end */

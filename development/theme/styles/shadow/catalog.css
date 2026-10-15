@@ -1,0 +1,41 @@
+/* shadow / catalog; cascade order: style-order.json. */
+/* @mft-part catalog-001 */.banner{position:relative;background:linear-gradient(110deg,var(--banner),var(--surface));border:1px solid var(--line);border-radius:24px;padding:24px;overflow:hidden;margin-bottom:22px}.banner h1{white-space:pre-line;margin:8px 0;font-size:1.6875rem}.banner h2{margin:10px 0}.home-bot-search{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;color:var(--muted);white-space:normal}.home-search-icon{flex:0 0 auto;font-size:1.5em;line-height:1}
+/* @mft-end */
+/* @mft-part catalog-003 */.shelf{margin:20px 0 32px}.rail{display:flex;gap:16px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding-bottom:8px;scroll-snap-type:x proximity}.card{flex:0 0 clamp(156px,39vw,210px);width:clamp(156px,39vw,210px);padding:0;scroll-snap-align:start;min-width:0}/* @mft-end */
+/* @mft-part catalog-005 */.card strong{font-size:1.0rem;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}/* @mft-end */
+/* @mft-part catalog-007 */.card small{font-size:0.75rem}/* @mft-end */
+/* @mft-part catalog-013 */
+.banner-logo{width:84px;height:84px;object-fit:contain;font-size:0;opacity:.85;right:20px;top:30px}/* @mft-end */
+/* @mft-part catalog-015 */
+/* v0.6: compact galleries, horizontal settings, equal chat switch. */
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 14px;margin:20px 0}.gallery-card{padding:0;min-width:0}.gallery-card strong{display:block;text-align:center;font-size:0.875rem;overflow:hidden;text-overflow:ellipsis}.gallery .art{margin-bottom:8px}/* @mft-end */
+/* @mft-part catalog-022 */.banner{display:grid;grid-template-columns:minmax(0,1fr) 84px;align-items:center;gap:8px}.banner small{grid-column:1}.banner h1{grid-column:1;margin:8px 0}.banner-logo{grid-column:2;grid-row:1/3;position:static;align-self:center;width:84px;height:84px}/* @mft-end */
+/* @mft-part catalog-025 */main,.rail{scrollbar-width:none}main::-webkit-scrollbar,.rail::-webkit-scrollbar{display:none}/* @mft-end */
+/* @mft-part catalog-028 */
+.banner{display:block}.banner:has(.banner-logo){display:grid}/* @mft-end */
+/* @mft-part catalog-031 */
+.gallery-card .card-name{font-size:1.0rem}.daily-pick{position:relative;border:1px solid var(--line);border-radius:22px;padding:30px 18px 18px;background:linear-gradient(135deg,var(--banner),var(--bg));overflow:hidden}.daily-pick h2{font-size:1.125rem;margin:0 0 18px;line-height:1.55}.daily-decor{display:inline-block;color:var(--accent);font-size:1.4375rem;margin-left:8px;letter-spacing:4px;opacity:.65}.daily-pick .rail{justify-content:center}.daily-pick .card{flex-basis:min(72vw,280px);width:min(72vw,280px)}/* @mft-end */
+/* @mft-part catalog-036 */.card,.gallery-card{align-self:flex-start}.card .card-name,.gallery-card .card-name{display:flex;align-items:center;min-height:2.9em;line-height:1.45;margin:0;text-align:left}.gallery-card .card-name{justify-content:center;text-align:center}.card-title{color:var(--muted);font-size:0.8125rem;line-height:1.55;margin:4px 0;overflow-wrap:anywhere}.gallery-card .summary,.gallery-card .card-title{text-align:center}/* @mft-end */
+/* @mft-part catalog-043 */
+
+/* 0.10: centered daily feature with portrait orbit effects. */
+.daily-pick h2{text-align:center}.daily-pick .card-name{justify-content:center;text-align:center}.daily-pick .card-title,.daily-pick .tags,.daily-pick small{text-align:center}.daily-pick .card{overflow:visible}.daily-pick .rail{overflow:visible;padding:24px 10px 10px}.daily-portrait{position:relative;margin-bottom:10px}.daily-portrait .art{margin:0;box-shadow:0 8px 30px #6656ec18}.daily-effects{position:absolute;inset:-20px;pointer-events:none}.daily-effects>span{position:absolute;left:calc(8% + var(--i)*12%);top:calc(12% + var(--i)*10%);width:13px;height:13px;animation:daily-shimmer 3.6s ease-in-out infinite;animation-delay:calc(var(--i)*-.48s);filter:drop-shadow(0 0 5px #b4a2ff88)}.daily-star{background:linear-gradient(145deg,#d9cbff,#8e77f1);clip-path:polygon(50% 0,62% 36%,100% 50%,62% 64%,50% 100%,38% 64%,0 50%,38% 36%)}.daily-heart{background:#efa2be;clip-path:path('M 6.5 12 C 4 9 0 7 0 3.8 C 0 0 4.5 -1 6.5 2 C 8.5 -1 13 0 13 3.8 C 13 7 9 9 6.5 12 Z')}.daily-effects>span:nth-child(2){left:90%;top:4%}.daily-effects>span:nth-child(3){left:-1%;top:44%}.daily-effects>span:nth-child(4){left:98%;top:50%}.daily-effects>span:nth-child(5){left:13%;top:98%}.daily-effects>span:nth-child(6){left:84%;top:91%}.daily-effects>span:nth-child(7){left:5%;top:6%}.daily-effects>span:nth-child(8){left:52%;top:-3%}@keyframes daily-shimmer{0%,100%{opacity:.15;transform:translateY(5px) scale(.6) rotate(-12deg)}45%{opacity:.95;transform:translateY(-7px) scale(1.1) rotate(12deg)}70%{opacity:.45;transform:translateY(-2px) scale(.8) rotate(0)}}/* @mft-end */
+/* @mft-part catalog-046 */
+
+:host([data-suspended]) .daily-effects>span{animation-play-state:paused!important}.daily-effects>span{filter:none}/* @mft-end */
+/* @mft-part catalog-048 */
+.card .card-name,.gallery-card .card-name{min-height:1.45em}.card-title{margin-top:2px;margin-bottom:0}/* @mft-end */
+/* @mft-part catalog-050 */.persona-folder h2{margin-bottom:12px}.persona-folder .gallery{margin-top:10px}/* @mft-end */
+/* @mft-part catalog-053 */
+.daily-heart{background:color-mix(in srgb,var(--accent) 35%,#efa2be)}.daily-star{background:color-mix(in srgb,var(--accent) 60%,#fff)}/* @mft-end */
+/* @mft-part catalog-058 */.banner-toggle{accent-color:var(--accent);width:18px;height:18px;margin:0}
+.persona-folder{margin-block:28px 34px}.persona-folder+.persona-folder{padding-top:20px;border-top:1px solid var(--line)}.persona-folder h2{margin:0 0 16px}.persona-folder .gallery{row-gap:32px;column-gap:16px;margin-top:0}.gallery-card{padding-bottom:6px}.gallery-card .art{margin-bottom:10px}/* @mft-end */
+/* @mft-part catalog-068 */
+
+/* 0.21: persona gallery uses the same left-aligned text as Home. */
+.persona-folder .gallery-card .card-name{justify-content:flex-start;text-align:left}.persona-folder .gallery-card :is(.card-title,.tags,.summary){text-align:left}/* @mft-end */
+/* @mft-part catalog-071 */
+main[data-catalog-view="gallery"] .shelf:not(.daily-pick) .rail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;overflow:visible}
+main[data-catalog-view="gallery"] .shelf:not(.daily-pick) .card{width:100%;min-width:0;flex-basis:auto}
+main[data-catalog-view="scroll"] .persona-folder .gallery{display:flex;overflow-x:auto;gap:16px;scroll-snap-type:x proximity;overscroll-behavior-x:contain;scrollbar-width:none;padding-bottom:8px}
+main[data-catalog-view="scroll"] .persona-folder .gallery-card{flex:0 0 44%;width:44%;min-width:0;scroll-snap-align:start}/* @mft-end */

@@ -1,0 +1,50 @@
+--- 0.32/src/engine/navigation.js
++++ 0.33/src/engine/navigation.js
+@@ -140,15 +140,22 @@
+   }
+   
+   async function openNative(key) {
++    const requestedChatMode = deps.chats.state.chatMode;
+     const signal = beginRoute('panel');
+     try {
+       const a = await actionsReady(signal);
+       if (signal.aborted) return false;
+       if (!engineHome()) throw Error('기존 방을 닫지 못해 화면 이동을 중단했어요.');
+       if (key === 'chats') {
+-        if (a.requestChatModeShortcut) a.requestChatModeShortcut(deps.chats.state.chatMode);else a.setSidebarOpen(true);
++        if (a.requestChatModeShortcut) a.requestChatModeShortcut(requestedChatMode);else a.setSidebarOpen(true);
+       } else a.openRightPanel(key);
+       await waitEngine(() => key === 'chats' ? [...document.querySelectorAll('[data-component="ChatSidebar"]')].find(deps.ui.state.visible) : document.querySelector(`[data-panel-key="${CSS.escape(key)}"][aria-hidden="false"]`), signal);
++      if (key === 'chats') {
++        const tab = await waitEngine(() => [...document.querySelectorAll(`[data-component="ChatSidebar"] [data-chat-mode-tab="${CSS.escape(requestedChatMode)}"]`)].find(deps.ui.state.visible), signal);
++        if (signal.aborted) return false;
++        if (tab.getAttribute('aria-pressed') !== 'true') tab.click();
++        await waitEngine(() => tab.isConnected && tab.getAttribute('aria-pressed') === 'true', signal);
++      }
+       if (signal.aborted) return false;
+       finishRoute('panel', signal);
+       return true;
+--- 0.32/styles/native/resources.css
++++ 0.33/styles/native/resources.css
+@@ -1,6 +1,9 @@
+ /* native / resources; cascade order: style-order.json. */
+ /* @mft-part resources-009 */
+-html.mft-enabled :is([data-panel-key],.mari-modal) :is(input,select,textarea){max-width:100%;min-width:0;background:var(--mft-soft);color:var(--mft-ink);border-color:var(--mft-line);border-radius:10px}/* @mft-end */
++html.mft-enabled :is([data-panel-key],.mari-modal) :is(input,select,textarea){max-width:100%;min-width:0;background:var(--mft-soft);color:var(--mft-ink);border-color:var(--mft-line);border-radius:10px}
++/* Hide only the native Sidecar local-model installation card while the theme is enabled. */
++html.mft-enabled [data-panel-key="connections"] div.rounded-xl:has(>div>div>svg.lucide-brain-circuit){display:none!important}
++/* @mft-end */
+ /* @mft-part resources-015 */
+ html.mft-enabled [data-panel-key="settings"] [role="tab"]{min-height:34px!important;box-shadow:none!important;background-image:none!important}
+ html.mft-enabled [data-panel-key="settings"] [role="tab"][aria-selected="true"]{background:var(--mft-soft)!important;color:var(--mft-accent)!important;border-color:var(--mft-line)!important}/* @mft-end */
+--- 0.32/styles/shadow/catalog.css
++++ 0.33/styles/shadow/catalog.css
+@@ -13,7 +13,7 @@
+ /* @mft-part catalog-028 */
+ .banner{display:block}.banner:has(.banner-logo){display:grid}/* @mft-end */
+ /* @mft-part catalog-031 */
+-.gallery-card .card-name{font-size:1.0rem}.daily-pick{position:relative;border:1px solid var(--line);border-radius:22px;padding:18px;background:linear-gradient(135deg,var(--banner),var(--bg));overflow:hidden}.daily-pick h2{font-size:1.125rem;margin:0 0 18px;line-height:1.55}.daily-decor{display:inline-block;color:var(--accent);font-size:1.4375rem;margin-left:8px;letter-spacing:4px;opacity:.65}.daily-pick .rail{justify-content:center}.daily-pick .card{flex-basis:min(72vw,280px);width:min(72vw,280px)}/* @mft-end */
++.gallery-card .card-name{font-size:1.0rem}.daily-pick{position:relative;border:1px solid var(--line);border-radius:22px;padding:30px 18px 18px;background:linear-gradient(135deg,var(--banner),var(--bg));overflow:hidden}.daily-pick h2{font-size:1.125rem;margin:0 0 18px;line-height:1.55}.daily-decor{display:inline-block;color:var(--accent);font-size:1.4375rem;margin-left:8px;letter-spacing:4px;opacity:.65}.daily-pick .rail{justify-content:center}.daily-pick .card{flex-basis:min(72vw,280px);width:min(72vw,280px)}/* @mft-end */
+ /* @mft-part catalog-036 */.card,.gallery-card{align-self:flex-start}.card .card-name,.gallery-card .card-name{display:flex;align-items:center;min-height:2.9em;line-height:1.45;margin:0;text-align:left}.gallery-card .card-name{justify-content:center;text-align:center}.card-title{color:var(--muted);font-size:0.8125rem;line-height:1.55;margin:4px 0;overflow-wrap:anywhere}.gallery-card .summary,.gallery-card .card-title{text-align:center}/* @mft-end */
+ /* @mft-part catalog-043 */
+ 

@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: forced resume must replace an older non-fresh pending read
+
+1 !== 2
+
+    at /workspace/scratch/da7efaa31822/tests/resume-races.cjs:7:51 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 2,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

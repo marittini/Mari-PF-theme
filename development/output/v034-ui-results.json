@@ -1,0 +1,22 @@
+[
+  {
+    "touch": false,
+    "homeWidths": 6,
+    "botOpens": 3,
+    "lazyOpener": true,
+    "nativeCloseAndHistory": true,
+    "resourcePanels": 6,
+    "sidebar": true,
+    "settingsMounts": 3
+  },
+  {
+    "touch": true,
+    "homeWidths": 6,
+    "botOpens": 3,
+    "lazyOpener": true,
+    "nativeCloseAndHistory": true,
+    "resourcePanels": 6,
+    "sidebar": true,
+    "settingsMounts": 3
+  }
+]

@@ -1,0 +1,10 @@
+/* native / game; cascade order: style-order.json. */
+/* @mft-part game-003 */
+html.mft-enabled [data-tour="game-dialogue"]{max-height:calc(var(--mft-available-height) - 5.5rem)!important;min-height:0!important;max-width:min(100%,56rem)!important}
+html.mft-enabled .mari-game-narration-surface{background:var(--mft-card)!important;border:1px solid var(--mft-line)!important;border-radius:20px!important;padding:14px!important;box-shadow:none!important;backdrop-filter:none!important;color:var(--mft-ink)!important}
+html.mft-enabled .mari-game-narration-surface :is(.mari-chat-style-surface,.mari-game-action,.mari-game-meta,.mari-game-nav){background:var(--mft-soft)!important;color:var(--mft-ink)!important;border-color:var(--mft-line)!important;box-shadow:none!important}/* @mft-end */
+/* @mft-part game-017 */
+html.mft-enabled .game-narration-prose{color:var(--mft-ink)!important;line-height:1.8!important;overflow-wrap:anywhere}
+html.mft-enabled .mari-game-narration-surface .mari-chat-resolved-text{color:var(--mft-ink)!important;line-height:1.8!important}/* @mft-end */
+/* @mft-part game-020 */
+html.mft-enabled .mari-game-narration-surface{max-height:calc(var(--mft-available-height) - 5.5rem)!important;overflow-y:auto!important;scrollbar-width:thin}/* @mft-end */

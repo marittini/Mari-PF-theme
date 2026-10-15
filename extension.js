@@ -1,4 +1,4 @@
-(/* Marinara Platform 0.31.4 — generated; edit src/ and styles/. */
+(/* Marinara Platform 0.35 — generated; edit src/ and styles/. */
 function(){
 "use strict";
 // Source: src/ui/shell.js
@@ -386,8 +386,7 @@ function createData(deps) {
     viewRequests: undefined,
     request: undefined,
     refreshWriteQueued: undefined,
-    resourceFetch: undefined,
-    inflight: new Map()
+    resourceFetch: undefined
   };
 
   function resourceFetchWrapper(input, init) {
@@ -433,51 +432,40 @@ function createData(deps) {
   }
   
   async function get(path, ticket, convert = x => x, options = {}) {
-    const readOnly = !options.method || options.method.toUpperCase() === 'GET';
-    const shareable = readOnly && Object.keys(options).length === 0;
-    const old = readOnly && mftModuleState.cache.get(path);
+    const old = mftModuleState.cache.get(path);
     if (old && Date.now() - old.time < 60000) {
       mftModuleState.cache.delete(path);
       mftModuleState.cache.set(path, old);
       return old.data;
     }
-    const pending = shareable && mftModuleState.inflight.get(path);
-    if (pending && pending.ticket === ticket && !pending.controller.signal.aborted) return pending.promise;
     const c = new AbortController();
-    const entry = { ticket, controller: c, promise: null };
-    const run = async () => {
-      mftModuleState.viewRequests.add(c);
-      mftModuleState.request = c;
-      const deadline = deps.core.later(() => c.abort(new DOMException('Request timeout', 'TimeoutError')), 15000);
-      try {
-        const res = await fetch('/api' + path.split('?mft=')[0], {
-          signal: c.signal,
-          credentials: 'same-origin',
-          ...options
-        });
-        if (!res.ok) throw Error('HTTP ' + res.status);
-        const raw = await res.json();
-        if (deps.core.state.disposed || ticket !== deps.core.state.epoch) throw new DOMException('Stale', 'AbortError');
-        const data = convert(raw);
-        if (readOnly) mftModuleState.cache.set(path, {
-          time: Date.now(),
-          data
-        });
-        while (mftModuleState.cache.size > 12) mftModuleState.cache.delete(mftModuleState.cache.keys().next().value);
-        return data;
-      } finally {
-        clearTimeout(deadline);
-        deps.core.state.timers.delete(deadline);
-        mftModuleState.viewRequests.delete(c);
-        if (mftModuleState.request === c) mftModuleState.request = null;
-        if (mftModuleState.inflight.get(path) === entry) mftModuleState.inflight.delete(path);
-      }
-    };
-    entry.promise = run();
-    if (shareable) mftModuleState.inflight.set(path, entry);
-    return entry.promise;
+    mftModuleState.viewRequests.add(c);
+    mftModuleState.request = c;
+    const deadline = deps.core.later(() => c.abort(new DOMException('Request timeout', 'TimeoutError')), 15000);
+    try {
+      const res = await fetch('/api' + path.split('?mft=')[0], {
+        signal: c.signal,
+        credentials: 'same-origin',
+        ...options
+      });
+      if (!res.ok) throw Error('HTTP ' + res.status);
+      const raw = await res.json();
+      if (deps.core.state.disposed || ticket !== deps.core.state.epoch) throw new DOMException('Stale', 'AbortError');
+      const data = convert(raw);
+      mftModuleState.cache.set(path, {
+        time: Date.now(),
+        data
+      });
+      while (mftModuleState.cache.size > 12) mftModuleState.cache.delete(mftModuleState.cache.keys().next().value);
+      return data;
+    } finally {
+      clearTimeout(deadline);
+      deps.core.state.timers.delete(deadline);
+      mftModuleState.viewRequests.delete(c);
+      if (mftModuleState.request === c) mftModuleState.request = null;
+    }
   }
-
+  
   async function jsonRequest(path, method = 'GET', data, signal, fresh = false) {
     const res = await fetch('/api' + path, {
       signal,
@@ -519,7 +507,6 @@ function createData(deps) {
     } },
     { order: 65, run() {
       mftModuleState.cache.clear();
-      mftModuleState.inflight.clear();
     } }
   ];
   return { state: mftModuleState, initialize, cleanup, resourceFetchWrapper, compact, get, jsonRequest };
@@ -587,7 +574,7 @@ function createCore(deps) {
       deps.ui.state.root.id = 'mft-root';
     } },
     { order: 600, run() {
-      deps.ui.state.css.textContent = ":host{all:initial!important;position:fixed!important;inset:0!important;z-index:80!important;display:block!important;pointer-events:none!important;color-scheme:light!important;direction:ltr!important}.app{--bg:#f5f5f8;--surface:#eeeef3;--ink:#16161d;--muted:#81818e;--line:#e5e5ee;--accent:#6656ec;--banner:#e6e2fa;font:inherit;line-height:1.55;color:var(--ink);letter-spacing:-.35px;pointer-events:auto;position:absolute;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg);color-scheme:light}.app[data-dark=true]{--bg:#111113;--surface:#202023;--ink:#f6f6fa;--muted:#9999a4;--line:#2b2b30;--banner:#272042;color-scheme:dark}*{box-sizing:border-box}button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none;text-align:left}button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}button:disabled{opacity:.5}button:active{opacity:.75}header{padding:calc(16px + env(safe-area-inset-top,0px)) max(20px,calc((100vw - 1020px)/2)) 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-size:1.4375rem;font-weight:800;white-space:nowrap}.brand:first-letter{color:var(--accent)}main{overflow:auto;overscroll-behavior:contain;padding:10px max(20px,calc((100vw - 1020px)/2)) 36px;scrollbar-width:thin;min-width:0}h1{font-size:1.5625rem;line-height:1.4;margin:15px 0 24px;letter-spacing:-1px}h2{font-size:1.25rem;line-height:1.4;margin:26px 0 16px}p{margin:8px 0}.muted,small{color:var(--muted)}.search{width:100%;padding:13px 17px;border:1px solid var(--line);border-radius:16px;background:var(--surface);outline-offset:0;margin:8px 0 18px}.banner{position:relative;background:linear-gradient(110deg,var(--banner),var(--surface));border:1px solid var(--line);border-radius:24px;padding:24px;overflow:hidden;margin-bottom:22px}.banner h1{white-space:pre-line;margin:8px 0;font-size:1.6875rem}.banner h2{margin:10px 0}.spark{position:absolute;right:25px;top:25px;font-size:5.125rem;color:var(--accent);line-height:1}.chips{display:flex;gap:8px;align-items:center;background:var(--surface);border-radius:25px;padding:6px;margin:10px 0 28px;flex-wrap:wrap}.chip,.button,.primary,.quiet{border-radius:19px;padding:10px 15px}.chip[data-active=true],.chip:not([data-active]),.primary{background:var(--accent);color:white}.quiet{color:var(--muted)}.button{background:var(--surface)}.shelf{margin:20px 0 32px}.rail{display:flex;gap:16px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding-bottom:8px;scroll-snap-type:x proximity}.card{flex:0 0 clamp(156px,39vw,210px);width:clamp(156px,39vw,210px);padding:0;scroll-snap-align:start;min-width:0}.art{position:relative;width:100%;aspect-ratio:1;border-radius:17px;background:linear-gradient(135deg,var(--banner),var(--surface));display:grid;place-items:center;font-size:2.75rem;color:var(--accent);overflow:hidden;margin-bottom:10px}.art img,.hero img{position:absolute;width:100%;height:100%;inset:0;object-fit:cover}.card strong{font-size:1.0rem;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.summary{color:var(--muted);font-size:0.8125rem;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.tags{font-size:0.8125rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.card small{font-size:0.75rem}.pager{display:flex;gap:12px;justify-content:center}.chat-row{display:flex;align-items:center;width:100%;gap:14px;padding:18px 0}.chat-row>div:nth-child(2){min-width:0;flex:1}.chat-row .summary{white-space:nowrap;display:block;text-overflow:ellipsis;margin:5px 0}.round{display:grid;place-items:center;flex:0 0 56px;height:56px;border-radius:50%;background:var(--banner);color:var(--accent);font-size:1.4375rem}.menu-row{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;padding:22px 16px;border-bottom:1px solid var(--line)}.menu-row p{font-size:0.8125rem;margin:5px 0 0}.primary{display:block;text-align:center;width:100%;font-size:1.0rem;font-weight:700;margin-top:16px}.hero{position:relative;aspect-ratio:1.25;max-height:500px;border-radius:22px;overflow:hidden;display:grid;place-items:center;background:var(--banner);font-size:5.0rem;color:var(--accent)}.description{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.9}.detail-actions{display:flex;align-items:center;gap:12px}.detail-actions .primary{margin:0;flex:1}.status{position:absolute;bottom:100px;left:20px;right:20px;background:var(--ink);color:var(--bg);padding:16px;border-radius:16px;font-size:0.8125rem;z-index:2}.status[hidden],[hidden]{display:none!important}nav{display:flex;justify-content:space-around;background:var(--bg);border-top:1px solid var(--line);border-radius:25px 25px 0 0;padding:9px max(8px,calc((100vw - 800px)/2)) calc(8px + env(safe-area-inset-bottom,0px));gap:10px}.tab{display:flex;flex:1;align-items:center;flex-direction:column;justify-content:center;gap:2px;min-height:49px;color:var(--muted);font-size:0.75rem}.tab[data-active=true]{color:var(--accent);font-weight:700}.icon{display:block;height:26px}.icon svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}:host([data-native=true]) .app{background:transparent;pointer-events:none;display:block}:host([data-native=true]) header,:host([data-native=true]) main{display:none}:host([data-native=true]) nav{display:var(--mft-native-nav-display,flex);position:absolute;bottom:0;left:0;right:0;pointer-events:auto}:host([data-native=true]) .status{pointer-events:auto}@media(min-width:800px){.banner{min-height:180px}.banner h1{font-size:2.0rem}.rail{gap:22px}.card{flex-basis:210px;width:210px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}\n/* v0.3: same home layout; flexible viewport, navigation and media geometry. */\n:host{top:var(--mari-visual-viewport-offset-top,0px)!important;bottom:auto!important;height:var(--mari-visual-viewport-height,100dvh)!important;max-width:100vw!important}\n.app{font-family:inherit;min-width:0;min-height:0;overflow:hidden}\n.app[data-dark=true]{--accent:#7969fa}\nmain{min-height:0;overflow-x:hidden}\nheader{min-width:0;padding-inline:max(16px,calc((100vw - 1020px)/2))}\n.brand{font-size:1.3125rem;overflow:hidden;text-overflow:ellipsis}\n.hero{aspect-ratio:1;max-height:none}\n.round{position:relative;overflow:hidden}\n.round img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}\nnav{padding-top:6px;padding-bottom:calc(5px + env(safe-area-inset-bottom,0px))}\n.tab{min-height:44px}\n.mode-tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);margin:10px 0 18px}\n.mode-tab{flex:1;padding:12px;text-align:center;color:var(--muted);border-bottom:2px solid transparent}\n.mode-tab[aria-selected=true]{border-color:var(--accent);color:var(--accent);font-weight:700}\n.tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0 28px}\n.tool{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:16px;font-size:0.875rem;text-align:center;min-height:54px}\n.color-settings .chip{margin-right:8px}\n:host([data-native=true]) .app{pointer-events:none}\n:host([data-native=true]) nav{display:var(--mft-native-nav-display,flex)}\n@media(max-width:360px){.brand{font-size:1.1875rem}header{gap:6px}main{padding-inline:14px}.banner{padding:20px}.spark{font-size:4.0rem;right:12px}.banner h1{font-size:1.5rem}.card{flex-basis:144px;width:144px}}\n/* v0.4 official static logo; readable Markdown; compact integration shortcuts. */\n.brand{display:flex;align-items:center;gap:8px}.brand-logo{width:30px;height:30px;object-fit:contain}\n.description{white-space:normal}.description p{white-space:pre-wrap}.description h2,.description h3,.description h4{margin:18px 0 8px}.description ul,.description ol{padding-left:24px}.description pre{overflow:auto;padding:12px;background:var(--surface);border-radius:10px;white-space:pre-wrap}.description code{font-family:inherit;background:var(--surface);border-radius:4px;padding:2px 4px}.description blockquote{border-left:3px solid var(--accent);margin:12px 0;padding-left:12px;color:var(--muted)}.description a{color:var(--accent);overflow-wrap:anywhere}.tool svg{display:block;margin:0 auto 6px;width:22px;height:22px;fill:none;stroke:currentColor}\n.banner-logo{width:84px;height:84px;object-fit:contain;font-size:0;opacity:.85;right:20px;top:30px}\n@media(max-width:360px){.banner-logo{width:60px;height:60px;right:12px;top:35px}.banner h1{font-size:1.4375rem}}\n/* v0.6: compact galleries, horizontal settings, equal chat switch. */\n.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 14px;margin:20px 0}.gallery-card{padding:0;min-width:0}.gallery-card strong{display:block;text-align:center;font-size:0.875rem;overflow:hidden;text-overflow:ellipsis}.gallery .art{margin-bottom:8px}.agent-icons{display:flex;gap:5px;align-items:center}.agent-icon{display:grid;place-items:center;width:36px;height:36px;padding:5px;background:transparent}.agent-icon img{width:27px;height:27px;object-fit:contain}.chat-switch{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:4px;border-radius:12px;background:var(--surface);margin:12px 0}.chat-switch>button{text-align:center;min-width:0}.chat-switch>button:nth-child(n+3){display:none}.color-settings{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px 0}.color-settings h2{margin:0;font-size:0.9375rem}.color-settings .chip{margin:0;padding:7px 13px}.split-toggle{display:flex;align-items:center;gap:10px;margin:24px 0;font-size:0.875rem}.split-toggle input{accent-color:var(--accent)}.chat-item{display:flex;align-items:center;gap:6px}.chat-item .chat-row{flex:1;min-width:0}.folder-move{color:var(--muted);font-size:0.6875rem;padding:8px}.folder-bar{display:flex;gap:8px;align-items:center;margin:12px 0}.folder-bar select,.inline-dialog select{min-width:0;flex:1;background:var(--surface);color:var(--ink);padding:10px;border:1px solid var(--line);border-radius:10px}.inline-dialog{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--bg)}.folder-edit{display:flex;gap:4px;margin:8px 0;flex-wrap:wrap}.folder-edit input{min-width:0;flex:1;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:8px}.banner{display:grid;grid-template-columns:minmax(0,1fr) 84px;align-items:center;gap:8px}.banner small{grid-column:1}.banner h1{grid-column:1;margin:8px 0}.banner-logo{grid-column:2;grid-row:1/3;position:static;align-self:center;width:84px;height:84px}.alerts{position:absolute;right:12px;top:85px;z-index:90;display:flex;flex-direction:column;gap:8px;max-width:min(310px,85vw);pointer-events:auto}.alert{display:flex;align-items:center;gap:10px;border-radius:14px;background:var(--bg);box-shadow:0 3px 14px #0002;border:1px solid var(--line);padding:10px;font-size:0.8125rem;color:var(--ink)}.alert .round{width:38px;height:38px;flex-basis:38px;font-size:0.9375rem}.unread{position:absolute;top:0;right:calc(50% - 28px);background:var(--accent);color:white;font-size:0.625rem;padding:1px 5px;border-radius:12px}.tab{position:relative}main,.rail{scrollbar-width:none}main::-webkit-scrollbar,.rail::-webkit-scrollbar{display:none}\n@media(min-width:1024px){.app{grid-template-columns:92px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}header{grid-column:2;grid-row:1;padding-inline:32px}main{grid-column:2;grid-row:2;padding-inline:max(32px,calc((100vw - 1050px)/2))}nav{grid-column:1;grid-row:1/3;flex-direction:column;justify-content:flex-start;padding:24px 8px;border-top:0;border-right:1px solid var(--line);border-radius:0;gap:18px}.tab{flex:0 0 auto;min-height:62px}.gallery{grid-template-columns:repeat(4,minmax(0,1fr))}:host([data-native=true]) nav{top:0;bottom:0;left:0;right:auto;width:92px}.alerts{right:24px;top:20px}}\n:host([data-native=true]) .alerts{display:none}\n.banner{display:block}.banner:has(.banner-logo){display:grid}\n.chat-unread{flex:none;border-radius:12px;padding:1px 6px;font-size:0.6875rem;background:var(--accent);color:white}\n.brand-group{display:flex;align-items:center;gap:5px;min-width:0}.refresh-icon{display:grid;place-items:center;width:28px;height:28px;flex:none;padding:5px;color:var(--muted);border-radius:50%}.refresh-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.refresh-icon:hover{background:var(--surface);color:var(--accent)}\n.gallery-card .card-name{font-size:1.0rem}.daily-pick{position:relative;border:1px solid var(--line);border-radius:22px;padding:18px;background:linear-gradient(135deg,var(--banner),var(--bg));overflow:hidden}.daily-pick h2{font-size:1.125rem;margin:0 0 18px;line-height:1.55}.daily-decor{display:inline-block;color:var(--accent);font-size:1.4375rem;margin-left:8px;letter-spacing:4px;opacity:.65}.daily-pick .rail{justify-content:center}.daily-pick .card{flex-basis:min(72vw,280px);width:min(72vw,280px)}\n/* Message-style notifications are visible over both theme pages and native chats. */\n.alerts,:host([data-native=true]) .alerts{display:flex!important;position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);right:12px;left:12px;max-width:440px;margin-left:auto;gap:8px;pointer-events:none}.alert-row{pointer-events:auto}.alert-row .alert{box-shadow:0 5px 22px #0002;border-radius:16px;padding:13px 32px 13px 14px;gap:12px}.alert .round{width:44px;height:44px;flex-basis:44px}.notification-copy{min-width:0;flex:1;text-align:left}.notification-copy strong{display:block;font-size:0.875rem;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.notification-copy p{margin:3px 0 0;font-size:0.8125rem;line-height:1.45;color:var(--muted)}.alert-dismiss{top:8px;right:6px;font-size:1.25rem}\n@media(max-width:360px){header .agent-icons{gap:0}header .agent-icon{width:27px;height:28px}header .agent-icon img,header .agent-icon svg{width:23px;height:23px}.brand-group{gap:2px}.brand{font-size:1.125rem}.brand-logo{width:25px;height:25px}.refresh-icon{width:25px;height:25px;padding:4px}}\n/* 0.7: aligned card labels, optional metadata and installed apps in the header. */\nheader .agent-icons{margin-left:auto;flex-shrink:0;gap:4px}header .agent-icon{width:32px;height:32px;padding:3px}header .agent-icon img,header .agent-icon svg{width:26px;height:26px}.chips{flex-wrap:nowrap}.chips .chip{flex:1;min-width:0;text-align:center;padding:9px 6px;font-size:0.8125rem;white-space:nowrap}.card,.gallery-card{align-self:flex-start}.card .card-name,.gallery-card .card-name{display:flex;align-items:center;min-height:2.9em;line-height:1.45;margin:0;text-align:left}.gallery-card .card-name{justify-content:center;text-align:center}.card-title{color:var(--muted);font-size:0.8125rem;line-height:1.55;margin:4px 0;overflow-wrap:anywhere}.gallery-card .summary,.gallery-card .card-title{text-align:center}.profile-heading{min-height:88px;display:flex;flex-direction:column;justify-content:center;gap:4px;margin:16px 0 22px}.profile-heading h1{margin:0}.profile-heading p{margin:0}.color-settings{justify-content:space-between;flex-wrap:nowrap;gap:8px}.theme-choices{display:flex;align-items:center;gap:6px;margin-left:auto}.color-settings strong{white-space:nowrap}.folder-bar .button{font-size:0.75rem;white-space:nowrap;padding:9px 10px}.folder-bar select{font:inherit;font-size:0.8125rem}.has-unread strong{color:var(--accent)}.alert-row{position:relative;display:flex;flex-wrap:wrap;gap:5px}.alert-row .alert{flex:1;min-width:0;padding-right:25px}.alert-dismiss{position:absolute;right:4px;top:2px;font-size:1.25rem;color:var(--muted);padding:2px 7px}.alert-row .button,.alert-row .quiet{font-size:0.75rem;padding:6px 10px}\n\n/* 0.10: centered daily feature with portrait orbit effects. */\n.daily-pick h2{text-align:center}.daily-pick .card-name{justify-content:center;text-align:center}.daily-pick .card-title,.daily-pick .tags,.daily-pick small{text-align:center}.daily-pick .card{overflow:visible}.daily-pick .rail{overflow:visible;padding:24px 10px 10px}.daily-portrait{position:relative;margin-bottom:10px}.daily-portrait .art{margin:0;box-shadow:0 8px 30px #6656ec18}.daily-effects{position:absolute;inset:-20px;pointer-events:none}.daily-effects>span{position:absolute;left:calc(8% + var(--i)*12%);top:calc(12% + var(--i)*10%);width:13px;height:13px;animation:daily-shimmer 3.6s ease-in-out infinite;animation-delay:calc(var(--i)*-.48s);filter:drop-shadow(0 0 5px #b4a2ff88)}.daily-star{background:linear-gradient(145deg,#d9cbff,#8e77f1);clip-path:polygon(50% 0,62% 36%,100% 50%,62% 64%,50% 100%,38% 64%,0 50%,38% 36%)}.daily-heart{background:#efa2be;clip-path:path('M 6.5 12 C 4 9 0 7 0 3.8 C 0 0 4.5 -1 6.5 2 C 8.5 -1 13 0 13 3.8 C 13 7 9 9 6.5 12 Z')}.daily-effects>span:nth-child(2){left:90%;top:4%}.daily-effects>span:nth-child(3){left:-1%;top:44%}.daily-effects>span:nth-child(4){left:98%;top:50%}.daily-effects>span:nth-child(5){left:13%;top:98%}.daily-effects>span:nth-child(6){left:84%;top:91%}.daily-effects>span:nth-child(7){left:5%;top:6%}.daily-effects>span:nth-child(8){left:52%;top:-3%}@keyframes daily-shimmer{0%,100%{opacity:.15;transform:translateY(5px) scale(.6) rotate(-12deg)}45%{opacity:.95;transform:translateY(-7px) scale(1.1) rotate(12deg)}70%{opacity:.45;transform:translateY(-2px) scale(.8) rotate(0)}}@media(prefers-reduced-motion:reduce){.daily-effects>span{animation:none;opacity:.65}}\n\n/* Horizontal toast dismissal does not participate in tab swipes or unread state. */\n.alert-row{touch-action:pan-y;will-change:auto}.alert-row:active{user-select:none}\n\n:host([data-suspended]) .daily-effects>span{animation-play-state:paused!important}.daily-effects>span{filter:none}\n\n/* 0.13: compact labels, static engine accent and plain avatar loading surfaces. */\n.app{--accent:var(--mft-user-accent,#6656ec);--banner:var(--mft-user-banner,#e6e2fa)}.app[data-dark=true]{--accent:var(--mft-user-accent,#7969fa);--banner:var(--mft-user-banner,#272042)}\n.card .card-name,.gallery-card .card-name{min-height:1.45em}.card-title{margin-top:2px;margin-bottom:0}.art,.hero,.round{background:var(--accent);color:transparent}.persona-folder h2{margin-bottom:12px}.persona-folder .gallery{margin-top:10px}.mode-tab{position:relative}.mode-unread{display:inline-block;vertical-align:middle;margin-left:5px;padding:0 5px;min-width:17px;border-radius:9px;background:var(--accent);color:white;font-size:0.625rem;line-height:17px}\n.daily-heart{background:color-mix(in srgb,var(--accent) 35%,#efa2be)}.daily-star{background:color-mix(in srgb,var(--accent) 60%,#fff)}\n\n/* 0.14: inherit the engine/user typography and make preferences local to My. */\n:host{font-family:inherit!important;font-size:inherit!important}.app{font-family:var(--font-user,inherit);font-size:1rem}\n.theme-preferences{margin:12px 0 24px}.preference-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}.preference-controls{display:flex;align-items:center;gap:8px}.main-color{width:36px;height:32px;padding:2px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer}.preference-controls .quiet{font-size:.8125rem;padding:6px 8px}.banner-toggle{accent-color:var(--accent);width:18px;height:18px;margin:0}\n.persona-folder{margin-block:28px 34px}.persona-folder+.persona-folder{padding-top:20px;border-top:1px solid var(--line)}.persona-folder h2{margin:0 0 16px}.persona-folder .gallery{row-gap:32px;column-gap:16px;margin-top:0}.gallery-card{padding-bottom:6px}.gallery-card .art{margin-bottom:10px}\n.brand-group{flex:1;min-width:0;gap:4px}.brand{min-width:0;flex:0 1 auto}.brand-logo{flex:none}.refresh-icon{width:22px;height:22px;padding:3px;flex:0 0 22px}.refresh-icon svg{width:14px;height:14px}@media(max-width:360px){.refresh-icon{width:20px;height:20px;flex-basis:20px;padding:3px}.refresh-icon svg{width:13px;height:13px}}\n\n/* 0.15: in-app pointer/keyboard color picker; engine writes only on Apply. */\n.color-picker[hidden]{display:none}.color-picker{padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--card);max-width:420px;margin:10px 0 18px}.color-trigger{width:36px;height:32px;border:2px solid var(--line);border-radius:9px;padding:0;cursor:pointer}.color-plane{height:180px;position:relative;border-radius:10px;background:linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,transparent),var(--picker-hue);touch-action:none;cursor:crosshair;outline-offset:3px}.color-point{position:absolute;width:14px;height:14px;border:2px solid white;border-radius:50%;box-shadow:0 0 0 1px #333;transform:translate(-50%,-50%);pointer-events:none}.hue-slider{width:100%;height:18px;margin:16px 0;appearance:none;border-radius:10px;background:linear-gradient(to right,red,#ff0,#0f0,#0ff,#00f,#f0f,red)}.hue-slider::-webkit-slider-thumb{appearance:none;width:22px;height:22px;background:white;border:1px solid #777;border-radius:50%}.hue-slider::-moz-range-thumb{width:20px;height:20px;background:white;border:1px solid #777;border-radius:50%}.color-fields{display:flex;gap:5px;align-items:center}.color-fields input{font:inherit;min-width:0;padding:7px 4px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);width:46px}.color-fields .main-color{width:86px;height:auto;font-size:.8125rem}.color-preview{width:24px;height:24px;flex:none;border-radius:50%;border:1px solid var(--line)}.color-presets{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.color-swatch{width:23px;height:23px;border-radius:50%;border:1px solid var(--line);padding:0}.picker-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.home-folder{margin-block:28px}\n.picker-actions .primary{width:auto;margin:0;padding:9px 18px}.color-fields input{width:38px}.color-fields .main-color{width:74px}.color-picker{background:var(--bg)}\n\n.color-fields{align-items:flex-end}.color-field{display:flex;flex-direction:column;min-width:0;gap:3px}.color-field>span{font-size:.625rem;color:var(--muted)}.color-fields input{font-size:.75rem;appearance:textfield;-moz-appearance:textfield}.color-fields input::-webkit-inner-spin-button,.color-fields input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.color-preview{margin-bottom:7px}\n\n/* 0.18: keep the two equal chat choices, slightly reduce vertical space. */\n.chat-switch{padding:3px;margin-block:9px}.chat-switch>button{padding-block:7px;line-height:1.4}\n\n/* 0.21: persona gallery uses the same left-aligned text as Home. */\n.persona-folder .gallery-card .card-name{justify-content:flex-start;text-align:left}.persona-folder .gallery-card :is(.card-title,.tags,.summary){text-align:left}\n.home-folder,.unfiled{padding-top:20px;border-top:1px solid var(--line);margin-top:28px}\n\n\n/* 0.23: gallery = grid; scroll = horizontal portrait rail. */\n.view-select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-width:50%;min-width:0}.view-preference strong{min-width:0}\nmain[data-catalog-view=\"gallery\"] .shelf:not(.daily-pick) .rail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;overflow:visible}\nmain[data-catalog-view=\"gallery\"] .shelf:not(.daily-pick) .card{width:100%;min-width:0;flex-basis:auto}\nmain[data-catalog-view=\"scroll\"] .persona-folder .gallery{display:flex;overflow-x:auto;gap:16px;scroll-snap-type:x proximity;overscroll-behavior-x:contain;scrollbar-width:none;padding-bottom:8px}\nmain[data-catalog-view=\"scroll\"] .persona-folder .gallery-card{flex:0 0 44%;width:44%;min-width:0;scroll-snap-align:start}\n@media(min-width:1024px){main[data-catalog-view=\"gallery\"] .shelf:not(.daily-pick) .rail{grid-template-columns:repeat(4,minmax(0,1fr))}main[data-catalog-view=\"scroll\"] .persona-folder .gallery-card{flex-basis:23%;width:23%}}\n.spacing-setting{display:grid;grid-template-columns:1fr auto;gap:10px;margin:22px 0;font:inherit}.spacing-setting input{grid-column:1/-1;width:100%;accent-color:var(--accent)}.spacing-setting output{grid-row:1;grid-column:2;color:var(--muted)}.typography-preview{padding:16px;border:1px solid var(--line);border-radius:14px;white-space:pre-line;letter-spacing:var(--chat-letter-spacing,0px);line-height:var(--chat-line-height,1.8)}\n\n.typography-preview{padding-inline:var(--rp-text-padding,16px)}\n\n/* 0.29: three consistent design groups. */\n.theme-preferences{display:grid;gap:18px}.design-group{border:1px solid var(--line);border-radius:16px;background:var(--bg);padding:16px;min-width:0}.design-group h2{font-size:1rem;margin:0 0 6px}.design-description{color:var(--muted);font-size:.8125rem;line-height:1.6;margin:0 0 12px}.design-group .preference-row{padding:12px 0}.design-group .preference-row:last-child{border-bottom:0}.design-group .spacing-setting{margin:0;padding:14px 0;border-bottom:1px solid var(--line)}.design-group .typography-preview{margin:16px 0 0}.typography-preview p{margin:0}.translation-size-preview{margin-top:10px!important;font-size:max(1px,calc(1em - var(--translation-reduction,0px)));color:var(--muted)}\n\n.page-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}\n.page-heading h1{min-width:0;margin-right:auto}\n.help-open{flex-shrink:0;font:inherit;color:var(--accent);white-space:nowrap}\n.help-content{max-width:760px;margin-inline:auto;overflow-wrap:anywhere}\n.help-content h2{margin-top:1.5em}\n.help-content p,.help-content li{line-height:1.7}\n.help-content pre{overflow-x:auto;max-width:100%;padding:12px;background:var(--surface);border-radius:12px}\n.help-content a{color:var(--accent);text-decoration:underline}\n";
+      deps.ui.state.css.textContent = ":host{all:initial!important;position:fixed!important;inset:0!important;z-index:80!important;display:block!important;pointer-events:none!important;color-scheme:light!important;direction:ltr!important}.app{--bg:#f5f5f8;--surface:#eeeef3;--ink:#16161d;--muted:#81818e;--line:#e5e5ee;--accent:#6656ec;--banner:#e6e2fa;font:inherit;line-height:1.55;color:var(--ink);letter-spacing:-.35px;pointer-events:auto;position:absolute;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg);color-scheme:light}.app[data-dark=true]{--bg:#111113;--surface:#202023;--ink:#f6f6fa;--muted:#9999a4;--line:#2b2b30;--banner:#272042;color-scheme:dark}*{box-sizing:border-box}button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none;text-align:left}button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}button:disabled{opacity:.5}button:active{opacity:.75}header{padding:calc(16px + env(safe-area-inset-top,0px)) max(20px,calc((100vw - 1020px)/2)) 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-size:1.4375rem;font-weight:800;white-space:nowrap}.brand:first-letter{color:var(--accent)}main{overflow:auto;overscroll-behavior:contain;padding:10px max(20px,calc((100vw - 1020px)/2)) 36px;scrollbar-width:thin;min-width:0}h1{font-size:1.5625rem;line-height:1.4;margin:15px 0 24px;letter-spacing:-1px}h2{font-size:1.25rem;line-height:1.4;margin:26px 0 16px}p{margin:8px 0}.muted,small{color:var(--muted)}.search{width:100%;padding:13px 17px;border:1px solid var(--line);border-radius:16px;background:var(--surface);outline-offset:0;margin:8px 0 18px}.banner{position:relative;background:linear-gradient(110deg,var(--banner),var(--surface));border:1px solid var(--line);border-radius:24px;padding:24px;overflow:hidden;margin-bottom:22px}.banner h1{white-space:pre-line;margin:8px 0;font-size:1.6875rem}.banner h2{margin:10px 0}.home-bot-search{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;color:var(--muted);white-space:normal}.home-search-icon{flex:0 0 auto;font-size:1.5em;line-height:1}\n.spark{position:absolute;right:25px;top:25px;font-size:5.125rem;color:var(--accent);line-height:1}.chips{display:flex;gap:8px;align-items:center;background:var(--surface);border-radius:25px;padding:6px;margin:10px 0 28px;flex-wrap:wrap}.chip,.button,.primary,.quiet{border-radius:19px;padding:10px 15px}.chip[data-active=true],.chip:not([data-active]),.primary{background:var(--accent);color:white}.quiet{color:var(--muted)}.button{background:var(--surface)}.shelf{margin:20px 0 32px}.rail{display:flex;gap:16px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding-bottom:8px;scroll-snap-type:x proximity}.card{flex:0 0 clamp(156px,39vw,210px);width:clamp(156px,39vw,210px);padding:0;scroll-snap-align:start;min-width:0}.art{position:relative;width:100%;aspect-ratio:1;border-radius:17px;background:linear-gradient(135deg,var(--banner),var(--surface));display:grid;place-items:center;font-size:2.75rem;color:var(--accent);overflow:hidden;margin-bottom:10px}.art img,.hero img{position:absolute;width:100%;height:100%;inset:0;object-fit:cover}.card strong{font-size:1.0rem;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.summary{color:var(--muted);font-size:0.8125rem;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.tags{font-size:0.8125rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.card small{font-size:0.75rem}.pager{display:flex;gap:12px;justify-content:center}.chat-row{display:flex;align-items:center;width:100%;gap:14px;padding:18px 0}.chat-row>div:nth-child(2){min-width:0;flex:1}.chat-row .summary{white-space:nowrap;display:block;text-overflow:ellipsis;margin:5px 0}.round{display:grid;place-items:center;flex:0 0 56px;height:56px;border-radius:50%;background:var(--banner);color:var(--accent);font-size:1.4375rem}.menu-row{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;padding:22px 16px;border-bottom:1px solid var(--line)}.menu-row p{font-size:0.8125rem;margin:5px 0 0}.primary{display:block;text-align:center;width:100%;font-size:1.0rem;font-weight:700;margin-top:16px}.hero{position:relative;aspect-ratio:1.25;max-height:500px;border-radius:22px;overflow:hidden;display:grid;place-items:center;background:var(--banner);font-size:5.0rem;color:var(--accent)}.description{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.9}.detail-actions{display:flex;align-items:center;gap:12px}.detail-actions .primary{margin:0;flex:1}.status{position:absolute;bottom:100px;left:20px;right:20px;background:var(--ink);color:var(--bg);padding:16px;border-radius:16px;font-size:0.8125rem;z-index:2}.status[hidden],[hidden]{display:none!important}nav{display:flex;justify-content:space-around;background:var(--bg);border-top:1px solid var(--line);border-radius:25px 25px 0 0;padding:9px max(8px,calc((100vw - 800px)/2)) calc(8px + env(safe-area-inset-bottom,0px));gap:10px}.tab{display:flex;flex:1;align-items:center;flex-direction:column;justify-content:center;gap:2px;min-height:49px;color:var(--muted);font-size:0.75rem}.tab[data-active=true]{color:var(--accent);font-weight:700}.icon{display:block;height:26px}.icon svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}:host([data-native=true]) .app{background:transparent;pointer-events:none;display:block}:host([data-native=true]) header,:host([data-native=true]) main{display:none}:host([data-native=true]) nav{display:var(--mft-native-nav-display,flex);position:absolute;bottom:0;left:0;right:0;pointer-events:auto}:host([data-native=true]) .status{pointer-events:auto}@media(min-width:800px){.banner{min-height:180px}.banner h1{font-size:2.0rem}.rail{gap:22px}.card{flex-basis:210px;width:210px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}\n/* v0.3: same home layout; flexible viewport, navigation and media geometry. */\n:host{top:var(--mari-visual-viewport-offset-top,0px)!important;bottom:auto!important;height:var(--mari-visual-viewport-height,100dvh)!important;max-width:100vw!important}\n.app{font-family:inherit;min-width:0;min-height:0;overflow:hidden}\n.app[data-dark=true]{--accent:#7969fa}\nmain{min-height:0;overflow-x:hidden}\nheader{min-width:0;padding-inline:max(16px,calc((100vw - 1020px)/2))}\n.brand{font-size:1.3125rem;overflow:hidden;text-overflow:ellipsis}\n.hero{aspect-ratio:1;max-height:none}\n.round{position:relative;overflow:hidden}\n.round img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}\nnav{padding-top:6px;padding-bottom:calc(5px + env(safe-area-inset-bottom,0px))}\n.tab{min-height:44px}\n.mode-tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);margin:10px 0 18px}\n.mode-tab{flex:1;padding:12px;text-align:center;color:var(--muted);border-bottom:2px solid transparent}\n.mode-tab[aria-selected=true]{border-color:var(--accent);color:var(--accent);font-weight:700}\n.tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0 28px}\n.tool{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:16px;font-size:0.875rem;text-align:center;min-height:54px}\n.color-settings .chip{margin-right:8px}\n:host([data-native=true]) .app{pointer-events:none}\n:host([data-native=true]) nav{display:var(--mft-native-nav-display,flex)}\n@media(max-width:360px){.brand{font-size:1.1875rem}header{gap:6px}main{padding-inline:14px}.banner{padding:20px}.spark{font-size:4.0rem;right:12px}.banner h1{font-size:1.5rem}.card{flex-basis:144px;width:144px}}\n/* v0.4 official static logo; readable Markdown; compact integration shortcuts. */\n.brand{display:flex;align-items:center;gap:8px}.brand-logo{width:30px;height:30px;object-fit:contain}\n.description{white-space:normal}.description p{white-space:pre-wrap}.description h2,.description h3,.description h4{margin:18px 0 8px}.description ul,.description ol{padding-left:24px}.description pre{overflow:auto;padding:12px;background:var(--surface);border-radius:10px;white-space:pre-wrap}.description code{font-family:inherit;background:var(--surface);border-radius:4px;padding:2px 4px}.description blockquote{border-left:3px solid var(--accent);margin:12px 0;padding-left:12px;color:var(--muted)}.description a{color:var(--accent);overflow-wrap:anywhere}.tool svg{display:block;margin:0 auto 6px;width:22px;height:22px;fill:none;stroke:currentColor}\n.banner-logo{width:84px;height:84px;object-fit:contain;font-size:0;opacity:.85;right:20px;top:30px}\n@media(max-width:360px){.banner-logo{width:60px;height:60px;right:12px;top:35px}.banner h1{font-size:1.4375rem}}\n/* v0.6: compact galleries, horizontal settings, equal chat switch. */\n.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 14px;margin:20px 0}.gallery-card{padding:0;min-width:0}.gallery-card strong{display:block;text-align:center;font-size:0.875rem;overflow:hidden;text-overflow:ellipsis}.gallery .art{margin-bottom:8px}.agent-icons{display:flex;gap:5px;align-items:center}.agent-icon{display:grid;place-items:center;width:36px;height:36px;padding:5px;background:transparent}.agent-icon img{width:27px;height:27px;object-fit:contain}.chat-switch{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:4px;border-radius:12px;background:var(--surface);margin:12px 0}.chat-switch>button{text-align:center;min-width:0}.chat-switch>button:nth-child(n+3){display:none}.color-settings{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px 0}.color-settings h2{margin:0;font-size:0.9375rem}.color-settings .chip{margin:0;padding:7px 13px}.split-toggle{display:flex;align-items:center;gap:10px;margin:24px 0;font-size:0.875rem}.split-toggle input{accent-color:var(--accent)}.chat-item{display:flex;align-items:center;gap:6px}.chat-item .chat-row{flex:1;min-width:0}.folder-move{color:var(--muted);font-size:0.6875rem;padding:8px}.folder-bar{display:flex;gap:8px;align-items:center;margin:12px 0}.folder-bar select,.inline-dialog select{min-width:0;flex:1;background:var(--surface);color:var(--ink);padding:10px;border:1px solid var(--line);border-radius:10px}.inline-dialog{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--bg)}.folder-edit{display:flex;gap:4px;margin:8px 0;flex-wrap:wrap}.folder-edit input{min-width:0;flex:1;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:8px}.banner{display:grid;grid-template-columns:minmax(0,1fr) 84px;align-items:center;gap:8px}.banner small{grid-column:1}.banner h1{grid-column:1;margin:8px 0}.banner-logo{grid-column:2;grid-row:1/3;position:static;align-self:center;width:84px;height:84px}.alerts{position:absolute;right:12px;top:85px;z-index:90;display:flex;flex-direction:column;gap:8px;max-width:min(310px,85vw);pointer-events:auto}.alert{display:flex;align-items:center;gap:10px;border-radius:14px;background:var(--bg);box-shadow:0 3px 14px #0002;border:1px solid var(--line);padding:10px;font-size:0.8125rem;color:var(--ink)}.alert .round{width:38px;height:38px;flex-basis:38px;font-size:0.9375rem}.unread{position:absolute;top:0;right:calc(50% - 28px);background:var(--accent);color:white;font-size:0.625rem;padding:1px 5px;border-radius:12px}.tab{position:relative}main,.rail{scrollbar-width:none}main::-webkit-scrollbar,.rail::-webkit-scrollbar{display:none}\n@media(min-width:1024px){.app{grid-template-columns:92px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}header{grid-column:2;grid-row:1;padding-inline:32px}main{grid-column:2;grid-row:2;padding-inline:max(32px,calc((100vw - 1050px)/2))}nav{grid-column:1;grid-row:1/3;flex-direction:column;justify-content:flex-start;padding:24px 8px;border-top:0;border-right:1px solid var(--line);border-radius:0;gap:18px}.tab{flex:0 0 auto;min-height:62px}.gallery{grid-template-columns:repeat(4,minmax(0,1fr))}:host([data-native=true]) nav{top:0;bottom:0;left:0;right:auto;width:92px}.alerts{right:24px;top:20px}}\n:host([data-native=true]) .alerts{display:none}\n.banner{display:block}.banner:has(.banner-logo){display:grid}\n.chat-unread{flex:none;border-radius:12px;padding:1px 6px;font-size:0.6875rem;background:var(--accent);color:white}\n.brand-group{display:flex;align-items:center;gap:5px;min-width:0}.refresh-icon{display:grid;place-items:center;width:28px;height:28px;flex:none;padding:5px;color:var(--muted);border-radius:50%}.refresh-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.refresh-icon:hover{background:var(--surface);color:var(--accent)}\n.gallery-card .card-name{font-size:1.0rem}.daily-pick{position:relative;border:1px solid var(--line);border-radius:22px;padding:30px 18px 18px;background:linear-gradient(135deg,var(--banner),var(--bg));overflow:hidden}.daily-pick h2{font-size:1.125rem;margin:0 0 18px;line-height:1.55}.daily-decor{display:inline-block;color:var(--accent);font-size:1.4375rem;margin-left:8px;letter-spacing:4px;opacity:.65}.daily-pick .rail{justify-content:center}.daily-pick .card{flex-basis:min(72vw,280px);width:min(72vw,280px)}\n/* Message-style notifications are visible over both theme pages and native chats. */\n.alerts,:host([data-native=true]) .alerts{display:flex!important;position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);right:12px;left:12px;max-width:440px;margin-left:auto;gap:8px;pointer-events:none}.alert-row{pointer-events:auto}.alert-row .alert{box-shadow:0 5px 22px #0002;border-radius:16px;padding:13px 32px 13px 14px;gap:12px}.alert .round{width:44px;height:44px;flex-basis:44px}.notification-copy{min-width:0;flex:1;text-align:left}.notification-copy strong{display:block;font-size:0.875rem;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.notification-copy p{margin:3px 0 0;font-size:0.8125rem;line-height:1.45;color:var(--muted)}.alert-dismiss{top:8px;right:6px;font-size:1.25rem}\n@media(max-width:360px){header .agent-icons{gap:0}header .agent-icon{width:27px;height:28px}header .agent-icon img,header .agent-icon svg{width:23px;height:23px}.brand-group{gap:2px}.brand{font-size:1.125rem}.brand-logo{width:25px;height:25px}.refresh-icon{width:25px;height:25px;padding:4px}}\n/* 0.7: aligned card labels, optional metadata and installed apps in the header. */\nheader .agent-icons{margin-left:auto;flex-shrink:0;gap:4px}header .agent-icon{width:32px;height:32px;padding:3px}header .agent-icon img,header .agent-icon svg{width:26px;height:26px}.chips{flex-wrap:nowrap}.chips .chip{flex:1;min-width:0;text-align:center;padding:9px 6px;font-size:0.8125rem;white-space:nowrap}.card,.gallery-card{align-self:flex-start}.card .card-name,.gallery-card .card-name{display:flex;align-items:center;min-height:2.9em;line-height:1.45;margin:0;text-align:left}.gallery-card .card-name{justify-content:center;text-align:center}.card-title{color:var(--muted);font-size:0.8125rem;line-height:1.55;margin:4px 0;overflow-wrap:anywhere}.gallery-card .summary,.gallery-card .card-title{text-align:center}.profile-heading{min-height:88px;display:flex;flex-direction:column;justify-content:center;gap:4px;margin:16px 0 22px}.profile-heading h1{margin:0}.profile-heading p{margin:0}.color-settings{justify-content:space-between;flex-wrap:nowrap;gap:8px}.theme-choices{display:flex;align-items:center;gap:6px;margin-left:auto}.color-settings strong{white-space:nowrap}.folder-bar .button{font-size:0.75rem;white-space:nowrap;padding:9px 10px}.folder-bar select{font:inherit;font-size:0.8125rem}.has-unread strong{color:var(--accent)}.alert-row{position:relative;display:flex;flex-wrap:wrap;gap:5px}.alert-row .alert{flex:1;min-width:0;padding-right:25px}.alert-dismiss{position:absolute;right:4px;top:2px;font-size:1.25rem;color:var(--muted);padding:2px 7px}.alert-row .button,.alert-row .quiet{font-size:0.75rem;padding:6px 10px}\n\n/* 0.10: centered daily feature with portrait orbit effects. */\n.daily-pick h2{text-align:center}.daily-pick .card-name{justify-content:center;text-align:center}.daily-pick .card-title,.daily-pick .tags,.daily-pick small{text-align:center}.daily-pick .card{overflow:visible}.daily-pick .rail{overflow:visible;padding:24px 10px 10px}.daily-portrait{position:relative;margin-bottom:10px}.daily-portrait .art{margin:0;box-shadow:0 8px 30px #6656ec18}.daily-effects{position:absolute;inset:-20px;pointer-events:none}.daily-effects>span{position:absolute;left:calc(8% + var(--i)*12%);top:calc(12% + var(--i)*10%);width:13px;height:13px;animation:daily-shimmer 3.6s ease-in-out infinite;animation-delay:calc(var(--i)*-.48s);filter:drop-shadow(0 0 5px #b4a2ff88)}.daily-star{background:linear-gradient(145deg,#d9cbff,#8e77f1);clip-path:polygon(50% 0,62% 36%,100% 50%,62% 64%,50% 100%,38% 64%,0 50%,38% 36%)}.daily-heart{background:#efa2be;clip-path:path('M 6.5 12 C 4 9 0 7 0 3.8 C 0 0 4.5 -1 6.5 2 C 8.5 -1 13 0 13 3.8 C 13 7 9 9 6.5 12 Z')}.daily-effects>span:nth-child(2){left:90%;top:4%}.daily-effects>span:nth-child(3){left:-1%;top:44%}.daily-effects>span:nth-child(4){left:98%;top:50%}.daily-effects>span:nth-child(5){left:13%;top:98%}.daily-effects>span:nth-child(6){left:84%;top:91%}.daily-effects>span:nth-child(7){left:5%;top:6%}.daily-effects>span:nth-child(8){left:52%;top:-3%}@keyframes daily-shimmer{0%,100%{opacity:.15;transform:translateY(5px) scale(.6) rotate(-12deg)}45%{opacity:.95;transform:translateY(-7px) scale(1.1) rotate(12deg)}70%{opacity:.45;transform:translateY(-2px) scale(.8) rotate(0)}}@media(prefers-reduced-motion:reduce){.daily-effects>span{animation:none;opacity:.65}}\n\n/* Horizontal toast dismissal does not participate in tab swipes or unread state. */\n.alert-row{touch-action:pan-y;will-change:auto}.alert-row:active{user-select:none}\n\n:host([data-suspended]) .daily-effects>span{animation-play-state:paused!important}.daily-effects>span{filter:none}\n\n/* 0.13: compact labels, static engine accent and plain avatar loading surfaces. */\n.app{--accent:var(--mft-user-accent,#6656ec);--banner:var(--mft-user-banner,#e6e2fa)}.app[data-dark=true]{--accent:var(--mft-user-accent,#7969fa);--banner:var(--mft-user-banner,#272042)}\n.card .card-name,.gallery-card .card-name{min-height:1.45em}.card-title{margin-top:2px;margin-bottom:0}.art,.hero,.round{background:var(--accent);color:transparent}.persona-folder h2{margin-bottom:12px}.persona-folder .gallery{margin-top:10px}.mode-tab{position:relative}.mode-unread{display:inline-block;vertical-align:middle;margin-left:5px;padding:0 5px;min-width:17px;border-radius:9px;background:var(--accent);color:white;font-size:0.625rem;line-height:17px}\n.daily-heart{background:color-mix(in srgb,var(--accent) 35%,#efa2be)}.daily-star{background:color-mix(in srgb,var(--accent) 60%,#fff)}\n\n/* 0.14: inherit the engine/user typography and make preferences local to My. */\n:host{font-family:inherit!important;font-size:inherit!important}.app{font-family:var(--font-user,inherit);font-size:1rem}\n.theme-preferences{margin:12px 0 24px}.preference-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}.preference-controls{display:flex;align-items:center;gap:8px}.main-color{width:36px;height:32px;padding:2px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer}.preference-controls .quiet{font-size:.8125rem;padding:6px 8px}.banner-toggle{accent-color:var(--accent);width:18px;height:18px;margin:0}\n.persona-folder{margin-block:28px 34px}.persona-folder+.persona-folder{padding-top:20px;border-top:1px solid var(--line)}.persona-folder h2{margin:0 0 16px}.persona-folder .gallery{row-gap:32px;column-gap:16px;margin-top:0}.gallery-card{padding-bottom:6px}.gallery-card .art{margin-bottom:10px}\n.brand-group{flex:1;min-width:0;gap:4px}.brand{min-width:0;flex:0 1 auto}.brand-logo{flex:none}.refresh-icon{width:22px;height:22px;padding:3px;flex:0 0 22px}.refresh-icon svg{width:14px;height:14px}@media(max-width:360px){.refresh-icon{width:20px;height:20px;flex-basis:20px;padding:3px}.refresh-icon svg{width:13px;height:13px}}\n\n/* 0.15: in-app pointer/keyboard color picker; engine writes only on Apply. */\n.color-picker[hidden]{display:none}.color-picker{padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--card);max-width:420px;margin:10px 0 18px}.color-trigger{width:36px;height:32px;border:2px solid var(--line);border-radius:9px;padding:0;cursor:pointer}.color-plane{height:180px;position:relative;border-radius:10px;background:linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,transparent),var(--picker-hue);touch-action:none;cursor:crosshair;outline-offset:3px}.color-point{position:absolute;width:14px;height:14px;border:2px solid white;border-radius:50%;box-shadow:0 0 0 1px #333;transform:translate(-50%,-50%);pointer-events:none}.hue-slider{width:100%;height:18px;margin:16px 0;appearance:none;border-radius:10px;background:linear-gradient(to right,red,#ff0,#0f0,#0ff,#00f,#f0f,red)}.hue-slider::-webkit-slider-thumb{appearance:none;width:22px;height:22px;background:white;border:1px solid #777;border-radius:50%}.hue-slider::-moz-range-thumb{width:20px;height:20px;background:white;border:1px solid #777;border-radius:50%}.color-fields{display:flex;gap:5px;align-items:center}.color-fields input{font:inherit;min-width:0;padding:7px 4px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);width:46px}.color-fields .main-color{width:86px;height:auto;font-size:.8125rem}.color-preview{width:24px;height:24px;flex:none;border-radius:50%;border:1px solid var(--line)}.color-presets{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.color-swatch{width:23px;height:23px;border-radius:50%;border:1px solid var(--line);padding:0}.picker-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.home-folder{margin-block:28px}\n.picker-actions .primary{width:auto;margin:0;padding:9px 18px}.color-fields input{width:38px}.color-fields .main-color{width:74px}.color-picker{background:var(--bg)}\n\n.color-fields{align-items:flex-end}.color-field{display:flex;flex-direction:column;min-width:0;gap:3px}.color-field>span{font-size:.625rem;color:var(--muted)}.color-fields input{font-size:.75rem;appearance:textfield;-moz-appearance:textfield}.color-fields input::-webkit-inner-spin-button,.color-fields input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.color-preview{margin-bottom:7px}\n\n/* 0.18: keep the two equal chat choices, slightly reduce vertical space. */\n.chat-switch{padding:3px;margin-block:9px}.chat-switch>button{padding-block:7px;line-height:1.4}\n\n/* 0.21: persona gallery uses the same left-aligned text as Home. */\n.persona-folder .gallery-card .card-name{justify-content:flex-start;text-align:left}.persona-folder .gallery-card :is(.card-title,.tags,.summary){text-align:left}\n.home-folder,.unfiled{padding-top:20px;border-top:1px solid var(--line);margin-top:28px}\n\n\n/* 0.23: gallery = grid; scroll = horizontal portrait rail. */\n.view-select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-width:50%;min-width:0}.view-preference strong{min-width:0}\nmain[data-catalog-view=\"gallery\"] .shelf:not(.daily-pick) .rail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;overflow:visible}\nmain[data-catalog-view=\"gallery\"] .shelf:not(.daily-pick) .card{width:100%;min-width:0;flex-basis:auto}\nmain[data-catalog-view=\"scroll\"] .persona-folder .gallery{display:flex;overflow-x:auto;gap:16px;scroll-snap-type:x proximity;overscroll-behavior-x:contain;scrollbar-width:none;padding-bottom:8px}\nmain[data-catalog-view=\"scroll\"] .persona-folder .gallery-card{flex:0 0 44%;width:44%;min-width:0;scroll-snap-align:start}\n@media(min-width:1024px){main[data-catalog-view=\"gallery\"] .shelf:not(.daily-pick) .rail{grid-template-columns:repeat(4,minmax(0,1fr))}main[data-catalog-view=\"scroll\"] .persona-folder .gallery-card{flex-basis:23%;width:23%}}\n.spacing-setting{display:grid;grid-template-columns:1fr auto;gap:10px;margin:22px 0;font:inherit}.spacing-setting input{grid-column:1/-1;width:100%;accent-color:var(--accent)}.spacing-setting output{grid-row:1;grid-column:2;color:var(--muted)}.typography-preview{padding:16px;border:1px solid var(--line);border-radius:14px;white-space:pre-line;letter-spacing:var(--chat-letter-spacing,0px);line-height:var(--chat-line-height,1.8)}\n\n.typography-preview{padding-inline:var(--rp-text-padding,16px)}\n\n/* 0.29: three consistent design groups. */\n.theme-preferences{display:grid;gap:18px}.design-group{border:1px solid var(--line);border-radius:16px;background:var(--bg);padding:16px;min-width:0}.design-group h2{font-size:1rem;margin:0 0 6px}.design-description{color:var(--muted);font-size:.8125rem;line-height:1.6;margin:0 0 12px}.design-group .preference-row{padding:12px 0}.design-group .preference-row:last-child{border-bottom:0}.design-group .spacing-setting{margin:0;padding:14px 0;border-bottom:1px solid var(--line)}.design-group .typography-preview{margin:16px 0 0}.typography-preview p{margin:0}.translation-size-preview{margin-top:10px!important;font-size:max(1px,calc(1em - var(--translation-reduction,0px)));color:var(--muted)}\n\n.page-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}\n.page-heading h1{min-width:0;margin-right:auto}\n.help-open{flex-shrink:0;font:inherit;color:var(--accent);white-space:nowrap}\n.help-content{max-width:760px;margin-inline:auto;overflow-wrap:anywhere}\n.help-content h2{margin-top:1.5em}\n.help-content p,.help-content li{line-height:1.7}\n.help-content pre{overflow-x:auto;max-width:100%;padding:12px;background:var(--surface);border-radius:12px}\n.help-content a{color:var(--accent);text-decoration:underline}\n";
     } },
     { order: 700, run() {
       deps.ui.state.shadow.append(deps.ui.state.css);
@@ -660,17 +647,20 @@ function createNavigation(deps) {
     engineOverlayOwned: undefined
   };
 
-  function waitEngine(test, signal, ms = 8000) {
+  function waitEngine(test, signal, ms = 8000, extraAttributes = []) {
     return new Promise((resolve, reject) => {
-      const shell = document.querySelector('[data-component="AppShell"]') || document.body;
-      let observer, timeout;
+      // Engine dialogs can be portalled outside AppShell. Observe only while awaiting a route.
+      let observer, timeout, settled = false;
       function finish(error, value) {
+        if (settled) return;
+        settled = true;
         observer?.disconnect();
         clearTimeout(timeout);
         signal?.removeEventListener('abort', cancel);
         error ? reject(error) : resolve(value);
       }
       function check() {
+        if (settled) return;
         if (signal?.aborted) return cancel();
         try {
           const r = test();
@@ -683,11 +673,11 @@ function createNavigation(deps) {
         finish(new DOMException('Cancelled', 'AbortError'));
       }
       observer = new MutationObserver(check);
-      observer.observe(shell, {
+      observer.observe(document.body, {
         childList: true,
         subtree: true,
         attributes: true,
-        attributeFilter: ['data-chat-mode', 'data-chat-id', 'aria-hidden', 'data-chat-surface-active']
+        attributeFilter: ['data-chat-mode', 'data-chat-id', 'aria-hidden', 'data-chat-surface-active', 'aria-selected', 'hidden', ...extraAttributes]
       });
       timeout = setTimeout(() => finish(Error('화면 연결이 완료되지 않았어요. 다시 시도해 주세요.')), ms);
       signal?.addEventListener('abort', cancel, {
@@ -718,7 +708,8 @@ function createNavigation(deps) {
     return mftModuleState.navController.signal;
   }
   
-  function finishRoute(intent) {
+  function finishRoute(intent, signal) {
+    if (signal && (signal.aborted || mftModuleState.navController?.signal !== signal) || deps.core.state.disposed) return false;
     mftModuleState.bridgeBusy = false;
     mftModuleState.routeIntent = intent;
     deps.ui.state.html.toggleAttribute('data-mft-agent', intent === 'agent');
@@ -737,11 +728,19 @@ function createNavigation(deps) {
     deps.history.installBackWatcher();
   }
   
-  function routeFailure(error, retry) {
-    if (error.name === 'AbortError') return;
+  function routeFailure(error, retry, signal) {
+    if (error.name === 'AbortError' || signal && (signal.aborted || mftModuleState.navController?.signal !== signal) || deps.core.state.disposed) return;
     deps.ui.state.html.classList.remove('mft-transition');
     mftModuleState.bridgeBusy = false;
-    mftModuleState.routeIntent = 'own';
+    mftModuleState.agentActive = false;
+    deps.ui.state.html.removeAttribute('data-mft-agent');
+    // Restore the theme only after the native session/layers are actually closed.
+    if (engineHome()) {
+      mftModuleState.routeIntent = 'own';
+      deps.ui.own();
+    } else {
+      deps.ui.native();
+    }
     deps.ui.notice(error.message);
     const b = deps.ui.button('연결 다시 시도', retry, 'button');
     deps.ui.state.main.append(b);
@@ -763,34 +762,67 @@ function createNavigation(deps) {
       }, 1550);
     }
     mftModuleState.engineOverlayOwned = false;
-    a.closeAllDetails();
-    a.closeRightPanel();
-    a.setSidebarOpen(false);
+    a.closeAllDetails?.();
+    a.closeRightPanel?.();
+    a.setSidebarOpen?.(false);
   }
   
   async function openNative(key) {
+    const requestedChatMode = deps.chats.state.chatMode;
     const signal = beginRoute('panel');
     try {
       const a = await actionsReady(signal);
       if (signal.aborted) return false;
-      clearLayers(a);
+      if (!engineHome()) throw Error('기존 방을 닫지 못해 화면 이동을 중단했어요.');
       if (key === 'chats') {
-        if (a.requestChatModeShortcut) a.requestChatModeShortcut(deps.chats.state.chatMode);else a.setSidebarOpen(true);
+        if (a.requestChatModeShortcut) a.requestChatModeShortcut(requestedChatMode);else a.setSidebarOpen(true);
       } else a.openRightPanel(key);
       await waitEngine(() => key === 'chats' ? [...document.querySelectorAll('[data-component="ChatSidebar"]')].find(deps.ui.state.visible) : document.querySelector(`[data-panel-key="${CSS.escape(key)}"][aria-hidden="false"]`), signal);
+      if (key === 'chats') {
+        const tab = await waitEngine(() => [...document.querySelectorAll(`[data-component="ChatSidebar"] [data-chat-mode-tab="${CSS.escape(requestedChatMode)}"]`)].find(deps.ui.state.visible), signal);
+        if (signal.aborted) return false;
+        if (tab.getAttribute('aria-pressed') !== 'true') tab.click();
+        await waitEngine(() => tab.isConnected && tab.getAttribute('aria-pressed') === 'true', signal);
+      }
       if (signal.aborted) return false;
-      finishRoute('panel');
+      finishRoute('panel', signal);
       return true;
     } catch (e) {
-      routeFailure(e, () => openNative(key));
+      routeFailure(e, () => openNative(key), signal);
       return false;
     }
   }
   
+  async function openBotBrowser() {
+    const signal = beginRoute('bots');
+    try {
+      const a = await actionsReady(signal);
+      if (signal.aborted) return false;
+      if (!engineHome()) throw Error('기존 방을 닫지 못해 다운로드 화면을 열지 못했어요.');
+      if (!a.openBotBrowser) {
+        a.openRightPanel('characters');
+        await waitEngine(() => deps.adapter.engineActions().openBotBrowser, signal, 5000);
+        if (signal.aborted) return false;
+        Object.assign(a, deps.adapter.engineActions());
+        clearLayers(a);
+      }
+      if (signal.aborted) return false;
+      a.openBotBrowser();
+      await waitEngine(() => [...document.querySelectorAll('[data-component="BotBrowserView"]')].find(n => deps.ui.state.visible(n) && !n.closest('.pointer-events-none')), signal, 8000, ['class']);
+      if (signal.aborted) return false;
+      finishRoute('bots', signal);
+      return true;
+    } catch (error) {
+      routeFailure(error, openBotBrowser, signal);
+      return false;
+    }
+  }
+
   async function bridge(kind, item, start = false) {
     const signal = beginRoute(kind === 'chat' ? 'chat' : 'detail');
     deps.avatars.state.nativeCharacterIds = kind === 'chat' ? item.characterIds || [] : [item.id];
     try {
+      if (kind !== 'chat' && !engineHome()) throw Error('기존 방을 닫지 못해 화면 이동을 중단했어요.');
       const fast = deps.adapter.engineNavigator();
       if (!start && kind !== 'chat' && fast) {
         fast({
@@ -799,7 +831,7 @@ function createNavigation(deps) {
           id: item.id
         });
         await waitEngine(() => [...document.querySelectorAll('.mari-editor-shell,[data-component="MobileDetailSheet"]')].find(n => !n.closest('[aria-hidden="true"]')), signal);
-        if (!signal.aborted) finishRoute('detail');
+        if (!signal.aborted) finishRoute('detail', signal);
         return;
       }
       const a = await actionsReady(signal);
@@ -807,16 +839,17 @@ function createNavigation(deps) {
       clearLayers(a);
       if (kind === 'chat') {
         deps.chats.state.chatMode = item.mode || deps.chats.state.chatMode;
-        deps.adapter.prepareChat(a);
+        if (!deps.adapter.prepareChat(a)) throw Error('기존 방 진입에 필요한 순정 설정 초기화 액션을 찾지 못했어요. 앱 새로고침 후 다시 시도해 주세요.');
         if (!item.fromNotification || !deps.notifications.nativeNotificationAction(item.id, 'onNavigate')) a.setActiveChatId(item.id);
         await waitEngine(() => deps.adapter.roomReady(item.id, item.mode || 'conversation'), signal);
         if (signal.aborted) return;
         mftModuleState.roomId = item.id;
-        finishRoute('chat');
+        finishRoute('chat', signal);
       } else {
         if (kind === 'persona' && !a.openPersonaDetail) {
           a.openRightPanel('personas');
           await waitEngine(() => deps.adapter.engineActions().openPersonaDetail, signal, 5000);
+          if (signal.aborted) return;
           Object.assign(a, deps.adapter.engineActions());
           a.closeRightPanel();
         }
@@ -826,6 +859,7 @@ function createNavigation(deps) {
             const next = deps.adapter.engineActions();
             return next.openModal && next.openCharacterDetail ? next : null;
           }, signal, 5000);
+          if (signal.aborted) return;
           Object.assign(a, deps.adapter.engineActions());
           a.closeRightPanel();
         }
@@ -833,13 +867,15 @@ function createNavigation(deps) {
         if (start) {
           const active = deps.adapter.activeSession();
           const previousRoomId = active.known ? active.id : deps.adapter.chatSurface()?.id || null;
-          a.setActiveChatId(null);
+          if (!deps.adapter.clearActiveChat(a)) throw Error('기존 방 닫기를 완료하지 못했어요.');
           mftModuleState.routeIntent = 'start';
           deps.ui.state.html.classList.remove('mft-transition');
           mftModuleState.bridgeBusy = false;
           deps.ui.native();
           deps.ui.state.html.dataset.mftNativeLayer = 'start';
           deps.ui.notice('');
+          deps.history.armNativeBack();
+          deps.history.installBackWatcher();
           a.openModal('start-character-chat', {
             characterId: item.id,
             characterName: item.name
@@ -853,19 +889,29 @@ function createNavigation(deps) {
             id: item.id
           });else if (kind === 'persona') a.openPersonaDetail(item.id);else a.openCharacterDetail(item.id);
           await waitEngine(() => [...document.querySelectorAll('[data-component="MobileDetailSheet"],[data-component="DetailEditor"],.mari-editor-shell')].find(n => !n.closest('[aria-hidden="true"]')), signal);
-          finishRoute('detail');
+          finishRoute('detail', signal);
         }
       }
     } catch (e) {
-      routeFailure(e, () => bridge(kind, item, start));
+      routeFailure(e, () => bridge(kind, item, start), signal);
     }
   }
   
   function engineHome() {
+    // A pending game's native cancellation may delete asynchronously. Never
+    // switch rooms before its callback can finish and null the active ID.
+    if (mftModuleState.routeIntent === 'start' && !['idle', 'ready'].includes(deps.launch.state.phase)) {
+      deps.launch.requestBack();
+      return false;
+    }
+    if (!deps.adapter.dismissChatSetup()) return false;
     const a = deps.adapter.engineActions();
-    if (!a.setActiveChatId) return false;
+    deps.notifications.suspendUnread();
+    if (!deps.adapter.clearActiveChat(a)) {
+      deps.ui.notice('방 닫기를 완료하지 못했어요. 다시 홈을 눌러 주세요.');
+      return false;
+    }
     clearLayers(a);
-    a.setActiveChatId(null);
     mftModuleState.roomId = null;
     return true;
   }
@@ -875,30 +921,42 @@ function createNavigation(deps) {
     try {
       const a = await actionsReady(signal);
       if (signal.aborted) return false;
-      clearLayers(a);
+      if (!engineHome()) throw Error('기존 방을 닫지 못해 설정을 열지 못했어요.');
       a.openRightPanel('settings');
       await waitEngine(() => deps.adapter.engineActions().setSettingsTab, signal, 5000);
+      if (signal.aborted) return;
       deps.adapter.engineActions().setSettingsTab(tab);
-      await waitEngine(() => document.getElementById('settings-tab-' + tab), signal);
-      finishRoute('panel');
+      await waitEngine(() => {
+        const button = document.getElementById('settings-tab-' + tab);
+        return button && button.getAttribute('aria-selected') === 'true' ? button : null;
+      }, signal);
+      if (signal.aborted) return;
+      finishRoute('panel', signal);
       if (done) deps.extensions.retryNative(done);
     } catch (e) {
-      routeFailure(e, () => settings(tab, done));
+      routeFailure(e, () => settings(tab, done), signal);
     }
   }
   
-  function go(k, fromHistory = false) {
-    mftModuleState.nativeOrigin = null;
+  function go(k, fromHistory = false, closeAttempt = 0) {
     if (k !== 'home') {
       deps.history.state.exitUntil = 0;
       clearTimeout(deps.history.state.exitTimer);
       deps.core.state.timers.delete(deps.history.state.exitTimer);
     }
-    if (deps.ui.state.root.dataset.native === 'true') {
-      deps.data.state.cache.clear();
-      deps.extensions.state.installedMetaAt = 0;
-      if (!mftModuleState.bridgeBusy) engineHome();
+    const wasNative = deps.ui.state.root.dataset.native === 'true';
+    if (wasNative || deps.adapter.activeSession().id) {
+      if (!engineHome()) {
+        const ticket = deps.core.state.epoch;
+        if (closeAttempt < 3) deps.core.bindLater(() => {
+          if (!deps.core.state.disposed && ticket === deps.core.state.epoch) go(k, fromHistory, closeAttempt + 1);
+        }, [80, 200, 500][closeAttempt]);
+        return;
+      }
+      if (wasNative && mftModuleState.routeIntent !== 'chat') deps.extensions.state.installedMetaAt = 0;
+      deps.updates.invalidateChats();
     }
+    mftModuleState.nativeOrigin = null;
     mftModuleState.navController?.abort();
     deps.ui.state.html.classList.remove('mft-transition');
     mftModuleState.routeIntent = 'own';
@@ -930,6 +988,10 @@ function createNavigation(deps) {
   // The action adapter is resolved on explicit navigation. Message observation is scoped to active split rendering.
   
   function onModeClick(e) {
+    if (mftModuleState.routeIntent === 'bots' && e.target.closest?.('[data-component="BotBrowserView"]>header button:has(svg.lucide-arrow-left)')) {
+      queueMicrotask(deps.gestures.returnFromNative);
+      return;
+    }
     // The native launch flow owns mode selection and setup until it is complete.
     if (mftModuleState.routeIntent === 'start') return;
     if (deps.ui.state.root.dataset.native === 'true' && mftModuleState.routeIntent !== 'chat') queueMicrotask(deps.nativeUi.bindNativeUi);
@@ -952,9 +1014,11 @@ function createNavigation(deps) {
       deps.core.later(() => {
         if (mftModuleState.agentActive || mftModuleState.bridgeBusy || deps.ui.state.root.dataset.native !== 'true') return;
         if ([...document.querySelectorAll('[aria-hidden="false"][data-panel-key],[role="dialog"],[data-component="ChatSidebar"]')].some(deps.ui.state.visible)) return;
-        if (deps.ui.state.visible(document.querySelector('[data-chat-mode]'))) {
+        const surface = deps.adapter.chatSurface();
+        const active = deps.adapter.activeSession();
+        if (surface?.id && active.known && active.id === surface.id && deps.ui.state.visible(surface.surface || document.querySelector('[data-chat-mode]'))) {
           mftModuleState.routeIntent = 'chat';
-          const nextId = document.querySelector('[data-chat-composer]')?.dataset.chatId || mftModuleState.roomId;
+          const nextId = surface.id;
           if (nextId !== mftModuleState.roomId) deps.chats.rememberChatVisit(nextId);
           mftModuleState.roomId = nextId;
           deps.convo.bindSplits();
@@ -1022,7 +1086,7 @@ function createNavigation(deps) {
       document.removeEventListener('click', onModeClick, true);
     } }
   ];
-  return { state: mftModuleState, initialize, cleanup, waitEngine, beginRoute, finishRoute, routeFailure, actionsReady, clearLayers, openNative, bridge, engineHome, settings, go, onModeClick };
+  return { state: mftModuleState, initialize, cleanup, waitEngine, beginRoute, finishRoute, routeFailure, actionsReady, clearLayers, openNative, openBotBrowser, bridge, engineHome, settings, go, onModeClick };
 }
 
 // Source: src/engine/history.js
@@ -1036,7 +1100,9 @@ function createHistory(deps) {
     historyToken: undefined,
     closeWatcher: undefined,
     exitUntil: undefined,
-    exitTimer: undefined
+    exitTimer: undefined,
+    engineBack: null,
+    cleanupPops: 0
   };
 
   function armNativeBack() {
@@ -1082,15 +1148,34 @@ function createHistory(deps) {
     } catch {}
   }
   
+  function trackEngineBack(...args) {
+    // Native overlay cleanup calls history.back(); hardware/browser Back does not.
+    // Its popstate can arrive after a new lazy chooser has begun mounting.
+    const cleanup = !deps.core.state.disposed && !!history.state?.marinaraOverlay;
+    if (cleanup) mftModuleState.cleanupPops++;
+    try { return mftModuleState.engineBack.apply(this, args); }
+    catch (error) { if (cleanup) mftModuleState.cleanupPops--; throw error; }
+  }
+
   function onBack(event) {
+    if (mftModuleState.cleanupPops) {
+      mftModuleState.cleanupPops--;
+      if (deps.navigation.state.routeIntent === 'start') {
+        if (deps.navigation.state.expectedEnginePops) deps.navigation.state.expectedEnginePops--;
+        return;
+      }
+    }
     if (Date.now() < mftModuleState.exitUntil && deps.ui.state.root.dataset.native !== 'true' && deps.navigation.state.view === 'home') return;
-    if (deps.navigation.state.routeIntent === 'start') return;
     if (deps.navigation.state.routeIntent === 'extension' && document.querySelector('[role="dialog"],.mari-modal')) return;
     if (deps.navigation.state.expectedEnginePops && Date.now() < deps.navigation.state.expectedEnginePopUntil) {
       deps.navigation.state.expectedEnginePops--;
       return;
     }
     deps.navigation.state.expectedEnginePops = 0;
+    if (deps.navigation.state.routeIntent === 'start') {
+      if (deps.launch.requestBack('history')) event.stopImmediatePropagation();
+      return;
+    }
     if (deps.navigation.state.bridgeBusy) return;
     if (deps.ui.state.root.dataset.native === 'true') {
       // A native popup cleanup pops its sentinel back onto our room entry. It is
@@ -1153,14 +1238,24 @@ function createHistory(deps) {
       mftModuleState.closeWatcher = new CloseWatcher();
       mftModuleState.closeWatcher.addEventListener('close', () => {
         mftModuleState.closeWatcher = null;
-        const modal = [...document.querySelectorAll('.mari-modal')].filter(deps.ui.state.visible).at(-1);
+        if (deps.navigation.state.routeIntent === 'start') {
+          deps.launch.requestBack();
+          queueMicrotask(installBackWatcher);
+          return;
+        }
+        const modal = [...document.querySelectorAll('.mari-modal,[role="dialog"],[data-component="GameSetupWizard"]')].filter(deps.ui.state.visible).at(-1);
         const close = modal?.querySelector('button:has(svg.lucide-x)');
-        if (close) {
+        if (close && !close.disabled) {
           if (history.state?.marinaraOverlay) {
             deps.navigation.state.expectedEnginePops++;
             deps.navigation.state.expectedEnginePopUntil = Date.now() + 75;
           }
           close.click();
+          queueMicrotask(installBackWatcher);
+          return;
+        }
+        // A disabled/missing native dismiss action must not bypass the setup lifecycle.
+        if (modal || deps.navigation.state.routeIntent === 'start') {
           queueMicrotask(installBackWatcher);
           return;
         }
@@ -1191,6 +1286,10 @@ function createHistory(deps) {
     { order: 13600, run() {
       mftModuleState.historyToken = 'mft-' + Date.now();
     } },
+    { order: 13899, run() {
+      mftModuleState.engineBack = history.back;
+      history.back = trackEngineBack;
+    } },
     { order: 13900, run() {
       window.addEventListener('popstate', onBack, true);
     } },
@@ -1210,6 +1309,10 @@ function createHistory(deps) {
   const cleanup = [
     { order: 35, run() {
       mftModuleState.closeWatcher?.destroy();
+    } },
+    { order: 73, run() {
+      if (history.back === trackEngineBack) history.back = mftModuleState.engineBack;
+      mftModuleState.cleanupPops = 0;
     } },
     { order: 56, run() {
       window.removeEventListener('popstate', onBack, true);
@@ -1250,7 +1353,8 @@ function createAvatars(deps) {
       deps.ui.state.main.scrollTop = deps.navigation.state.restoreScrollTarget.scroll;
       deps.navigation.state.restoreScrollTarget = null;
     }
-    if (!mftModuleState.imageObserver) mftModuleState.imageObserver = new IntersectionObserver(entries => {
+    mftModuleState.imageObserver?.disconnect();
+    mftModuleState.imageObserver = new IntersectionObserver(entries => {
       for (const e of entries) if (e.isIntersecting) {
         const im = e.target;
         im.src = im.dataset.src;
@@ -1549,20 +1653,11 @@ function createCatalog(deps) {
   function homeChrome() {
     deps.ui.state.main.dataset.catalogView = deps.design.state.homeView;
     deps.ui.state.main.replaceChildren();
-    const search = deps.ui.state.el('input', 'search');
-    search.type = 'search';
-    search.placeholder = '캐릭터 이름이나 태그 검색';
-    search.setAttribute('aria-label', '캐릭터 검색');
-    search.value = mftModuleState.query;
-    search.oninput = () => {
-      clearTimeout(mftModuleState.searchTimer);
-      deps.core.state.timers.delete(mftModuleState.searchTimer);
-      mftModuleState.searchTimer = deps.core.later(() => {
-        mftModuleState.query = search.value.trim();
-        mftModuleState.pageOffset = 0;
-        loadHome();
-      }, 280);
-    };
+    const search = deps.ui.button('', () => deps.navigation.openBotBrowser(), 'search home-bot-search');
+    search.setAttribute('aria-label', '온라인에서 봇카드 찾아보기');
+    const searchIcon = deps.ui.state.el('span', 'home-search-icon', '⌕');
+    searchIcon.setAttribute('aria-hidden', 'true');
+    search.append(deps.ui.state.el('span', '', '온라인에서 봇카드 찾아보기'), searchIcon);
     const banner = deps.ui.state.el('section', 'banner');
     banner.append(deps.ui.state.el('small', '', '나만의 이야기, 여기서부터'), deps.ui.state.el('h1', '', '오늘은 누구와\n이야기할까요?'), officialBannerLogo());
     const chips = deps.ui.state.el('div', 'chips');
@@ -1587,11 +1682,8 @@ function createCatalog(deps) {
     deps.ui.own();
     const ticket = deps.core.state.epoch;
     const focused = deps.ui.state.shadow.activeElement?.classList.contains('search');
-    const input = homeChrome();
-    if (focused) {
-      input.focus();
-      input.setSelectionRange?.(input.value.length, input.value.length);
-    }
+    const search = homeChrome();
+    if (focused) search.focus();
     const loading = deps.ui.state.el('p', 'muted', '캐릭터를 불러오는 중…');
     deps.ui.state.main.append(loading);
     try {
@@ -1798,15 +1890,23 @@ function createChats(deps) {
     } catch {
       ids = [];
     }
+    const previous = mftModuleState.chatRegistry?.get(String(c.id));
+    const provided = latest !== undefined ? latest : c.lastMessage !== undefined ? c.lastMessage : c.latestMessage;
+    const lastMessageAt = c.lastMessageAt || c.updatedAt || c.createdAt || '';
+    const known = provided !== undefined;
+    const preview = known ? (provided === null ? '' : String(provided?.content || '').slice(0, 140) || '텍스트 미리보기가 없는 메시지예요.') : previous?.preview || '';
     return {
       ...deps.notifications.chatUnreadMetadata(c),
-      lastMessageAt: c.lastMessageAt || c.updatedAt || c.createdAt || '',
+      lastMessageAt,
       folderId: c.folderId || null,
       id: String(c.id),
       name: String(c.name || '이름 없는 대화'),
       mode: c.mode,
       characterIds: Array.isArray(ids) ? ids.slice(0, 6).filter(x => typeof x === 'string') : [],
-      preview: String(latest?.content ?? c.lastMessage?.content ?? c.latestMessage?.content ?? '').slice(0, 140)
+      preview,
+      previewEmpty: known ? !preview : previous?.previewEmpty === true && previous.lastMessageAt === lastMessageAt,
+      previewKnown: known || previous?.previewKnown === true,
+      previewPending: !known && (!previous?.previewKnown || previous.previewPending || previous.lastMessageAt !== lastMessageAt)
     };
   }
   
@@ -1816,6 +1916,7 @@ function createChats(deps) {
       for (const id of mftModuleState.chatRegistry.keys()) if (!ids.has(id)) mftModuleState.chatRegistry.delete(id);
     }
     for (const c of rows) mftModuleState.chatRegistry.set(c.id, c);
+    deps.notifications.captureUnreadMetadata(rows);
   }
   
   function orderedChats(rows, all) {
@@ -1835,8 +1936,12 @@ function createChats(deps) {
   }
   
   function hydrateSavedUnread(force = false) {
-    if (deps.notifications.state.unreadHydration) return deps.notifications.state.unreadHydration.promise;
+    const previous = deps.notifications.state.unreadHydration;
+    if (previous && !previous.signal.aborted && (!force || previous.fresh)) return previous.promise;
+    // Resume must never reuse an aborted or pre-suspension/cache-backed read.
+    previous?.abort();
     const controller = new AbortController();
+    controller.fresh = force;
     deps.notifications.state.unreadHydration = controller;
     const deadline = setTimeout(() => controller.abort(), 12000);
     controller.promise = (async () => {
@@ -1846,15 +1951,30 @@ function createChats(deps) {
           exact: true
         })?.state?.data;
         const raw = Array.isArray(cached) && cached.length ? cached : await deps.data.jsonRequest('/chats', 'GET', undefined, controller.signal, force);
-        if (deps.core.state.disposed || !Array.isArray(raw)) return;
+        if (controller.signal.aborted || deps.notifications.state.unreadHydration !== controller || deps.core.state.disposed || !Array.isArray(raw)) return false;
         const normalized = raw.map(c => normalizedChat(c));
         ingestChats(normalized, true);
         deps.data.state.cache.set('/chats', {
           time: Date.now(),
           data: normalized
         });
+        // The engine may clear active-room metadata before the theme's resume fetch.
+        // Only that protected CONVO room needs a bounded durable-message fallback.
+        const protectedId = deps.notifications.state.resumeUnreadRoom;
+        const room = normalized.find(c => c.id === protectedId && c.mode === 'conversation');
+        const since = protectedId ? Math.max(deps.notifications.state.resumeUnreadSince || 0, mftModuleState.chatVisits.get(protectedId) || 0) : 0;
+        if (force && room && !room.unreadCount && !deps.notifications.state.retainedUnread.has(room.id) && since && Date.parse(room.lastMessageAt) > since) {
+          const messages = await deps.data.jsonRequest('/chats/' + encodeURIComponent(room.id) + '/messages?limit=50', 'GET', undefined, controller.signal, true);
+          if (controller.signal.aborted || deps.notifications.state.unreadHydration !== controller || deps.notifications.state.resumeUnreadRoom !== protectedId) return false;
+          const arrivals = (Array.isArray(messages) ? messages : []).filter(m => {
+            let extra = m.extra; try { if (typeof extra === 'string') extra = JSON.parse(extra); } catch { extra = {}; }
+            return m.role === 'assistant' && Date.parse(m.createdAt) > since && extra?.hiddenFromUser !== true;
+          });
+          if (arrivals.length) deps.notifications.captureUnreadMetadata([{ ...room, unreadCount: arrivals.length, unreadVersion: arrivals.map(m => m.createdAt).sort().at(-1) }]);
+        }
         deps.notifications.syncUnreadBadges(deps.notifications.unreadSnapshot(deps.notifications.notificationSnapshot()));
-      } catch {} finally {
+        return true;
+      } catch { return false; } finally {
         clearTimeout(deadline);
         if (deps.notifications.state.unreadHydration === controller) deps.notifications.state.unreadHydration = null;
       }
@@ -1890,7 +2010,7 @@ function createChats(deps) {
     const loading = deps.ui.state.el('p', 'muted', '대화 목록을 불러오는 중…');
     deps.ui.state.main.append(loading);
     try {
-      const rows = await deps.data.get(all ? '/chats' : '/chats/home-feed', ticket, x => (all ? Array.isArray(x) ? x : [] : x.recentChats || []).map(r => normalizedChat(all ? r : r.chat, all ? null : r.latestMessage)));
+      const rows = await deps.data.get(all ? '/chats' : '/chats/home-feed', ticket, x => (all ? Array.isArray(x) ? x : [] : x.recentChats || []).map(r => normalizedChat(all ? r : r.chat, all ? undefined : r.latestMessage)));
       if (ticket !== deps.core.state.epoch) return;
       loading.remove();
       ingestChats(rows, all);
@@ -1914,7 +2034,7 @@ function createChats(deps) {
           const note = currentNotes.get(c.id);
           if (note) b.classList.add('has-unread');
           const copy = deps.ui.state.el('div');
-          copy.append(deps.ui.state.el('strong', '', c.name), deps.ui.state.el('p', 'summary', c.preview || '불러오는 중…'));
+          copy.append(deps.ui.state.el('strong', '', c.name), deps.ui.state.el('p', 'summary', c.preview || (c.previewEmpty ? '아직 메시지가 없어요.' : '불러오는 중…')));
           copy.lastChild.dataset.previewId = c.id;
           const holder = deps.avatars.avatar('', c.name, 'round');
           b.append(holder, copy, deps.ui.state.el('span', 'muted', '›'));
@@ -2079,6 +2199,7 @@ function createDesign(deps) {
       deps.navigation.clearLayers(actions);
       actions.openRightPanel('settings');
       await deps.navigation.waitEngine(() => deps.adapter.engineActions().setSettingsTab, signal, 5000);
+      if (signal.aborted) return;
       deps.adapter.engineActions().setSettingsTab('appearance');
       const set = await deps.navigation.waitEngine(() => deps.adapter.engineActions().setAppAccentColor, signal, 5000);
       if (signal.aborted) return;
@@ -2090,7 +2211,7 @@ function createDesign(deps) {
       deps.ui.own();
       deps.ui.notice('');
     } catch (error) {
-      deps.navigation.routeFailure(error, () => setMainColor(value));
+      deps.navigation.routeFailure(error, () => setMainColor(value), signal);
     }
   }
   
@@ -2431,7 +2552,9 @@ function createDesign(deps) {
  */
 function createAdapter(deps) {
   const mftModuleState = {
-    actionNames: undefined
+    actionNames: undefined,
+    lastChatSetter: null,
+    cachedChatActions: {}
   };
 
   function nativeTarget(key) {
@@ -2469,9 +2592,55 @@ function createAdapter(deps) {
         }
       }
     }
+    // Notification navigation owns the complete native reset routine. Its component
+    // often returns null, so its hooks cannot be found from a DOM notification rail.
+    // Search the mounted current Fiber tree only on explicit engine action lookup.
+    const resetNames = ['setPendingNewChatMode', 'setShouldOpenSettings', 'setShouldOpenWizard', 'setShouldOpenWizardInShortcutMode', 'setSetupActive'];
+    if (resetNames.some(name => !out[name] && !mftModuleState.cachedChatActions[name])) {
+      const shell = document.querySelector('[data-component="AppShell"]');
+      const key = Object.keys(shell || {}).find(k => k.startsWith('__reactFiber$'));
+      let root = key ? shell[key] : null;
+      while (root?.return) root = root.return;
+      root = root?.stateNode?.current || root;
+      const stack = root ? [root] : [], visited = new Set();
+      let budget = 0, cursor = 0;
+      while (cursor < stack.length && budget++ < 4000) {
+        const fiber = stack[cursor++];
+        if (!fiber || visited.has(fiber)) continue;
+        visited.add(fiber);
+        let hook = fiber.memoizedState;
+        for (let i = 0; hook && i < 160; hook = hook.next, i++) {
+          accept(hook.memoizedState);
+          for (const snapshot of [hook.queue, hook.memoizedState]) if (snapshot && typeof snapshot === 'object') {
+            accept(snapshot.value);
+            if (typeof snapshot.getSnapshot === 'function') try { accept(snapshot.getSnapshot()); } catch {}
+          }
+        }
+        if (resetNames.every(name => out[name] || mftModuleState.cachedChatActions[name])) break;
+        if (fiber.sibling) stack.push(fiber.sibling);
+        if (fiber.child) stack.push(fiber.child);
+      }
+    }
+    // Zustand action functions remain stable across component unmounts. Never cache
+    // component-local wizard setters or write hook values/store snapshots directly.
+    for (const name of resetNames) {
+      if (out[name]) mftModuleState.cachedChatActions[name] = out[name];
+      else if (mftModuleState.cachedChatActions[name]) out[name] = mftModuleState.cachedChatActions[name];
+    }
+    if (out.setActiveChatId) mftModuleState.lastChatSetter = out.setActiveChatId;
     return out;
   }
   
+  function clearActiveChat(actions) {
+    const setter = actions?.setActiveChatId || mftModuleState.lastChatSetter;
+    if (typeof setter !== 'function') { const active = activeSession(); return active.known && !active.id; }
+    try {
+      setter(null);
+      const active = activeSession();
+      return !active.known || !active.id;
+    } catch { return false; }
+  }
+
   function surfaceHasChatId(node, id) {
     if (!node) return false;
     const key = Object.keys(node).find(k => k.startsWith('__reactFiber$'));
@@ -2529,12 +2698,44 @@ function createAdapter(deps) {
     return candidates.some(n => surfaceHasChatId(n, id));
   }
 
+  function dismissChatSetup() {
+    // Suspense can retain wizardOpen while its lazy wizard has no DOM yet.
+    // Use the existing overlay callbacks; onWizardFinish also opens settings,
+    // so close that native drawer again before switching to an existing room.
+    let overlay = null;
+    for (const anchor of document.querySelectorAll('[data-chat-mode],[data-component="CenterContent"]')) {
+      if (eachHook(anchor, props => {
+        if (props?.wizardOpen === true && typeof props.onWizardFinish === 'function' && typeof props.onCloseSettings === 'function') {
+          overlay = props; return true;
+        }
+        return false;
+      }, true, true)) break;
+    }
+    if (overlay) {
+      overlay.onWizardFinish();
+      overlay.onCloseSettings({ force: true });
+      return true;
+    }
+    const wizard = document.querySelector('[data-component="ChatSetupWizard"]:not([hidden])');
+    if (!wizard || wizard.closest('[hidden],[aria-hidden="true"]')) return true;
+    const close = wizard.querySelector('button:has(svg.lucide-x)');
+    if (!close || close.disabled) return false;
+    // This calls onFinish, which clears LocalChatArea.wizardOpen. Resetting the
+    // global flags alone cannot clear that retained component-local state.
+    close.click();
+    return true;
+  }
+
   function prepareChat(a) {
-    a.setPendingNewChatMode?.(null);
-    a.setShouldOpenSettings?.(false);
-    a.setShouldOpenWizard?.(false);
-    a.setShouldOpenWizardInShortcutMode?.(false);
-    a.setSetupActive?.(false);
+    const required = ['setPendingNewChatMode', 'setShouldOpenSettings', 'setShouldOpenWizard', 'setShouldOpenWizardInShortcutMode', 'setSetupActive'];
+    if (!required.every(name => typeof a[name] === 'function')) return false;
+    if (!dismissChatSetup()) return false;
+    a.setPendingNewChatMode(null);
+    a.setShouldOpenSettings(false);
+    a.setShouldOpenWizard(false);
+    a.setShouldOpenWizardInShortcutMode(false);
+    a.setSetupActive(false);
+    return true;
   }
   
   // Match current persona identity and displayed photo before falling back to an older message snapshot.
@@ -2608,9 +2809,14 @@ function createAdapter(deps) {
   // Native notifications mount lazily and return null while empty. Read live store snapshots,
   // not the previous render's memoized Map, and fall back to original notification props.
   
-  function eachHook(node, accept, children = false) {
+  function eachHook(node, accept, children = false, currentOnly = false) {
     const key = Object.keys(node || {}).find(k => k.startsWith('__reactFiber$'));
     let f = key ? node[key] : null;
+    if (currentOnly) {
+      let top = f;
+      while (top?.return) top = top.return;
+      if (top?.stateNode?.current && top.stateNode.current !== top) f = f?.alternate;
+    }
     const seen = new Set(),
       stack = [];
     for (let d = 0; f && d < 18; d++, f = f.return) stack.push(f);
@@ -2619,7 +2825,7 @@ function createAdapter(deps) {
       const item = stack.shift();
       if (!item || seen.has(item)) continue;
       seen.add(item);
-      for (const branch of [item, item.alternate]) {
+      for (const branch of currentOnly ? [item] : [item, item.alternate]) {
         if (!branch) continue;
         if (accept(branch.memoizedProps, null) === true) return true;
         for (let h = branch.memoizedState, i = 0; h && i < 120; h = h.next, i++) {
@@ -2650,20 +2856,37 @@ function createAdapter(deps) {
     if (top?.stateNode?.current && top.stateNode.current !== top) f = f?.alternate;
     for (let d = 0; f && d < 18; d++, f = f.return) {
       const p = f.memoizedProps;
+      // The nearest message owns this flag. A view can stream another message.
+      const message = p?.message || p?.ctx?.message;
+      if (message?.id) return message.role !== 'user' && (p.isStreaming === true || p.ctx?.isStreaming === true);
       if (p?.isStreaming === true || p?.ctx?.isStreaming === true) return true;
     }
     return false;
   }
 
+  function chatDeletionCache() {
+    let cache = null;
+    for (const anchor of document.querySelectorAll('[data-component="TopBar"],[data-component="AppShell"]')) {
+      if (eachHook(anchor, value => {
+        const client = value?.value || value?.client || value;
+        if (typeof client?.getMutationCache !== 'function') return false;
+        cache = client.getMutationCache();
+        return typeof cache?.subscribe === 'function';
+      })) break;
+    }
+    return cache;
+  }
+
   const initialize = [
     { order: 7100, run() {
-      mftModuleState.actionNames = new Set(['setActiveChatId', 'setSidebarOpen', 'closeRightPanel', 'openRightPanel', 'closeAllDetails', 'openModal', 'openCharacterDetail', 'setSettingsTab', 'openPersonaDetail', 'openAgentCatalog', 'setTheme', 'requestChatModeShortcut', 'setPendingNewChatMode', 'setShouldOpenSettings', 'setShouldOpenWizard', 'setShouldOpenWizardInShortcutMode', 'setSetupActive', 'setAppAccentColor']);
+      mftModuleState.actionNames = new Set(['setActiveChatId', 'setSidebarOpen', 'closeRightPanel', 'openRightPanel', 'closeAllDetails', 'openModal', 'openCharacterDetail', 'setSettingsTab', 'openPersonaDetail', 'openAgentCatalog', 'openBotBrowser', 'setTheme', 'requestChatModeShortcut', 'setPendingNewChatMode', 'setShouldOpenSettings', 'setShouldOpenWizard', 'setShouldOpenWizardInShortcutMode', 'setSetupActive', 'setAppAccentColor']);
     } }
   ];
   const cleanup = [
+    { order: 76, run() { mftModuleState.lastChatSetter = null; mftModuleState.cachedChatActions = {}; } },
 
   ];
-  return { state: mftModuleState, initialize, cleanup, nativeTarget, engineActions, surfaceHasChatId, chatSurface, activeSession, roomReady, prepareChat, personaCropForImage, engineNavigator, eachHook, liveBubble };
+  return { state: mftModuleState, initialize, cleanup, nativeTarget, engineActions, clearActiveChat, surfaceHasChatId, chatSurface, activeSession, roomReady, prepareChat, dismissChatSetup, personaCropForImage, engineNavigator, eachHook, liveBubble, chatDeletionCache };
 }
 
 // Source: src/features/notifications.js
@@ -2685,8 +2908,24 @@ function createNotifications(deps) {
     unreadStorageSignature: undefined,
     dismissedToasts: undefined,
     toastClocks: undefined,
-    notificationsQueued: undefined
+    notificationsQueued: undefined,
+    resumeUnreadRoom: null,
+    resumeUnreadSince: 0,
+    readNotificationRefs: new Map()
   };
+
+  function visibleRoom() {
+    if (document.hidden || document.documentElement.classList.contains('mft-own') || deps.ui.state.root.dataset.native !== 'true' || deps.navigation.state.routeIntent !== 'chat' || deps.navigation.state.bridgeBusy) return null;
+    const id = deps.navigation.state.roomId;
+    if (!id) return null;
+    const active = deps.adapter.activeSession?.();
+    if (active?.known && active.id !== id) return null;
+    if (deps.adapter.chatSurface) {
+      const surface = deps.adapter.chatSurface(id)?.surface;
+      if (!surface || surface.closest('[hidden],[aria-hidden="true"]') || deps.ui.state.visible && !deps.ui.state.visible(surface)) return null;
+    }
+    return id;
+  }
 
   function notificationSnapshot() {
     const center = document.querySelector('[data-component="CenterContent"]') || document.querySelector('[data-component="TopBar"]')?.parentElement;
@@ -2786,8 +3025,41 @@ function createNotifications(deps) {
     };
   }
   
+  function captureUnreadMetadata(rows) {
+    const active = visibleRoom();
+    for (const c of rows) {
+      if (!c?.id || c.id === active && c.id !== mftModuleState.resumeUnreadRoom || !persistedUnread(c)) continue;
+      mftModuleState.retainedUnread.set(c.id, Math.max(mftModuleState.retainedUnread.get(c.id) || 0, c.unreadCount));
+      // A new server version can restart its count at one after a previous acknowledgement.
+      mftModuleState.readLiveCounts.delete(c.id);
+    }
+    saveUnreadLedger();
+  }
+
+  function suspendUnread() {
+    if (deps.ui.state.root.dataset.native === 'true' && deps.navigation.state.routeIntent === 'chat' && deps.navigation.state.roomId) {
+      if (mftModuleState.resumeUnreadRoom !== deps.navigation.state.roomId) mftModuleState.resumeUnreadSince = Date.now();
+      mftModuleState.resumeUnreadRoom = deps.navigation.state.roomId;
+    }
+    captureUnreadMetadata([...deps.chats.state.chatRegistry.values()]);
+  }
+
+  function acknowledgeVisibleUnread(event) {
+    if (document.hidden || deps.core.state.disposed || !mftModuleState.resumeUnreadRoom || deps.ui.state.root.dataset.native !== 'true' || deps.navigation.state.routeIntent !== 'chat') return;
+    const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+    if (!target?.closest('[data-chat-scroll],[data-chat-composer]') || target.closest('[role="dialog"],[data-chat-floating-panel]')) return;
+    const id = deps.navigation.state.roomId;
+    if (id !== mftModuleState.resumeUnreadRoom) return;
+    deps.chats.rememberChatVisit(id);
+    acknowledgeUnread(id);
+  }
+
   function acknowledgeUnread(id) {
     if (!id) return;
+    const note = notificationSnapshot().get(id);
+    if (note) mftModuleState.readNotificationRefs.set(id, note);else mftModuleState.readNotificationRefs.delete(id);
+    while (mftModuleState.readNotificationRefs.size > 500) mftModuleState.readNotificationRefs.delete(mftModuleState.readNotificationRefs.keys().next().value);
+    if (id === mftModuleState.resumeUnreadRoom) { mftModuleState.resumeUnreadRoom = null; mftModuleState.resumeUnreadSince = 0; }
     mftModuleState.readLiveCounts.set(id, mftModuleState.retainedUnread.get(id) || 0);
     mftModuleState.retainedUnread.delete(id);
     const c = deps.chats.state.roomRows.find(c => c.id === id) || deps.chats.state.chatRegistry.get(id);
@@ -2823,7 +3095,9 @@ function createNotifications(deps) {
     if (!live) for (const anchor of document.querySelectorAll('[data-component="ChatSidebar"],[data-component="TopBar"],[data-component="AppShell"]')) {
       if (deps.adapter.eachHook(anchor, (value, getter) => accept(value, getter, anchor.dataset.component === 'ChatSidebar'))) break;
     }
-    const active = !document.hidden && deps.ui.state.root.dataset.native === 'true' && deps.navigation.state.routeIntent === 'chat' && !deps.navigation.state.bridgeBusy ? deps.navigation.state.roomId : null;
+    const visible = visibleRoom();
+    const active = visible !== mftModuleState.resumeUnreadRoom ? visible : null;
+    if (live) for (const id of mftModuleState.readLiveCounts.keys()) if (!live.has(id) && !notes.has(id)) mftModuleState.readLiveCounts.delete(id);
     if (live) for (const [id, value] of live) {
       const count = Math.max(0, Number(value) || 0);
       if (count === 0) {
@@ -2835,7 +3109,9 @@ function createNotifications(deps) {
     }
     for (const [id, n] of notes) if (id !== active) {
       const count = Number(n.count) || 1;
-      if (count <= (mftModuleState.readLiveCounts.get(id) || 0)) continue;
+      if (mftModuleState.readNotificationRefs.get(id) === n) continue;
+      mftModuleState.readNotificationRefs.delete(id);
+      mftModuleState.readLiveCounts.delete(id);
       mftModuleState.retainedUnread.set(id, Math.max(mftModuleState.retainedUnread.get(id) || 0, count));
       mftModuleState.readUnreadVersions.delete(id);
     }
@@ -3020,11 +3296,11 @@ function createNotifications(deps) {
       const row = deps.ui.state.el('div', 'alert-row');
       bindToastSwipe(row, n.chatId || id, n);
       const b = deps.ui.button('', () => {
-        deps.data.state.cache.clear();
+        deps.updates.invalidateChats();
         deps.navigation.bridge('chat', {
           id: n.chatId || id,
-          mode: 'conversation',
-          characterIds: [],
+          mode: deps.chats.state.chatRegistry.get(n.chatId || id)?.mode || 'conversation',
+          characterIds: deps.chats.state.chatRegistry.get(n.chatId || id)?.characterIds || [],
           fromNotification: true
         });
       }, 'alert');
@@ -3047,6 +3323,11 @@ function createNotifications(deps) {
   // and keep selection/scroll while requests are batched. Never navigate from data events.
 
   const initialize = [
+    { order: 20901, run() {
+      document.addEventListener('pointerdown', acknowledgeVisibleUnread, true);
+      document.addEventListener('keydown', acknowledgeVisibleUnread, true);
+      document.addEventListener('wheel', acknowledgeVisibleUnread, { capture: true, passive: true });
+    } },
     { order: 10500, run() {
       mftModuleState.unreadHydration = null;
     } },
@@ -3104,6 +3385,11 @@ function createNotifications(deps) {
     } }
   ];
   const cleanup = [
+    { order: 75, run() {
+      document.removeEventListener('pointerdown', acknowledgeVisibleUnread, true);
+      document.removeEventListener('keydown', acknowledgeVisibleUnread, true);
+      document.removeEventListener('wheel', acknowledgeVisibleUnread, true);
+    } },
     { order: 26, run() {
       for (const clock of mftModuleState.toastClocks.values()) clearTimeout(clock.timer);
     } },
@@ -3115,9 +3401,10 @@ function createNotifications(deps) {
     } },
     { order: 37, run() {
       mftModuleState.notificationObserver?.disconnect();
+      mftModuleState.readNotificationRefs.clear();
     } }
   ];
-  return { state: mftModuleState, initialize, cleanup, notificationSnapshot, nativeNotificationAction, notificationCopy, saveUnreadLedger, chatUnreadMetadata, acknowledgeUnread, persistedUnread, unreadSnapshot, syncUnreadBadges, toastLifetime, toastKey, dismissToast, bindToastSwipe, scheduleNotifications, syncNotifications, refreshUnreadSources };
+  return { state: mftModuleState, initialize, cleanup, captureUnreadMetadata, suspendUnread, acknowledgeVisibleUnread, notificationSnapshot, nativeNotificationAction, notificationCopy, saveUnreadLedger, chatUnreadMetadata, acknowledgeUnread, persistedUnread, unreadSnapshot, syncUnreadBadges, toastLifetime, toastKey, dismissToast, bindToastSwipe, scheduleNotifications, syncNotifications, refreshUnreadSources };
 }
 
 // Source: src/ui/hub.js
@@ -3212,15 +3499,17 @@ function createExtensions(deps) {
     const ticket = deps.core.state.epoch;
     function step() {
       if (ticket !== deps.core.state.epoch || deps.core.state.disposed) return;
-      const result = fn();
+      let result;
+      try { result = fn(); } catch (error) {
+        deps.navigation.routeFailure(error, () => retryNative(fn, done));
+        return;
+      }
       if (result) {
         done?.(result);
         return;
       }
       if (count < 7) deps.core.later(step, [50, 80, 120, 180, 280, 450, 700][count++]);else {
-        deps.navigation.state.bridgeBusy = false;
-        deps.navigation.state.agentActive = false;
-        deps.ui.notice('메뉴 연결을 찾지 못했어요. 다른 탭으로 이동하거나 기능 설치 상태를 확인해 주세요.');
+        deps.navigation.routeFailure(Error('메뉴 연결을 찾지 못했어요. 기능 설치 상태를 확인해 주세요.'), () => retryNative(fn, done));
       }
     }
     step();
@@ -3239,10 +3528,12 @@ function createExtensions(deps) {
       deps.navigation.clearLayers(a);
       a.openRightPanel('settings');
       await deps.navigation.waitEngine(() => deps.adapter.engineActions().setTheme || deps.adapter.engineActions().setSettingsTab, signal, 5000);
+      if (signal.aborted) return;
       const set = deps.adapter.engineActions().setTheme;
       if (set) set(value);else {
         deps.adapter.engineActions().setSettingsTab('appearance');
         const select = await deps.navigation.waitEngine(() => document.querySelector('#settings-control-theme-mode select'), signal);
+        if (signal.aborted) return;
         const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set;
         setter.call(select, value);
         select.dispatchEvent(new Event('change', {
@@ -3257,31 +3548,36 @@ function createExtensions(deps) {
       deps.theme.syncTheme();
       deps.ui.notice('');
     } catch (e) {
-      deps.navigation.routeFailure(e, () => setEngineTheme(value));
+      deps.navigation.routeFailure(e, () => setEngineTheme(value), signal);
     }
   }
   
-  function openAgent(name) {
-    deps.navigation.state.navController?.abort();
-    deps.navigation.beginRoute('agent');
+  async function openAgent(name) {
+    const signal = deps.navigation.beginRoute('agent');
     deps.navigation.state.agentActive = true;
-    deps.navigation.engineHome();
-    const aliases = {
-      Noodle: ['noodle', '누들'],
-      'Gacha Forge': ['gachaforge', '가챠포지'],
-      Slurp: ['slurp', 'slurp2', '슬러프', '슬럽']
-    }[name];
-    retryNative(() => {
+    try {
+      if (!deps.navigation.engineHome()) throw Error('기존 방을 닫지 못해 에이전트를 열지 못했어요.');
+      const aliases = {
+        Noodle: ['noodle', '누들'],
+        'Gacha Forge': ['gachaforge', '가챠포지'],
+        Slurp: ['slurp', 'slurp2', '슬러프', '슬럽']
+      }[name] || [];
       const norm = x => x.toLowerCase().replace(/[^a-z0-9가-힣]/g, '');
-      const buttons = [...document.querySelectorAll('[data-component="HomeBrowserHub.TabList"] [role="tab"]')];
-      const b = buttons.find(b => aliases.includes(norm(b.id.replace('marinara-home-tab-', ''))) || aliases.some(a => norm(b.getAttribute('aria-label') || b.textContent).includes(a)));
-      if (!b) return false;
-      b.click();
-      deps.navigation.state.bridgeBusy = false;
-      deps.ui.state.html.classList.remove('mft-transition');
-      deps.navigation.finishRoute('agent');
-      return true;
-    });
+      const button = await deps.navigation.waitEngine(() => {
+        const buttons = [...document.querySelectorAll('[data-component="HomeBrowserHub.TabList"] [role="tab"]')];
+        return buttons.find(b => !b.disabled && (aliases.includes(norm(b.id.replace('marinara-home-tab-', ''))) || aliases.some(a => norm(b.getAttribute('aria-label') || b.textContent).includes(a))));
+      }, signal, 2500);
+      if (signal.aborted) return;
+      button.click();
+      // Sending a click does not prove that the engine selected the requested tab.
+      await deps.navigation.waitEngine(() => {
+        const selected = document.getElementById(button.id);
+        return selected?.getAttribute('aria-selected') === 'true' ? selected : null;
+      }, signal, 2500);
+      deps.navigation.finishRoute('agent', signal);
+    } catch (error) {
+      deps.navigation.routeFailure(error, () => openAgent(name), signal);
+    }
   }
   
   function runExtension(target) {
@@ -3289,9 +3585,10 @@ function createExtensions(deps) {
     const c = new AbortController();
     deps.navigation.state.navController = c;
     deps.navigation.state.routeIntent = 'extension';
+    const panels = new Set(document.querySelectorAll('[data-panel-key][aria-hidden="false"]'));
     target.click();
     // Toggles and portal dialogs stay over My. Only a real engine panel takes over the canvas.
-    deps.navigation.waitEngine(() => document.querySelector('[data-panel-key][aria-hidden="false"]'), c.signal, 1200).then(() => {
+    deps.navigation.waitEngine(() => [...document.querySelectorAll('[data-panel-key][aria-hidden="false"]')].find(panel => !panels.has(panel)), c.signal, 1200).then(() => {
       if (!c.signal.aborted && deps.navigation.state.routeIntent === 'extension') {
         deps.ui.native();
         deps.history.armNativeBack();
@@ -3413,6 +3710,11 @@ function createMounts(deps) {
 
   function checkEngineHome() {
     if (deps.core.state.disposed || deps.navigation.state.bridgeBusy) return;
+    if (deps.navigation.state.routeIntent === 'own' && deps.ui.state.root.dataset.native !== 'true' && deps.adapter.activeSession().id) {
+      deps.notifications.suspendUnread();
+      deps.navigation.engineHome();
+      return;
+    }
     if (deps.ui.state.root.dataset.native === 'true' && deps.navigation.state.routeIntent === 'chat') deps.convo.bindSplits();
     if (deps.navigation.state.routeIntent === 'start') deps.launch.reconcile();
     if (deps.navigation.state.routeIntent === 'chat') deps.launch.checkExit();
@@ -3465,13 +3767,24 @@ function createMounts(deps) {
   }
   // Bootstrap binding is independent from page-request cancellation.
   
+  function suspendActivity() {
+    deps.notifications.suspendUnread();
+    clearTimeout(mftModuleState.resumeTimer);
+    mftModuleState.resumeTimer = null;
+    mftModuleState.resumeAt = 0;
+    deps.notifications.state.unreadHydration?.abort();
+    deps.notifications.state.unreadHydration = null;
+  }
+
   function visibility() {
     deps.ui.state.root.toggleAttribute('data-suspended', document.hidden);
     if (document.hidden) {
+      deps.notifications.suspendUnread();
       clearTimeout(mftModuleState.resumeTimer);
       mftModuleState.resumeTimer = null;
       mftModuleState.resumeAt = 0;
       deps.notifications.state.unreadHydration?.abort();
+      deps.notifications.state.unreadHydration = null;
       deps.updates.state.chatRefreshRequest?.abort();
       deps.core.stop();
     } else if (deps.ui.state.root.dataset.native !== 'true' && !deps.ui.state.main.querySelector('.card,.chat-row,.menu-row,.description') && ['home', 'chats'].includes(deps.navigation.state.view)) deps.navigation.go(deps.navigation.state.view);else if (deps.ui.state.root.dataset.native !== 'true') {
@@ -3482,7 +3795,13 @@ function createMounts(deps) {
   
   function resumeActivity(event) {
     if (document.hidden || deps.core.state.disposed) return;
-    if (event?.type === 'online') mftModuleState.resumeAt = 0;
+    if (event?.type === 'online' || event?.type === 'pageshow' && event.persisted) {
+      clearTimeout(mftModuleState.resumeTimer);
+      mftModuleState.resumeTimer = null;
+      mftModuleState.resumeAt = 0;
+    }
+    // Own screens must not retain an invisible engine room after history restoration.
+    if (deps.navigation.state.routeIntent === 'own' && deps.ui.state.root.dataset.native !== 'true' && deps.adapter.activeSession().id && !deps.navigation.engineHome()) return;
     deps.notifications.syncNotifications();
     // visibility/focus/pageshow often arrive together on mobile. One bounded, fresh read; no poll.
     if (!mftModuleState.resumeTimer && Date.now() - mftModuleState.resumeAt > 1000) {
@@ -3491,7 +3810,16 @@ function createMounts(deps) {
         if (document.hidden || deps.core.state.disposed) return;
         mftModuleState.resumeAt = Date.now();
         deps.notifications.refreshUnreadSources();
-        deps.chats.hydrateSavedUnread(true);
+        const resumeAt = mftModuleState.resumeAt;
+        const refresh = attempt => deps.chats.hydrateSavedUnread(true).then(ok => {
+          // Mobile networking can recover after the page. Retry failures only, at most twice.
+          if (ok !== false || attempt >= 2 || document.hidden || deps.core.state.disposed || mftModuleState.resumeAt !== resumeAt) return;
+          mftModuleState.resumeTimer = setTimeout(() => {
+            mftModuleState.resumeTimer = null;
+            if (!document.hidden && !deps.core.state.disposed && mftModuleState.resumeAt === resumeAt) refresh(attempt + 1);
+          }, attempt ? 1200 : 350);
+        });
+        refresh(0);
       }, 120);
     }
     if (deps.ui.state.root.dataset.native === 'true' && deps.navigation.state.routeIntent === 'chat') {
@@ -3519,6 +3847,9 @@ function createMounts(deps) {
       window.addEventListener('focus', resumeActivity);
       window.addEventListener('pageshow', resumeActivity);
       window.addEventListener('online', resumeActivity);
+      window.addEventListener('blur', suspendActivity);
+      window.addEventListener('pagehide', suspendActivity);
+      document.addEventListener('freeze', suspendActivity);
     } }
   ];
   const cleanup = [
@@ -3539,10 +3870,13 @@ function createMounts(deps) {
       window.removeEventListener('focus', resumeActivity);
       window.removeEventListener('pageshow', resumeActivity);
       window.removeEventListener('online', resumeActivity);
+      window.removeEventListener('blur', suspendActivity);
+      window.removeEventListener('pagehide', suspendActivity);
+      document.removeEventListener('freeze', suspendActivity);
       clearTimeout(mftModuleState.resumeTimer);
     } }
   ];
-  return { state: mftModuleState, initialize, cleanup, checkEngineHome, bindShell, visibility, resumeActivity };
+  return { state: mftModuleState, initialize, cleanup, checkEngineHome, bindShell, suspendActivity, visibility, resumeActivity };
 }
 
 // Source: src/ui/markdown.js
@@ -3651,9 +3985,9 @@ function createGestures(deps) {
     const origin = deps.navigation.state.nativeOrigin || {
       view: deps.navigation.state.returnView === 'detail' ? 'home' : deps.navigation.state.returnView
     };
+    if (!deps.navigation.engineHome()) return;
     deps.navigation.state.nativeOrigin = null;
-    deps.data.state.cache.clear();
-    deps.navigation.engineHome();
+    deps.updates.invalidateChats();
     deps.ui.own();
     deps.chats.state.chatMode = origin.chatMode || deps.chats.state.chatMode;
     deps.chats.state.chatsAll = origin.chatsAll ?? deps.chats.state.chatsAll;
@@ -3783,44 +4117,60 @@ function createPreviews(deps) {
   function fillPreviews(slice, ticket) {
     const generation = ++mftModuleState.previewGeneration;
     mftModuleState.previewObserver?.disconnect();
+    const byId = new Map(deps.chats.state.roomRows.filter(c => c.previewPending || !c.preview && !c.previewEmpty).map(c => [c.id, c]));
+    const wanted = new Set([...byId.values()].map(c => c.id + ':' + (c.lastMessageAt || '')));
+    for (const request of mftModuleState.previewRequests) if (request.previewKey && !wanted.has(request.previewKey)) request.abort();
     let queue = [],
       working = 0;
     async function drain() {
       if (working >= 2 || !queue.length || ticket !== deps.core.state.epoch || generation !== mftModuleState.previewGeneration) return;
       const c = queue.shift();
       working++;
-      const controller = new AbortController();
-      mftModuleState.previewRequests.add(controller);
       try {
         const key = c.id + ':' + (c.lastMessageAt || '');
         let text = mftModuleState.previewCache.get(key);
         if (text === undefined) {
-          const rows = await deps.data.jsonRequest('/chats/' + encodeURIComponent(c.id) + '/messages?limit=1', 'GET', undefined, controller.signal);
-          text = String(rows?.[rows.length - 1]?.content || '').slice(0, 140);
-          mftModuleState.previewCache.set(key, text);
-          while (mftModuleState.previewCache.size > 200) mftModuleState.previewCache.delete(mftModuleState.previewCache.keys().next().value);
+          let request = [...mftModuleState.previewRequests].find(r => r.previewKey === key && !r.signal.aborted);
+          if (!request) {
+            request = new AbortController();
+            request.previewKey = key;
+            mftModuleState.previewRequests.add(request);
+            request.previewPromise = (async () => {
+              const rows = await deps.data.jsonRequest('/chats/' + encodeURIComponent(c.id) + '/messages?limit=12', 'GET', undefined, request.signal);
+              if (!Array.isArray(rows)) throw Error('Unexpected message response');
+              const message = [...rows].reverse().find(m => {
+                let extra = m.extra; try { if (typeof extra === 'string') extra = JSON.parse(extra); } catch { extra = {}; }
+                return m.role !== 'system' && extra?.hiddenFromUser !== true && extra?.commandOnly !== true && String(m.content || '').trim();
+              });
+              const value = message ? String(message.content).slice(0, 140) : rows.length ? '텍스트 미리보기가 없는 메시지예요.' : '';
+              if (!request.signal.aborted) {
+                mftModuleState.previewCache.set(key, value);
+                while (mftModuleState.previewCache.size > 200) mftModuleState.previewCache.delete(mftModuleState.previewCache.keys().next().value);
+              }
+              return value;
+            })().finally(() => mftModuleState.previewRequests.delete(request));
+          }
+          text = await request.previewPromise;
+          if (request.signal.aborted) return;
         }
         if (ticket === deps.core.state.epoch && generation === mftModuleState.previewGeneration) {
-          c.preview = text;
+          const result = { preview: text, previewKnown: true, previewEmpty: !text, previewPending: false };
+          Object.assign(c, result);
+          const registered = deps.chats.state.chatRegistry?.get(c.id);
+          if (registered?.lastMessageAt === c.lastMessageAt) Object.assign(registered, result);
           const n = deps.ui.state.main.querySelector(`[data-preview-id="${CSS.escape(c.id)}"]`);
           if (n) n.textContent = text || '아직 메시지가 없어요.';
         }
-      } catch {} finally {
+      } catch (error) {
+        if (error.name !== 'AbortError' && ticket === deps.core.state.epoch && generation === mftModuleState.previewGeneration) {
+          const n = deps.ui.state.main.querySelector(`[data-preview-id="${CSS.escape(c.id)}"]`);
+          if (n && !c.preview) n.textContent = '미리보기를 불러오지 못했어요.';
+        }
+      } finally {
         working--;
-        mftModuleState.previewRequests.delete(controller);
         drain();
       }
     }
-    const byId = new Map(deps.chats.state.roomRows.filter(c => !c.preview).map(c => [String(c.id), c]));
-    const targets = [];
-    for (const node of deps.ui.state.main.querySelectorAll('[data-preview-id]')) {
-      const c = byId.get(node.dataset.previewId);
-      if (!c) continue;
-      const text = mftModuleState.previewCache.get(c.id + ':' + (c.lastMessageAt || ''));
-      if (text !== undefined) { c.preview = text; node.textContent = text || '아직 메시지가 없어요.'; }
-      else targets.push(node);
-    }
-    if (!targets.length) return;
     mftModuleState.previewObserver = new IntersectionObserver(entries => {
       for (const e of entries) if (e.isIntersecting) {
         mftModuleState.previewObserver.unobserve(e.target);
@@ -3833,7 +4183,10 @@ function createPreviews(deps) {
       root: deps.ui.state.main,
       rootMargin: '30px'
     });
-    for (const node of targets) mftModuleState.previewObserver.observe(node);
+    for (const [id] of byId) {
+      const n = deps.ui.state.main.querySelector(`[data-preview-id="${CSS.escape(id)}"]`);
+      if (n) mftModuleState.previewObserver.observe(n);
+    }
   }
 
   const initialize = [
@@ -3958,14 +4311,13 @@ function createUpdates(deps) {
     chatRefreshBurst: undefined
   };
 
-  function invalidateChats(id) {
+  function invalidateChats() {
     for (const key of deps.data.state.cache.keys()) if (key.startsWith('/chats')) deps.data.state.cache.delete(key);
-    if (id) { for (const key of deps.previews.state.previewCache.keys()) if (key.startsWith(id + ':')) deps.previews.state.previewCache.delete(key); }
-    else deps.previews.state.previewCache.clear();
+    deps.previews.state.previewCache.clear();
   }
   
-  function queueChatRefresh(id) {
-    invalidateChats(id);
+  function queueChatRefresh() {
+    invalidateChats();
     mftModuleState.chatRevision++;
     if (deps.core.state.disposed || document.hidden || deps.navigation.state.bridgeBusy || deps.ui.state.root.dataset.native === 'true' || deps.navigation.state.view !== 'chats') return;
     mftModuleState.chatRefreshBurst ||= Date.now();
@@ -3997,18 +4349,10 @@ function createUpdates(deps) {
       }));
       const sortedRows = deps.chats.orderedChats(rows.map(r => deps.chats.normalizedChat(r.chat, r.latest)), all);
       deps.chats.ingestChats(sortedRows, all);
-      const selected = sortedRows.map(c => ({
-        chat: c,
-        latest: {
-          content: c.preview
-        }
-      })).filter(r => r.chat.mode === deps.chats.state.chatMode && (!all || !deps.chats.state.folderFilter || (deps.chats.state.folderFilter === 'unfiled' ? !r.chat.folderId : r.chat.folderId === deps.chats.state.folderFilter)));
+      const selected = sortedRows.map(c => ({ chat: c })).filter(r => r.chat.mode === deps.chats.state.chatMode && (!all || !deps.chats.state.folderFilter || (deps.chats.state.folderFilter === 'unfiled' ? !r.chat.folderId : r.chat.folderId === deps.chats.state.folderFilter)));
       const listed = [...deps.ui.state.main.querySelectorAll('.chat-row')];
       const ids = new Set(listed.map(n => n.dataset.roomId));
-      const selectedIds = new Set(selected.map(r => String(r.chat.id)));
-      const rendered = new Map(listed.map(n => [n.dataset.roomId, n]));
-      const storedRows = new Map(deps.chats.state.roomRows.map(c => [String(c.id), c]));
-      if (selected.slice(0, Math.max(30, listed.length)).some(r => !ids.has(String(r.chat.id))) || listed.some(n => !selectedIds.has(n.dataset.roomId))) {
+      if (selected.slice(0, Math.max(30, listed.length)).some(r => !ids.has(String(r.chat.id))) || listed.some(n => !selected.some(r => String(r.chat.id) === n.dataset.roomId))) {
         deps.navigation.state.restoreScrollTarget = {
           view: 'chats',
           scroll: deps.ui.state.main.scrollTop
@@ -4016,35 +4360,28 @@ function createUpdates(deps) {
         deps.chats.chats(all);
         return;
       }
-      for (const c of deps.previews.state.previewRequests) c.abort();
       const list = deps.ui.state.main.querySelector('.chat-list');
-      let cursor = list?.firstElementChild;
       for (const {
-        chat: c,
-        latest
+        chat: c
       } of selected) {
-        const row = rendered.get(String(c.id)),
-          stored = storedRows.get(String(c.id));
+        const row = deps.ui.state.main.querySelector(`[data-room-id="${CSS.escape(String(c.id))}"]`),
+          stored = deps.chats.state.roomRows.find(r => r.id === String(c.id));
         if (!row || !stored) continue;
         Object.assign(stored, {
           unreadCount: c.unreadCount,
-          unreadVersion: c.unreadVersion
+          unreadVersion: c.unreadVersion,
+          previewEmpty: c.previewEmpty,
+          previewKnown: c.previewKnown,
+          previewPending: c.previewPending
         });
         stored.name = c.name || stored.name;
         stored.lastMessageAt = c.lastMessageAt || c.updatedAt || '';
-        const name = row.querySelector('strong');
-        if (name.textContent !== stored.name) name.textContent = stored.name;
-        if (latest?.content !== undefined) {
-          stored.preview = String(latest.content).slice(0, 140);
-          const preview = row.querySelector('[data-preview-id]');
-          const text = stored.preview || '아직 메시지가 없어요.';
-          if (preview.textContent !== text) preview.textContent = text;
-        } else stored.preview = '';
-        if (list && row.parentElement) {
-          const item = row.parentElement;
-          if (item === cursor) cursor = cursor.nextElementSibling;
-          else list.insertBefore(item, cursor || null);
+        row.querySelector('strong').textContent = stored.name;
+        if (c.preview || c.previewKnown && !c.previewPending) {
+          stored.preview = c.preview;
+          row.querySelector('[data-preview-id]').textContent = stored.preview || '아직 메시지가 없어요.';
         }
+        if (list && row.parentElement) list.append(row.parentElement);
       }
       deps.previews.fillPreviews(deps.chats.state.roomRows, ticket);
       deps.notifications.syncUnreadBadges(deps.notifications.unreadSnapshot(deps.notifications.notificationSnapshot()));
@@ -4075,11 +4412,20 @@ function createUpdates(deps) {
     mftModuleState.queryUnsubscribe = found.subscribe(event => {
       const key = event.query?.queryKey;
       if (event.type === 'updated' && ['success', 'invalidate', 'setState'].includes(event.action?.type) && Array.isArray(key) && ['chats', 'home-feed'].includes(key[0])) {
+        if (key[0] === 'chats' && key[1] === 'messages' && typeof key[2] === 'string') {
+          // Edits can keep lastMessageAt unchanged. Never reuse an older request
+          // for that room after a native message mutation, while metadata-only
+          // list refreshes may still share their pending preview.
+          for (const request of deps.previews.state.previewRequests) if (request.previewKey?.startsWith(key[2] + ':')) request.abort();
+          for (const room of [deps.chats.state.chatRegistry.get(key[2]), ...deps.chats.state.roomRows.filter(c => c.id === key[2])]) if (room) room.previewPending = true;
+        }
         if (key[0] === 'chats' && key[1] === 'list' && Array.isArray(event.query?.state?.data)) deps.chats.ingestChats(event.query.state.data.map(c => deps.chats.normalizedChat(c)), true);
+        const detail = key[0] === 'chats' && key[1] === 'detail' && event.query?.state?.data;
+        if (detail?.id) deps.chats.ingestChats([deps.chats.normalizedChat(detail)]);
         const feed = event.query?.state?.data?.recentChats;
         if (Array.isArray(feed)) deps.chats.ingestChats(feed.filter(r => r?.chat).map(r => deps.chats.normalizedChat(r.chat, r.latestMessage)));
         deps.notifications.scheduleNotifications();
-        queueChatRefresh(key[0] === 'chats' && key[1] === 'messages' && typeof key[2] === 'string' ? key[2] : undefined);
+        queueChatRefresh();
       }
     });
   }
@@ -4360,7 +4706,7 @@ function createConvo(deps) {
     const scan = selector => scopes.flatMap(scope => [...(scope.matches(selector) ? [scope] : []), ...scope.querySelectorAll(selector)]);
     const owners = new Map();
     if (mftModuleState.splitRoot) for (const copy of scan('[data-mari-tts-copy]')) {
-      if (copy.closest('.ptx-view') || copy.parentElement.closest('[data-mari-tts-copy]')) continue;
+      if (copy.closest('.ptx-view') || copy.closest('[data-message-id],.mari-message')?.querySelector('.ptx-view,[data-ptx-hidden]') || copy.parentElement.closest('[data-mari-tts-copy]')) continue;
       let peer = copy.previousElementSibling;
       while (peer?.matches('mft-message-lines')) peer = peer.previousElementSibling;
       const known = mftModuleState.presentationOwners.get(copy);
@@ -4373,6 +4719,9 @@ function createConvo(deps) {
     if (mftModuleState.splitRoot) for (const nativeNode of scan('.mari-message-bubble')) {
       if (nativeNode.closest('[data-mari-tts-copy],.ptx-view,.mari-convo-viewer-split-display,.mft-split-display')) continue;
       if (nativeNode.classList.contains('mari-convo-viewer-split-bubble')) continue;
+      const row = nativeNode.closest('[data-message-id],.mari-message');
+      // Release our own presentation before inspecting a translator-owned source or TTS copy.
+      if (row?.hasAttribute('data-ptx-active') || row?.querySelector('.ptx-view,[data-ptx-hidden]')) continue;
       const source = displayedBubble(nativeNode);
       if (source) {
         owners.set(source, nativeNode);
@@ -4410,7 +4759,7 @@ function createConvo(deps) {
     if (mftModuleState.splitRoot) {
       const owned = new Set([...mftModuleState.splitSources.values()].map(s => s.display));
       scan('mft-message-lines').forEach(n => {
-        if (!owned.has(n)) n.remove();
+        if (!n.closest('.ptx-view') && !owned.has(n)) n.remove();
       });
       mftModuleState.splitObserver.observe(mftModuleState.splitRoot, {
         childList: true,
@@ -4438,7 +4787,7 @@ function createConvo(deps) {
       if (document.hidden) return;
       const mark = node => {
         const element = node.nodeType === 3 ? node.parentElement : node;
-        if (!(element instanceof Element) || element.closest('[data-chat-composer],textarea,.mft-split-display') || deps.adapter.liveBubble(element)) return;
+        if (!(element instanceof Element) || element.closest('[data-chat-composer],textarea,.mft-split-display,.ptx-view') || deps.adapter.liveBubble(element)) return;
         const row = element.closest('[data-message-id]') || element.closest('.mari-message');
         if (row) mftModuleState.splitDirty.add(row);else if (element === mftModuleState.splitRoot && node.nodeType !== 3) return;else if (element.querySelector('[data-message-id],.mari-message-bubble,[data-mari-tts-copy]')) mftModuleState.splitFull = true;
       };
@@ -5079,16 +5428,6 @@ function createSettings(deps) {
         deps.nativeUi.state.nativeUiAdditions.add(toggle);
         setSettingsFold(section, Date.now() < mftModuleState.settingsRevealUntil && !!mftModuleState.settingsSearchTarget && title.includes(mftModuleState.settingsSearchTarget));
       }
-      if (!panel.querySelector('.mft-settings-index')) {
-        const sections = [...panel.querySelectorAll('section[id^="settings-section-"],#settings-section-roleplay-tracker>section')];
-        if (!sections.length) continue;
-        const bar = deps.ui.state.el('div', 'mft-settings-index');
-        bar.append(deps.ui.button('모두 펼치기', () => revealSettings(panel)), deps.ui.button('모두 접기', () => {
-          for (const [n] of mftModuleState.settingsFolds) if (panel.contains(n)) setSettingsFold(n, false);
-        }));
-        sections[0].before(bar);
-        deps.nativeUi.state.nativeUiAdditions.add(bar);
-      }
     }
     for (const [section, state] of mftModuleState.settingsFolds) if (!section.isConnected) {
       deps.nativeUi.state.nativeUiAdditions.delete(state.button);
@@ -5200,17 +5539,35 @@ function createHelp(deps) {
 // Source: src/engine/launch.js
 /** Native launch lifecycle: one transaction per launch, authoritative room identity. */
 function createLaunch(deps) {
-  const state = { observer: null, signal: null, previousId: null, selectedMode: null, phase: 'idle', sawSetup: false, closing: false, settleTimer: null, deadline: null };
-  const dialogs = '[role="dialog"],.mari-modal,[data-new-chat-connection-gate]';
+  const state = { observer: null, signal: null, previousId: null, selectedMode: null, phase: 'idle', sawSetup: false, closing: false, settleTimer: null, closingDialog: null, backRequested: false, createdId: null, deletionUnsubscribe: null };
+  const dialogs = '[role="dialog"],.mari-modal,[data-component="GameSetupWizard"],[data-component="ChatSetupWizard"],[data-new-chat-connection-gate]';
   function stop() {
     state.observer?.disconnect(); state.observer = null;
-    clearTimeout(state.settleTimer); clearTimeout(state.deadline);
-    state.settleTimer = state.deadline = null;
+    state.deletionUnsubscribe?.(); state.deletionUnsubscribe = null;
+    clearTimeout(state.settleTimer);
+    state.settleTimer = null; state.closingDialog = null; state.backRequested = false;
     state.signal?.removeEventListener('abort', stop); state.signal = null;
     document.removeEventListener('click', onClick, true);
     if (state.phase !== 'ready') state.phase = 'idle';
   }
   function leave() { stop(); deps.gestures.returnFromNative(); }
+  function onDeletion(event) {
+    const mutation = event.mutation;
+    if (event.type !== 'updated' || event.action?.type !== 'success' || mutation?.state?.status !== 'success') return;
+    const { variables, context } = mutation.state;
+    const id = typeof variables === 'string' ? variables : variables?.id;
+    // ME 2.5.0 useDeleteChat's onMutate context distinguishes deletion from
+    // other successful mutations for the same room. Pending/error are never proof.
+    if (!Array.isArray(context?.previousGroups) || !Array.isArray(context?.affectedGroupIds)) return;
+    if (deps.navigation.state.routeIntent !== 'start' || !state.closing || !state.createdId || id !== state.createdId) return;
+    if (state.selectedMode !== 'game' && !state.closingDialog?.matches('[data-component="GameSetupWizard"]')) return;
+    const active = deps.adapter.activeSession();
+    // Cache removal can unmount GameSurface before its observer onSuccess runs.
+    // Recover only this confirmed deleted room, after native mutation settlement.
+    if (!active.known || active.id && active.id !== id) return;
+    if (active.id === id && !deps.adapter.clearActiveChat({})) return;
+    reconcile();
+  }
   function onClick(event) {
     const button = event.target.closest?.('button');
     if (!button || button.disabled) return;
@@ -5219,33 +5576,93 @@ function createLaunch(deps) {
       const index = [...chooser.querySelectorAll('button')].indexOf(button);
       state.selectedMode = ['conversation', 'roleplay', 'game'][index] || null;
       state.phase = 'creating';
+      if (history.state?.marinaraOverlay) {
+        deps.navigation.state.expectedEnginePops++;
+        deps.navigation.state.expectedEnginePopUntil = Date.now() + 1500;
+      }
       return;
     }
     const dialog = button.closest(dialogs);
     if (!dialog) return;
     const close = button.querySelector('svg.lucide-x') || /^(취소|닫기|cancel|close|×|x)$/i.test((button.getAttribute('aria-label') || button.textContent).trim());
     if (close) {
+      if (dialog.matches('.mari-modal') && history.state?.marinaraOverlay) {
+        deps.navigation.state.expectedEnginePops++;
+        deps.navigation.state.expectedEnginePopUntil = Date.now() + 1500;
+      }
       state.closing = true;
+      state.closingDialog = dialog;
       state.phase = 'closing';
       // Let the original handler delete or keep its room first. No setter or click proxy.
       clearTimeout(state.settleTimer);
       state.settleTimer = setTimeout(() => { state.settleTimer = null; reconcile(); }, 700);
     }
   }
+  function requestBack(source) {
+    if (deps.navigation.state.routeIntent !== 'start') return false;
+    const active = deps.adapter.activeSession();
+    // Native popstate listeners can run before this extension's listener on Window.
+    // If native Back already closed this launch, do not click a stale wizard and
+    // start an asynchronous delete whose success could later close another room.
+    if (state.createdId && active.known && !active.id && !state.closing) {
+      leave();
+      return false;
+    }
+    const modal = [...document.querySelectorAll(dialogs)].filter(deps.ui.state.visible).at(-1);
+    if (!modal) {
+      if (source === 'history' && history.state?.route?.kind === 'native') return false;
+      if (!state.closing) state.backRequested = true;
+      return true;
+    }
+    const close = modal.querySelector('button:has(svg.lucide-x)') || [...modal.querySelectorAll('button')].find(b => /^(취소|닫기|cancel|close|×|x)$/i.test((b.getAttribute('aria-label') || b.textContent).trim()));
+    if (!close || close.disabled || state.closing && state.closingDialog === modal) return true;
+    // Modal owns an engine sentinel, whereas GameSetupWizard is a custom portal.
+    // Invoke its actual X in both cases; do not replace cancellation with setActiveChatId(null).
+    if (source === 'history' && modal.matches('.mari-modal')) {
+      // The engine already popped this Modal's sentinel and will invoke onClose.
+      // Record cancellation before that handler runs, without clicking it twice.
+      onClick({ target: close });
+      return false;
+    }
+    if (!modal.matches('.mari-modal') && (history.state?.marinaraOverlay || source === 'history')) {
+      deps.navigation.state.expectedEnginePops++;
+      deps.navigation.state.expectedEnginePopUntil = Date.now() + 1500;
+    }
+    close.click();
+    return true;
+  }
   function reconcile() {
     if (deps.core.state.disposed || deps.navigation.state.routeIntent !== 'start') { stop(); return; }
-    const visible = [...document.querySelectorAll(dialogs)].filter(deps.ui.state.visible);
+    const mounted = [...document.querySelectorAll(dialogs)];
+    const visible = mounted.filter(deps.ui.state.visible);
+    // A motion panel starts at opacity:0. Mount/unmount, not animation visibility, owns setup.
+    const mountedSetup = mounted.some(n => n.matches('[data-component="GameSetupWizard"],[data-component="ChatSetupWizard"],[data-new-chat-connection-gate]') && !n.closest('[hidden],[aria-hidden="true"]'));
+    if (state.backRequested && visible.length) {
+      state.backRequested = false;
+      requestBack();
+      return; // Re-read mounted surfaces after the native close handler mutates them.
+    }
     const chooser = visible.some(n => n.querySelector('[data-component="ChatModeSelectorModal"]') || n.matches('[data-component="ChatModeSelectorModal"]'));
-    if (visible.length && !chooser) { state.sawSetup = true; if (!state.closing) state.phase = 'setup'; }
+    if (mountedSetup || visible.length && !chooser) {
+      state.sawSetup = true;
+      // Closing an inner picker/help dialog is not cancellation of its still-open wizard.
+      if (state.closing && state.closingDialog && !state.closingDialog.isConnected) {
+        state.closing = false; state.closingDialog = null;
+        clearTimeout(state.settleTimer); state.settleTimer = null;
+      }
+      if (!state.closing) state.phase = 'setup';
+    }
     const active = deps.adapter.activeSession();
     const chat = deps.adapter.chatSurface(active.known ? active.id : undefined);
     const id = active.known ? active.id : chat?.id;
     const fresh = id && id !== state.previousId;
+    if (fresh) state.createdId = id;
+    if (state.createdId && active.known && !active.id && !state.closing) { leave(); return; }
     if (state.closing && active.known && !active.id) {
       // Empty game setup was deleted. A stale loading surface must not keep this route alive.
       leave(); return;
     }
-    if (visible.length) return;
+    if (visible.length || mountedSetup) return;
     if (!fresh) return; // React/Lazy transitions and creation can be arbitrarily slow; absence is not cancellation.
     if (document.querySelector('[data-component="ChatArea.RestoringChat"],[data-component="GameSurface.MessagesLoading"]')) { state.phase = 'opening'; return; }
     if (state.closing && state.settleTimer) return;
@@ -5257,19 +5674,15 @@ function createLaunch(deps) {
     deps.navigation.finishRoute('chat');
   }
   function begin(signal, previousId) {
-    stop(); state.signal = signal; state.previousId = previousId;
+    stop(); state.signal = signal; state.previousId = previousId; state.createdId = null;
     state.phase = 'choosing'; state.selectedMode = null; state.sawSetup = false; state.closing = false;
     if (signal?.aborted) { stop(); return; }
     signal?.addEventListener('abort', stop, { once: true });
+    state.deletionUnsubscribe = deps.adapter.chatDeletionCache?.()?.subscribe(onDeletion) || null;
     document.addEventListener('click', onClick, true);
     state.observer = new MutationObserver(reconcile);
-    state.observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-chat-id','data-chat-mode','aria-hidden','hidden'] });
-    state.deadline = setTimeout(() => {
-      if (deps.navigation.state.routeIntent !== 'start' || state.phase === 'choosing' || state.phase === 'setup') return;
-      deps.ui.notice('설정이나 방 열기가 끝나지 않았어요. 아래 버튼으로 돌아갈 수 있어요.');
-      const back = deps.ui.button('캐릭터로 돌아가기', leave, 'button');
-      deps.ui.state.status.append(back);
-    }, 30000);
+    state.observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-chat-id','data-chat-mode','data-chat-surface-active','aria-hidden','hidden'] });
+    // Setup and model generation have no theme-imposed deadline. Native errors/cancellation own recovery.
     reconcile();
   }
   function checkExit() {
@@ -5283,7 +5696,7 @@ function createLaunch(deps) {
   const cleanup = [
     { order: 74, run() { stop(); } }
   ];
-  return { state, initialize, cleanup, begin, reconcile, stop, onClick, checkExit };
+  return { state, initialize, cleanup, begin, reconcile, stop, onClick, requestBack, checkExit };
 }
 
 

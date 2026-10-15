@@ -1,0 +1,1 @@
+PASS Chromium PC/mobile: existing user/assistant split identity survives another streaming message; live assistant waits for completion; known empty room sends no preview request; fetched empty and failed preview show settled states.

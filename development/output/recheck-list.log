@@ -1,0 +1,1 @@
+PASS 0.31.3 refresh/cache behavior restored: row identity, reordered output, full invalidation and cached previews preserved.

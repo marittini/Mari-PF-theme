@@ -1,0 +1,11 @@
+--- 0.31.14/src/features/chats.js
++++ 0.32/src/features/chats.js
+@@ -149,7 +149,7 @@
+     const loading = deps.ui.state.el('p', 'muted', '대화 목록을 불러오는 중…');
+     deps.ui.state.main.append(loading);
+     try {
+-      const rows = await deps.data.get(all ? '/chats' : '/chats/home-feed', ticket, x => (all ? Array.isArray(x) ? x : [] : x.recentChats || []).map(r => normalizedChat(all ? r : r.chat, all ? null : r.latestMessage)));
++      const rows = await deps.data.get(all ? '/chats' : '/chats/home-feed', ticket, x => (all ? Array.isArray(x) ? x : [] : x.recentChats || []).map(r => normalizedChat(all ? r : r.chat, all ? undefined : r.latestMessage)));
+       if (ticket !== deps.core.state.epoch) return;
+       loading.remove();
+       ingestChats(rows, all);

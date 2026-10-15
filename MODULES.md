@@ -10,19 +10,19 @@
 | theme | `src/ui/theme.js` | design, navigation, ui |
 | data | `src/core/data.js` | catalog, core, navigation, tags, ui |
 | core | `src/core/runtime.js` | avatars, convo, data, design, previews, tags, translations, ui, updates |
-| navigation | `src/engine/navigation.js` | adapter, avatars, catalog, chats, convo, core, data, extensions, gestures, help, history, hub, launch, nativeUi, notifications, ui |
-| history | `src/engine/history.js` | catalog, core, gestures, navigation, ui |
+| navigation | `src/engine/navigation.js` | adapter, avatars, catalog, chats, convo, core, data, extensions, gestures, help, history, hub, launch, nativeUi, notifications, ui, updates |
+| history | `src/engine/history.js` | catalog, core, gestures, navigation, ui, launch |
 | avatars | `src/features/avatars.js` | adapter, core, navigation, ui |
 | catalog | `src/features/catalog.js` | avatars, core, daily, data, design, extensions, history, markdown, navigation, ui |
 | chats | `src/features/chats.js` | avatars, core, data, navigation, notifications, previews, ui, updates |
 | design | `src/features/design.js` | adapter, core, navigation, theme, ui |
 | adapter | `src/engine/adapter.js` | avatars |
-| notifications | `src/features/notifications.js` | adapter, avatars, chats, core, data, navigation, ui, updates |
+| notifications | `src/features/notifications.js` | adapter, avatars, chats, core, navigation, ui, updates |
 | hub | `src/ui/hub.js` | catalog, design, extensions, navigation, ui |
 | extensions | `src/engine/extensions.js` | adapter, core, data, history, navigation, theme, ui |
-| mounts | `src/engine/mounts.js` | avatars, chats, convo, core, launch, navigation, notifications, ui, updates |
+| mounts | `src/engine/mounts.js` | adapter, avatars, chats, convo, core, launch, navigation, notifications, ui, updates |
 | markdown | `src/ui/markdown.js` | ui |
-| gestures | `src/ui/gestures.js` | adapter, catalog, chats, core, data, history, navigation, ui |
+| gestures | `src/ui/gestures.js` | adapter, catalog, chats, core, history, navigation, ui, updates |
 | previews | `src/features/previews.js` | chats, core, data, ui |
 | daily | `src/features/daily.js` | data |
 | updates | `src/engine/query-updates.js` | adapter, avatars, chats, core, data, navigation, notifications, previews, ui |
@@ -63,7 +63,7 @@
 
 공개 함수: `resourceFetchWrapper`, `compact`, `get`, `jsonRequest`
 
-소유 상태: `cache`, `viewRequests`, `request`, `refreshWriteQueued`, `resourceFetch`, `inflight`
+소유 상태: `cache`, `viewRequests`, `request`, `refreshWriteQueued`, `resourceFetch`
 
 다른 모듈 상태 쓰기: 없음
 
@@ -81,7 +81,7 @@
 
 팩토리: `createNavigation`
 
-공개 함수: `waitEngine`, `beginRoute`, `finishRoute`, `routeFailure`, `actionsReady`, `clearLayers`, `openNative`, `bridge`, `engineHome`, `settings`, `go`, `onModeClick`
+공개 함수: `waitEngine`, `beginRoute`, `finishRoute`, `routeFailure`, `actionsReady`, `clearLayers`, `openNative`, `bridge`, `engineHome`, `settings`, `go`, `onModeClick`, `openBotBrowser`
 
 소유 상태: `engineHomeIntent`, `agentActive`, `bridgeBusy`, `view`, `returnView`, `nativeGrace`, `nativeOrigin`, `restoreScrollTarget`, `navController`, `routeIntent`, `roomId`, `expectedEnginePops`, `expectedEnginePopUntil`, `engineOverlayOwned`
 
@@ -93,7 +93,7 @@
 
 공개 함수: `armNativeBack`, `remember`, `onBack`, `onNativeHome`, `installBackWatcher`
 
-소유 상태: `nativeBackArmed`, `historyOwned`, `historyToken`, `closeWatcher`, `exitUntil`, `exitTimer`
+소유 상태: `nativeBackArmed`, `historyOwned`, `historyToken`, `closeWatcher`, `exitUntil`, `exitTimer`, `engineBack`, `cleanupPops`
 
 다른 모듈 상태 쓰기: `navigation.engineOverlayOwned`, `navigation.expectedEnginePopUntil`, `navigation.expectedEnginePops`
 
@@ -141,9 +141,9 @@
 
 팩토리: `createAdapter`
 
-공개 함수: `nativeTarget`, `engineActions`, `surfaceHasChatId`, `prepareChat`, `personaCropForImage`, `engineNavigator`, `eachHook`, `liveBubble`, `chatSurface`, `activeSession`, `roomReady`
+공개 함수: `nativeTarget`, `engineActions`, `surfaceHasChatId`, `prepareChat`, `personaCropForImage`, `engineNavigator`, `eachHook`, `liveBubble`, `chatSurface`, `activeSession`, `roomReady`, `clearActiveChat`, `dismissChatSetup`, `chatDeletionCache`
 
-소유 상태: `actionNames`
+소유 상태: `actionNames`, `lastChatSetter`, `cachedChatActions`
 
 다른 모듈 상태 쓰기: 없음
 
@@ -151,9 +151,9 @@
 
 팩토리: `createNotifications`
 
-공개 함수: `notificationSnapshot`, `nativeNotificationAction`, `notificationCopy`, `saveUnreadLedger`, `chatUnreadMetadata`, `acknowledgeUnread`, `persistedUnread`, `unreadSnapshot`, `syncUnreadBadges`, `toastLifetime`, `toastKey`, `dismissToast`, `bindToastSwipe`, `scheduleNotifications`, `syncNotifications`, `refreshUnreadSources`
+공개 함수: `notificationSnapshot`, `nativeNotificationAction`, `notificationCopy`, `saveUnreadLedger`, `chatUnreadMetadata`, `acknowledgeUnread`, `persistedUnread`, `unreadSnapshot`, `syncUnreadBadges`, `toastLifetime`, `toastKey`, `dismissToast`, `bindToastSwipe`, `scheduleNotifications`, `syncNotifications`, `refreshUnreadSources`, `captureUnreadMetadata`, `suspendUnread`, `acknowledgeVisibleUnread`
 
-소유 상태: `unreadHydration`, `notificationObserver`, `notificationRail`, `notificationGetter`, `notificationSignature`, `alertTray`, `unreadGetter`, `retainedUnread`, `readUnreadVersions`, `readLiveCounts`, `unreadStorageSignature`, `dismissedToasts`, `toastClocks`, `notificationsQueued`
+소유 상태: `unreadHydration`, `notificationObserver`, `notificationRail`, `notificationGetter`, `notificationSignature`, `alertTray`, `unreadGetter`, `retainedUnread`, `readUnreadVersions`, `readLiveCounts`, `unreadStorageSignature`, `dismissedToasts`, `toastClocks`, `notificationsQueued`, `resumeUnreadRoom`, `resumeUnreadSince`, `readNotificationRefs`
 
 다른 모듈 상태 쓰기: 없음
 
@@ -181,11 +181,11 @@
 
 팩토리: `createMounts`
 
-공개 함수: `checkEngineHome`, `bindShell`, `visibility`, `resumeActivity`
+공개 함수: `checkEngineHome`, `bindShell`, `visibility`, `resumeActivity`, `suspendActivity`
 
 소유 상태: `shellObserver`, `centerObserver`, `notificationMountObserver`, `resumeTimer`, `resumeAt`
 
-다른 모듈 상태 쓰기: 없음
+다른 모듈 상태 쓰기: `notifications.unreadHydration`
 
 ## markdown
 
@@ -331,8 +331,8 @@
 
 팩토리: `createLaunch`
 
-공개 함수: `begin`, `reconcile`, `stop`, `onClick`, `checkExit`
+공개 함수: `begin`, `reconcile`, `stop`, `onClick`, `checkExit`, `requestBack`
 
-소유 상태: `observer`, `signal`, `previousId`, `selectedMode`, `phase`, `sawSetup`, `closing`, `settleTimer`, `deadline`
+소유 상태: `observer`, `signal`, `previousId`, `selectedMode`, `phase`, `sawSetup`, `closing`, `settleTimer`, `closingDialog`, `backRequested`, `createdId`, `deletionUnsubscribe`
 
-다른 모듈 상태 쓰기: `navigation.roomId`, `chats.chatMode`
+다른 모듈 상태 쓰기: `navigation.roomId`, `chats.chatMode`, `navigation.expectedEnginePops`, `navigation.expectedEnginePopUntil`

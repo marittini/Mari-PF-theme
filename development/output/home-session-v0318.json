@@ -1,0 +1,18 @@
+[
+  {
+    "mobile": false,
+    "catalogRequests": 1,
+    "folderRequests": 1,
+    "initialCatalog": 1,
+    "initialGroups": 1,
+    "initialReturnMs": 54
+  },
+  {
+    "mobile": true,
+    "catalogRequests": 1,
+    "folderRequests": 1,
+    "initialCatalog": 1,
+    "initialGroups": 1,
+    "initialReturnMs": 52
+  }
+]

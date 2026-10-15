@@ -1,0 +1,1 @@
+PASS compiled extension PC/touch: startup recent/full lists; CONVO/RP/GAME actual room entry→list return twice each (12 round trips); fresh full-list requests and recent/full toggles preserve content; real empty room remains empty. Mock HTTP/native engine, not live server.

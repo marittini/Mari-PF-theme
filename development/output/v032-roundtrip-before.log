@@ -1,0 +1,6 @@
+page.waitForFunction: Timeout 2500ms exceeded.
+    at check (/workspace/scratch/da7efaa31822/tests/v032-roundtrip.cjs:5:112)
+    at /workspace/scratch/da7efaa31822/tests/v032-roundtrip.cjs:7:444 {
+  log: [],
+  name: 'TimeoutError'
+}
