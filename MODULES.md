@@ -10,7 +10,7 @@
 | theme | `src/ui/theme.js` | design, navigation, ui |
 | data | `src/core/data.js` | catalog, core, navigation, tags, ui |
 | core | `src/core/runtime.js` | avatars, convo, data, design, previews, tags, translations, ui, updates |
-| navigation | `src/engine/navigation.js` | adapter, avatars, catalog, chats, convo, core, data, extensions, gestures, help, history, hub, nativeUi, notifications, ui |
+| navigation | `src/engine/navigation.js` | adapter, avatars, catalog, chats, convo, core, data, extensions, gestures, help, history, hub, mounts, nativeUi, notifications, ui |
 | history | `src/engine/history.js` | catalog, core, gestures, navigation, ui |
 | avatars | `src/features/avatars.js` | adapter, core, navigation, ui |
 | catalog | `src/features/catalog.js` | avatars, core, daily, data, design, extensions, history, markdown, navigation, ui |
@@ -20,7 +20,7 @@
 | notifications | `src/features/notifications.js` | adapter, avatars, chats, core, data, navigation, ui, updates |
 | hub | `src/ui/hub.js` | catalog, design, extensions, navigation, ui |
 | extensions | `src/engine/extensions.js` | adapter, core, data, history, navigation, theme, ui |
-| mounts | `src/engine/mounts.js` | avatars, chats, convo, core, navigation, notifications, ui, updates |
+| mounts | `src/engine/mounts.js` | adapter, avatars, chats, convo, core, gestures, navigation, notifications, ui, updates |
 | markdown | `src/ui/markdown.js` | ui |
 | gestures | `src/ui/gestures.js` | adapter, catalog, chats, core, data, history, navigation, ui |
 | previews | `src/features/previews.js` | chats, core, data, ui |
@@ -140,7 +140,7 @@
 
 팩토리: `createAdapter`
 
-공개 함수: `nativeTarget`, `engineActions`, `surfaceHasChatId`, `prepareChat`, `personaCropForImage`, `engineNavigator`, `eachHook`, `liveBubble`
+공개 함수: `nativeTarget`, `engineActions`, `surfaceHasChatId`, `prepareChat`, `personaCropForImage`, `engineNavigator`, `eachHook`, `liveBubble`, `chatSurface`
 
 소유 상태: `actionNames`
 
@@ -180,11 +180,11 @@
 
 팩토리: `createMounts`
 
-공개 함수: `checkEngineHome`, `bindShell`, `visibility`, `resumeActivity`
+공개 함수: `checkEngineHome`, `bindShell`, `visibility`, `resumeActivity`, `watchStart`, `checkStart`, `stopStart`
 
-소유 상태: `shellObserver`, `centerObserver`, `notificationMountObserver`, `resumeTimer`, `resumeAt`
+소유 상태: `shellObserver`, `centerObserver`, `notificationMountObserver`, `resumeTimer`, `resumeAt`, `startObserver`, `startCancelTimer`, `startSignal`, `startPreviousId`, `startSawDialog`
 
-다른 모듈 상태 쓰기: `navigation.routeIntent`
+다른 모듈 상태 쓰기: `navigation.roomId`, `chats.chatMode`
 
 ## markdown
 
