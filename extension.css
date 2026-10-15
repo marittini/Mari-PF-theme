@@ -250,7 +250,7 @@ html.mft-enabled [data-chat-mode="conversation"] .mari-message>div:has(>.mari-me
 html.mft-enabled [data-chat-mode="conversation"] .mari-message-avatar{align-self:flex-start!important;margin-top:2px!important}
 
 /* 0.13: engine native panels cannot expose Home during their enter animation. */
-html.mft-enabled[data-mft-native-layer="panel"] [data-component="HomeBrowserHub"],html.mft-enabled[data-mft-native-layer="detail"] [data-component="HomeBrowserHub"]{visibility:hidden!important;pointer-events:none!important}
+html.mft-enabled[data-mft-native-layer="start"] [data-component="HomeBrowserHub"],html.mft-enabled[data-mft-native-layer="panel"] [data-component="HomeBrowserHub"],html.mft-enabled[data-mft-native-layer="detail"] [data-component="HomeBrowserHub"]{visibility:hidden!important;pointer-events:none!important}
 html.mft-enabled .mari-modal{top:var(--mari-visual-viewport-offset-top,0px)!important;bottom:auto!important;height:calc(var(--mft-available-height) - 12px)!important;min-height:0!important;padding:12px!important}
 html.mft-enabled .mari-modal-panel{max-height:calc(var(--mft-available-height) - 36px)!important;min-height:0!important}
 @media(max-width:1023px){html.mft-enabled :is([data-component="RightPanelMobile"],[data-component="MobileDetailSheet"],[data-component="ChatSidebarPanel"]){height:calc(var(--mft-available-height) - 3rem - env(safe-area-inset-top,0px) - 12px)!important;max-height:calc(var(--mft-available-height) - 3rem - env(safe-area-inset-top,0px) - 12px)!important}}
