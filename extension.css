@@ -152,7 +152,7 @@ html.mft-enabled .mari-modal-panel button:has(svg.lucide-message-circle),html.mf
 html.mft-enabled .mari-modal-panel>div{max-width:100%;margin-inline:auto}
 html.mft-enabled [data-chat-mode="roleplay"] :is(.mari-message-name,.mari-roleplay-message-body>div:first-child){text-align:center!important;justify-content:center!important}
 html.mft-enabled [data-chat-mode="roleplay"] [class*="swipe"]{justify-content:center!important;text-align:center!important}
-html.mft-enabled [data-mft-split]{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+html.mft-enabled [data-mft-split]:not(.ptx-view){position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
 html.mft-enabled .mft-split-display{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:100%}
 html.mft-enabled .mft-line{display:block;background:var(--mft-card);color:var(--mft-ink);padding:8px 12px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;font:inherit}
 html.mft-enabled .mari-message-user .mft-split-display{align-items:flex-end}
@@ -176,7 +176,7 @@ html.mft-enabled[data-mft-agent] [data-component="HomeBrowserHub"],html.mft-enab
 html.mft-enabled[data-mft-agent] :is(marinara-capability-noodle,marinara-capability-slurp,marinara-capability-slurp2,[data-marinara-capability-scope]){min-height:0!important;max-height:100%!important;--mari-visual-viewport-height:var(--mft-available-height)}
 html.mft-enabled [data-component="HomeBrowserHub"] [data-component*="MobileBottomNav"]{bottom:0!important}
 /* Generated lines are isolated from third-party message scanners. Exactly one presentation. */
-html.mft-enabled [data-chat-mode="conversation"] .mari-message-bubble[data-mft-split]{display:none!important;position:static!important;width:auto!important;height:auto!important;clip-path:none!important}
+html.mft-enabled [data-chat-mode="conversation"] .mari-message-bubble[data-mft-split]:not(.ptx-view){display:none!important;position:static!important;width:auto!important;height:auto!important;clip-path:none!important}
 html.mft-enabled [data-chat-mode="conversation"] .mari-convo-viewer-split-display{display:none!important}
 html.mft-enabled [data-chat-mode="conversation"] [data-mari-convo-viewer-split-source]:not([data-mft-split]){display:revert!important}
 html.mft-enabled mft-message-lines{margin-block:0;max-width:100%;min-width:0}
@@ -211,7 +211,7 @@ html.mft-enabled [data-chat-mode="conversation"] .mari-message-user .mari-messag
 html.mft-enabled [data-chat-mode="conversation"] .mari-message-body:has(>.mari-message-meta){min-width:0;align-self:center}
 html.mft-enabled [data-chat-mode="conversation"] .mari-message-content:not(.mari-message-bubble){line-height:1.8!important;white-space:pre-wrap;overflow-wrap:anywhere}
 /* Bubble input is hidden only while its one generated presentation is present. */
-html.mft-enabled [data-chat-mode="conversation"] .mari-message-bubble[data-mft-split]{pointer-events:none!important}
+html.mft-enabled [data-chat-mode="conversation"] .mari-message-bubble[data-mft-split]:not(.ptx-view){pointer-events:none!important}
 /* RP metadata never takes visual space beside a character name. */
 html.mft-enabled [data-chat-mode="roleplay"] .mari-message-body>div:has(>.mari-message-name)>span:not(.mari-message-name){display:none!important}
 html.mft-enabled [data-chat-mode="roleplay"] .mari-message-name{line-height:1.5!important}
