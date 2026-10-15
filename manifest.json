@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "마리나라 플랫폼화",
-    "version": "0.29.0",
-    "description": "별도 번역문 크기 차이 조절·저장 추가, 디자인 설정을 색상·홈/라이브러리·채팅 글자/여백으로 정리.",
+    "version": "0.31.1",
+    "description": "초보자용 Markdown 도움말과 설치환경을 포함한 오류 질문 안내 추가.",
     "runtime": "client",
     "capabilities": [
       "full_page_access"
