@@ -1,4 +1,4 @@
-(/* Marinara Platform 0.31.1 — generated; edit src/ and styles/. */
+(/* Marinara Platform 0.31.2 — generated; edit src/ and styles/. */
 function(){
 "use strict";
 // Source: src/ui/shell.js
@@ -822,15 +822,19 @@ function createNavigation(deps) {
         }
         if (signal.aborted) return;
         if (start) {
+          const previousRoomId = deps.adapter.chatSurface()?.id || null;
           a.setActiveChatId(null);
           mftModuleState.routeIntent = 'start';
           deps.ui.state.html.classList.remove('mft-transition');
           mftModuleState.bridgeBusy = false;
+          deps.ui.native();
+          deps.ui.state.html.dataset.mftNativeLayer = 'start';
           deps.ui.notice('');
           a.openModal('start-character-chat', {
             characterId: item.id,
             characterName: item.name
           });
+          deps.mounts.watchStart(signal, previousRoomId);
         } else {
           const navigate = deps.adapter.engineNavigator();
           if (navigate) navigate({
@@ -916,6 +920,8 @@ function createNavigation(deps) {
   // The action adapter is resolved on explicit navigation. Message observation is scoped to active split rendering.
   
   function onModeClick(e) {
+    // The native launch flow owns mode selection and setup until it is complete.
+    if (mftModuleState.routeIntent === 'start') return;
     if (deps.ui.state.root.dataset.native === 'true' && mftModuleState.routeIntent !== 'chat') queueMicrotask(deps.nativeUi.bindNativeUi);
     const sidebarClose = e.target.closest?.('[data-component="ChatSidebar"] .mari-sidebar-header button:has(svg.lucide-x)');
     if (sidebarClose) {
@@ -2469,6 +2475,21 @@ function createAdapter(deps) {
     return false;
   }
   
+  function chatSurface() {
+    for (const surface of document.querySelectorAll('[data-chat-mode]')) {
+      const composer = surface.querySelector('[data-chat-composer][data-chat-id]');
+      if (composer?.dataset.chatId) return { surface, id: composer.dataset.chatId, mode: surface.dataset.chatMode };
+      let id = null;
+      eachHook(surface, value => {
+        const candidate = value?.activeChatId || value?.chatId || value?.chat?.id;
+        if (typeof candidate === 'string' && surfaceHasChatId(surface, candidate)) { id = candidate; return true; }
+        return false;
+      });
+      if (id) return { surface, id, mode: surface.dataset.chatMode };
+    }
+    return null;
+  }
+
   function prepareChat(a) {
     a.setPendingNewChatMode?.(null);
     a.setShouldOpenSettings?.(false);
@@ -2603,7 +2624,7 @@ function createAdapter(deps) {
   const cleanup = [
 
   ];
-  return { state: mftModuleState, initialize, cleanup, nativeTarget, engineActions, surfaceHasChatId, prepareChat, personaCropForImage, engineNavigator, eachHook, liveBubble };
+  return { state: mftModuleState, initialize, cleanup, nativeTarget, engineActions, surfaceHasChatId, chatSurface, prepareChat, personaCropForImage, engineNavigator, eachHook, liveBubble };
 }
 
 // Source: src/features/notifications.js
@@ -3348,19 +3369,73 @@ function createMounts(deps) {
     centerObserver: undefined,
     notificationMountObserver: undefined,
     resumeTimer: null,
-    resumeAt: 0
+    resumeAt: 0,
+    startObserver: null,
+    startCancelTimer: null,
+    startSignal: null,
+    startPreviousId: null,
+    startSawDialog: false
   };
 
   function checkEngineHome() {
     if (deps.core.state.disposed || deps.navigation.state.bridgeBusy) return;
     if (deps.ui.state.root.dataset.native === 'true' && deps.navigation.state.routeIntent === 'chat') deps.convo.bindSplits();
-    if (deps.navigation.state.routeIntent === 'start' && document.querySelector('[data-chat-mode]') && !document.querySelector('[data-component="ChatArea.RestoringChat"]') && !document.querySelector('[role="dialog"],.mari-modal')) {
-      deps.navigation.finishRoute('chat');
-      deps.navigation.state.routeIntent = 'chat';
-    }
+    if (deps.navigation.state.routeIntent === 'start') checkStart();
     // Native settings/extensions may render asynchronously. Never guess that a temporary blank means Home.
   }
   
+  function stopStart() {
+    mftModuleState.startObserver?.disconnect();
+    mftModuleState.startObserver = null;
+    clearTimeout(mftModuleState.startCancelTimer);
+    mftModuleState.startCancelTimer = null;
+    mftModuleState.startSignal?.removeEventListener('abort', stopStart);
+    mftModuleState.startSignal = null;
+  }
+
+  function checkStart() {
+    if (deps.core.state.disposed || deps.navigation.state.routeIntent !== 'start') { stopStart(); return; }
+    const blocking = [...document.querySelectorAll('[role="dialog"],.mari-modal,[data-component="NewChatConnectionGate"]')].some(deps.ui.state.visible);
+    if (blocking) mftModuleState.startSawDialog = true;
+    const chat = deps.adapter.chatSurface();
+    const fresh = chat && chat.id !== mftModuleState.startPreviousId;
+    const restoring = document.querySelector('[data-component="ChatArea.RestoringChat"]');
+    if (fresh && !blocking && !restoring) {
+      deps.navigation.state.roomId = chat.id;
+      deps.chats.state.chatMode = chat.mode || deps.chats.state.chatMode;
+      stopStart();
+      deps.navigation.finishRoute('chat');
+      return;
+    }
+    // Closing the mode chooser without creating a room returns to the original card.
+    if (!blocking && !fresh && !restoring && mftModuleState.startSawDialog) {
+      if (!mftModuleState.startCancelTimer) mftModuleState.startCancelTimer = setTimeout(() => {
+        mftModuleState.startCancelTimer = null;
+        const next = deps.adapter.chatSurface();
+        if (deps.navigation.state.routeIntent === 'start' && !(next && next.id !== mftModuleState.startPreviousId) && !document.querySelector('[role="dialog"],.mari-modal,[data-component="ChatArea.RestoringChat"]')) {
+          stopStart();
+          deps.gestures.returnFromNative();
+        }
+      }, 500);
+    } else {
+      clearTimeout(mftModuleState.startCancelTimer);
+      mftModuleState.startCancelTimer = null;
+    }
+  }
+
+  function watchStart(signal, previousId) {
+    stopStart();
+    mftModuleState.startPreviousId = previousId;
+    mftModuleState.startSawDialog = false;
+    mftModuleState.startSignal = signal;
+    if (signal?.aborted) return;
+    signal?.addEventListener('abort', stopStart, { once: true });
+    mftModuleState.startObserver = new MutationObserver(checkStart);
+    // Temporary, event-driven observer also sees dialogs portaled outside AppShell.
+    mftModuleState.startObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-chat-id', 'data-chat-mode', 'aria-hidden', 'hidden'] });
+    checkStart();
+  }
+
   function bindShell(attempt = 0) {
     const shell = document.querySelector('[data-component="AppShell"]');
     if (!shell) {
@@ -3464,6 +3539,7 @@ function createMounts(deps) {
     } }
   ];
   const cleanup = [
+    { order: 74, run() { stopStart(); } },
     { order: 36, run() {
       mftModuleState.notificationMountObserver?.disconnect();
     } },
@@ -3484,7 +3560,7 @@ function createMounts(deps) {
       clearTimeout(mftModuleState.resumeTimer);
     } }
   ];
-  return { state: mftModuleState, initialize, cleanup, checkEngineHome, bindShell, visibility, resumeActivity };
+  return { state: mftModuleState, initialize, cleanup, checkEngineHome, bindShell, visibility, resumeActivity, watchStart, checkStart, stopStart };
 }
 
 // Source: src/ui/markdown.js
