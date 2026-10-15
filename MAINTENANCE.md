@@ -1,3 +1,12 @@
+## 0.31.4 loading and refresh invariants
+
+- data.get merges option-free GETs only within the same view epoch. Writes never share a pending read or read cache. Each pending entry removes only itself on completion.
+- Catalog and folder requests run concurrently. Cards render independently; late folders reuse per-ID card pools (including membership in multiple folders) and must check the epoch before touching the view.
+- Chat refresh uses maps for rendered/stored rows and a cursor for minimal reorder. Keep unchanged rows in place to preserve focus, scroll and foreign DOM.
+- Preview lookup starts from rendered nodes, not the whole room list. Single-room message changes preserve unrelated cached previews.
+- Image IntersectionObserver is retained and disconnected on view stop; do not introduce periodic scans.
+- Regressions: tests/performance.cjs, tests/list-updates.cjs, tests/v031.cjs, tests/v031-compat.cjs and tests/start-flow.cjs. Performance fixtures do not measure physical device heat.
+
 # 유지보수 안내 · 0.31.0
 
 설치용 파일은 manifest.json, extension.js, extension.css입니다. 개발 소스는 development/theme 아래에 있습니다. 소스만 수정하고 빌드한 결과를 설치합니다. 배포 JS는 하나의 IIFE이며 런타임 모듈 다운로드가 없습니다.
@@ -80,10 +89,14 @@ visibility/focus/pageshow/online 복귀 이벤트는 120ms 단위로 합쳐 처�
 
 첨부 확장 전체 코드를 수정하거나 배포물에 포함하지 않습니다. tests/ptx-dom-reference.js는 제공된 코드의 DOM 처리 함수만 추출한 검사용 참조이며 출처 해시를 기록했습니다. API 번역 요청 자체나 모든 외부 확장 조합을 통합 검증한 것은 아닙니다.
 
-## 캐릭터에서 새 대화 시작 · 0.31.2
+## 캐릭터 시작·반복 생성·게임 취소 · 0.31.3
 
-navigation.bridge의 start 분기는 순정 앱을 표시한 상태로 원래 start-character-chat 모달을 엽니다. start 레이어에서는 순정 HomeBrowserHub만 가립니다. 모드 선택과 옵션 설정은 엔진 핸들러가 소유하며 테마의 지연 클릭 내비게이션이나 prepareChat 상태 초기화를 적용하지 않습니다.
+전용 src/engine/launch.js가 새 대화의 choosing/creating/setup/opening/closing/ready 단계를 관리합니다. mode 버튼과 닫기 버튼을 관찰하며 원래 핸들러를 호출하거나 대체하지 않습니다. 방 생성 API나 생성 옵션을 테마에서 수정하지 않습니다.
 
-mounts.watchStart는 이 시작 과정에서만 DOM 관찰자를 붙입니다. 본문 밖으로 포털된 설정창도 포함합니다. 이전 방 ID와 다른 실제 채팅 표면을 확인하고, 설정 모달/복구 로딩이 끝난 뒤 roomId와 모드를 기록하여 finishRoute를 실행합니다. 완료·취소·라우트 중단·확장 종료 시 관찰자와 취소 타이머를 정리합니다. 주기적 폴링과 추가 방 생성 요청은 없습니다.
+adapter.activeSession은 엔진이 setActiveChatId에서 동기적으로 기록/해제하는 marinara-active-chat-id를 읽습니다. 이전 방과 다른 ID인지 확인하며, composer 또는 현재 방 props도 해당 ID와 맞는지 검사합니다. 같은 모드에서 DOM과 React alternate가 재사용되어도 예전 방을 채택하지 않습니다. localStorage 접근이 불가능한 경우에만 DOM 기반 확인으로 제한합니다.
 
-검사: node tests/start-flow.cjs. PC/모바일의 세 모드에서 숨겨진 설정창, 중복 클릭, 옵션 보존, 방 식별, 취소 복귀를 검사합니다. 출발 화면이 이전 방인 경우의 오래된 표면도 배제합니다.
+설정 UI를 실제로 관찰한 뒤 닫히는 시점까지 기다립니다. Lazy/AnimatePresence의 빈 구간을 임의의 500ms 취소로 간주하지 않습니다. 게임의 시작/인트로 화면에는 data-chat-mode나 입력창이 없을 수 있어 roomReady가 현재 방 props를 제한된 후보 범위에서 확인합니다.
+
+GameSetupWizard의 X는 순정에서 빈 방을 비동기로 삭제하고 활성 방 ID를 null로 바꿉니다. launch는 이를 확인하면 예전 RestoringChat이 남아 있어도 원래 카드로 복귀합니다. 저장된 게임을 유지하는 닫기는 현재 방을 유지합니다. 시작 중 history pop은 순정에 맡깁니다. 완료·취소·라우트 abort·종료 시 관찰자/리스너/타이머를 해제합니다. 주기적 폴링은 없습니다.
+
+검사: node tests/start-flow.cjs. PC/모바일에서 각 모드 두 번 연속 생성, DOM 재사용과 이전 Fiber, 늦게 마운트되는 설정, 옵션 보존, 중복 생성, 게임 X 비동기 삭제와 오래된 로딩, 선택창 취소를 검사합니다. 모의 엔진 계약이며 제보자의 실제 설치 환경에서 직접 실행한 검사는 아닙니다.
