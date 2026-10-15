@@ -1,1 +1,0 @@
-PASS cached native setter survives hook unmount; active ID is verified; unchanged/throwing/missing/unknown-state failures do not report closure; cleanup releases setter.

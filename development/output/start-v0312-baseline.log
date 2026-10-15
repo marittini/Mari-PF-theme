@@ -1,5 +1,0 @@
-page.waitForFunction: Timeout 7000ms exceeded.
-    at /workspace/scratch/da7efaa31822/tests/start-flow.cjs:14:338 {
-  log: [],
-  name: 'TimeoutError'
-}

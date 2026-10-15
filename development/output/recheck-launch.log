@@ -1,1 +1,0 @@
-PASS PC/mobile: mounted-null reset actions; stale global flags/local setup cleared for existing room; role-less ChatSetupWizard retains start ownership; game browser Back handles native-first closure without stale X and theme-owned cancellation with 1100ms deletion, blocks early navigation and preserves subsequently opened existing room.

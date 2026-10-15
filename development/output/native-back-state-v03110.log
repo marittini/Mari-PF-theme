@@ -1,1 +1,0 @@
-PASS native-first game Back exits on authoritative active-ID removal, including stale loading DOM, without stale X; back queued during creation retains cancellation ownership until native closure.

@@ -1,6 +1,0 @@
-/* native / translations; cascade order: style-order.json. */
-/* @mft-part translations-091 */
-
-/* 0.28: translations follow the same message's computed user-selected size. */
-html.mft-enabled [data-chat-mode] .translation-text{font-size:var(--mft-translation-size,inherit)!important;line-height:var(--mft-chat-line-height,1.8)!important;letter-spacing:var(--mft-chat-letter-spacing,0px)!important}
-html.mft-enabled [data-chat-mode] .translation-text :is(p,li,span,div,blockquote,pre,code){font-size:inherit!important;line-height:inherit!important;letter-spacing:inherit!important}/* @mft-end */

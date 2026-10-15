@@ -1,1 +1,0 @@
-PASS verified ME useDeleteChat onMutate/onError/onSettled: unmounted per-call callback recovery, native callback retained, failed deletion kept, unrelated mutation/room/route protected, subscription cleanup. No live React/TanStack runtime.

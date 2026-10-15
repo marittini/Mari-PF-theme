@@ -1,1 +1,0 @@
-PASS portal wakeup; panel closes native session; stale route completion/failure and settings mutation blocked; failed exit retains origin and native surface; stale composer rejected; mobile wizard back uses native X and respects disabled state; agent selection acknowledgement and unrelated extension panel isolation.

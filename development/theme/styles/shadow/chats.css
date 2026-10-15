@@ -1,8 +1,0 @@
-/* shadow / chats; cascade order: style-order.json. */
-/* @mft-part chats-009 */.chat-row{display:flex;align-items:center;width:100%;gap:14px;padding:18px 0}.chat-row>div:nth-child(2){min-width:0;flex:1}.chat-row .summary{white-space:nowrap;display:block;text-overflow:ellipsis;margin:5px 0}/* @mft-end */
-/* @mft-part chats-017 */.chat-switch{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:4px;border-radius:12px;background:var(--surface);margin:12px 0}.chat-switch>button{text-align:center;min-width:0}.chat-switch>button:nth-child(n+3){display:none}/* @mft-end */
-/* @mft-part chats-020 */.chat-item{display:flex;align-items:center;gap:6px}.chat-item .chat-row{flex:1;min-width:0}/* @mft-end */
-/* @mft-part chats-067 */
-
-/* 0.18: keep the two equal chat choices, slightly reduce vertical space. */
-.chat-switch{padding:3px;margin-block:9px}.chat-switch>button{padding-block:7px;line-height:1.4}/* @mft-end */

@@ -1,1 +1,0 @@
-PASS native start flow PC/mobile: each mode twice with reused DOM/old Fiber -> visible setup options -> preset/scenario -> matching room; no duplicate creation; setup flags untouched; game X async deletion/stale loader and chooser cancel return to card; cleanup.

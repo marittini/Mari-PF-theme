@@ -1,9 +1,0 @@
-AssertionError [ERR_ASSERTION]: Created room exists but its setup wizard is hidden by the theme
-    at /workspace/scratch/da7efaa31822/tests/start-flow.cjs:12:730 {
-  generatedMessage: false,
-  code: 'ERR_ASSERTION',
-  actual: false,
-  expected: true,
-  operator: '==',
-  diff: 'simple'
-}

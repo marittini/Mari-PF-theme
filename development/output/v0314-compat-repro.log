@@ -1,5 +1,0 @@
-page.waitForFunction: Timeout 8000ms exceeded.
-    at /workspace/scratch/da7efaa31822/tests/v0315-compat.cjs:49:13 {
-  log: [],
-  name: 'TimeoutError'
-}

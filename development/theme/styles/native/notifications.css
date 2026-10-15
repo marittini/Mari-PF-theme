@@ -1,3 +1,0 @@
-/* native / notifications; cascade order: style-order.json. */
-/* @mft-part notifications-053 */
-html.mft-enabled[data-mft-alerts] [data-component="CenterContent"]>[class~="pointer-events-none"][class~="absolute"][class~="right-3"]{visibility:hidden!important;pointer-events:none!important}/* @mft-end */

@@ -1,1 +1,0 @@
-PASS PC/mobile A->Home with missing native hooks: native/store active ID cleared; cached Home catalog/folders reused; background A unread survives; A->B background preserves B and A unread; notification-origin history Back closes room.

@@ -1,7 +1,0 @@
-/* native / tags; cascade order: style-order.json. */
-/* @mft-part tags-076 */
-html.mft-enabled [data-mft-tag-duplicate]{display:none!important}/* @mft-end */
-/* @mft-part tags-080 */
-
-/* 0.21: in-app suggestions, with touch and keyboard controls. */
-.mft-tag-list{width:100%;max-height:min(180px,30dvh);overflow:auto;overscroll-behavior:contain;margin:6px 0 12px;padding:5px;border:1px solid var(--mft-line);border-radius:12px;background:var(--mft-card);color:var(--mft-ink);font-family:inherit}.mft-tag-option{display:block;width:100%;padding:9px 12px;min-height:36px;text-align:left;border:0;border-radius:8px;background:transparent;color:inherit;font:inherit;cursor:pointer}.mft-tag-option:hover,.mft-tag-option[aria-selected=true]{background:var(--mft-soft);color:var(--mft-accent)}.mft-tag-empty{margin:5px;padding:6px;color:var(--mft-muted);font-size:.8rem;line-height:1.5}/* @mft-end */

@@ -1,3 +1,0 @@
-PASS previews: populated timestamp-null room, hidden/empty trailing row, metadata refresh preserves text, same-version pending request shared, stale generation ignored, same-timestamp edit invalidation, confirmed empty response.
-PASS unread: old acknowledged note suppressed, count restart recognized, hidden native room not treated as read, visible active room unchanged, restored native room released without theme navigation.
-PASS existing-room setup: native retained wizard callback before lazy DOM mount, finish-opened settings closed through native callback, game setup untouched.
