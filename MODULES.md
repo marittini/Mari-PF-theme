@@ -10,7 +10,7 @@
 | theme | `src/ui/theme.js` | design, navigation, ui |
 | data | `src/core/data.js` | catalog, core, navigation, tags, ui |
 | core | `src/core/runtime.js` | avatars, convo, data, design, previews, tags, translations, ui, updates |
-| navigation | `src/engine/navigation.js` | adapter, avatars, catalog, chats, convo, core, data, extensions, gestures, help, history, hub, mounts, nativeUi, notifications, ui |
+| navigation | `src/engine/navigation.js` | adapter, avatars, catalog, chats, convo, core, data, extensions, gestures, help, history, hub, launch, nativeUi, notifications, ui |
 | history | `src/engine/history.js` | catalog, core, gestures, navigation, ui |
 | avatars | `src/features/avatars.js` | adapter, core, navigation, ui |
 | catalog | `src/features/catalog.js` | avatars, core, daily, data, design, extensions, history, markdown, navigation, ui |
@@ -20,7 +20,7 @@
 | notifications | `src/features/notifications.js` | adapter, avatars, chats, core, data, navigation, ui, updates |
 | hub | `src/ui/hub.js` | catalog, design, extensions, navigation, ui |
 | extensions | `src/engine/extensions.js` | adapter, core, data, history, navigation, theme, ui |
-| mounts | `src/engine/mounts.js` | adapter, avatars, chats, convo, core, gestures, navigation, notifications, ui, updates |
+| mounts | `src/engine/mounts.js` | avatars, chats, convo, core, launch, navigation, notifications, ui, updates |
 | markdown | `src/ui/markdown.js` | ui |
 | gestures | `src/ui/gestures.js` | adapter, catalog, chats, core, data, history, navigation, ui |
 | previews | `src/features/previews.js` | chats, core, data, ui |
@@ -35,6 +35,7 @@
 | bootstrap | `src/core/bootstrap.js` | chats, history, mounts, navigation, notifications |
 | lifecycle | `src/core/lifecycle.js` | 없음 |
 | help | `src/features/help.js` | markdown, navigation, ui |
+| launch | `src/engine/launch.js` | adapter, chats, core, gestures, navigation, ui |
 
 ## ui
 
@@ -62,7 +63,7 @@
 
 공개 함수: `resourceFetchWrapper`, `compact`, `get`, `jsonRequest`
 
-소유 상태: `cache`, `viewRequests`, `request`, `refreshWriteQueued`, `resourceFetch`
+소유 상태: `cache`, `viewRequests`, `request`, `refreshWriteQueued`, `resourceFetch`, `inflight`
 
 다른 모듈 상태 쓰기: 없음
 
@@ -140,7 +141,7 @@
 
 팩토리: `createAdapter`
 
-공개 함수: `nativeTarget`, `engineActions`, `surfaceHasChatId`, `prepareChat`, `personaCropForImage`, `engineNavigator`, `eachHook`, `liveBubble`, `chatSurface`
+공개 함수: `nativeTarget`, `engineActions`, `surfaceHasChatId`, `prepareChat`, `personaCropForImage`, `engineNavigator`, `eachHook`, `liveBubble`, `chatSurface`, `activeSession`, `roomReady`
 
 소유 상태: `actionNames`
 
@@ -180,11 +181,11 @@
 
 팩토리: `createMounts`
 
-공개 함수: `checkEngineHome`, `bindShell`, `visibility`, `resumeActivity`, `watchStart`, `checkStart`, `stopStart`
+공개 함수: `checkEngineHome`, `bindShell`, `visibility`, `resumeActivity`
 
-소유 상태: `shellObserver`, `centerObserver`, `notificationMountObserver`, `resumeTimer`, `resumeAt`, `startObserver`, `startCancelTimer`, `startSignal`, `startPreviousId`, `startSawDialog`
+소유 상태: `shellObserver`, `centerObserver`, `notificationMountObserver`, `resumeTimer`, `resumeAt`
 
-다른 모듈 상태 쓰기: `navigation.roomId`, `chats.chatMode`
+다른 모듈 상태 쓰기: 없음
 
 ## markdown
 
@@ -325,3 +326,13 @@
 소유 상태: 없음
 
 다른 모듈 상태 쓰기: 없음
+
+## launch
+
+팩토리: `createLaunch`
+
+공개 함수: `begin`, `reconcile`, `stop`, `onClick`, `checkExit`
+
+소유 상태: `observer`, `signal`, `previousId`, `selectedMode`, `phase`, `sawSetup`, `closing`, `settleTimer`, `deadline`
+
+다른 모듈 상태 쓰기: `navigation.roomId`, `chats.chatMode`
