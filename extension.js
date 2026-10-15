@@ -1,4 +1,4 @@
-(/* Marinara Platform 0.31.2 — generated; edit src/ and styles/. */
+(/* Marinara Platform 0.31.4 — generated; edit src/ and styles/. */
 function(){
 "use strict";
 // Source: src/ui/shell.js
@@ -386,7 +386,8 @@ function createData(deps) {
     viewRequests: undefined,
     request: undefined,
     refreshWriteQueued: undefined,
-    resourceFetch: undefined
+    resourceFetch: undefined,
+    inflight: new Map()
   };
 
   function resourceFetchWrapper(input, init) {
@@ -432,40 +433,51 @@ function createData(deps) {
   }
   
   async function get(path, ticket, convert = x => x, options = {}) {
-    const old = mftModuleState.cache.get(path);
+    const readOnly = !options.method || options.method.toUpperCase() === 'GET';
+    const shareable = readOnly && Object.keys(options).length === 0;
+    const old = readOnly && mftModuleState.cache.get(path);
     if (old && Date.now() - old.time < 60000) {
       mftModuleState.cache.delete(path);
       mftModuleState.cache.set(path, old);
       return old.data;
     }
+    const pending = shareable && mftModuleState.inflight.get(path);
+    if (pending && pending.ticket === ticket && !pending.controller.signal.aborted) return pending.promise;
     const c = new AbortController();
-    mftModuleState.viewRequests.add(c);
-    mftModuleState.request = c;
-    const deadline = deps.core.later(() => c.abort(new DOMException('Request timeout', 'TimeoutError')), 15000);
-    try {
-      const res = await fetch('/api' + path.split('?mft=')[0], {
-        signal: c.signal,
-        credentials: 'same-origin',
-        ...options
-      });
-      if (!res.ok) throw Error('HTTP ' + res.status);
-      const raw = await res.json();
-      if (deps.core.state.disposed || ticket !== deps.core.state.epoch) throw new DOMException('Stale', 'AbortError');
-      const data = convert(raw);
-      mftModuleState.cache.set(path, {
-        time: Date.now(),
-        data
-      });
-      while (mftModuleState.cache.size > 12) mftModuleState.cache.delete(mftModuleState.cache.keys().next().value);
-      return data;
-    } finally {
-      clearTimeout(deadline);
-      deps.core.state.timers.delete(deadline);
-      mftModuleState.viewRequests.delete(c);
-      if (mftModuleState.request === c) mftModuleState.request = null;
-    }
+    const entry = { ticket, controller: c, promise: null };
+    const run = async () => {
+      mftModuleState.viewRequests.add(c);
+      mftModuleState.request = c;
+      const deadline = deps.core.later(() => c.abort(new DOMException('Request timeout', 'TimeoutError')), 15000);
+      try {
+        const res = await fetch('/api' + path.split('?mft=')[0], {
+          signal: c.signal,
+          credentials: 'same-origin',
+          ...options
+        });
+        if (!res.ok) throw Error('HTTP ' + res.status);
+        const raw = await res.json();
+        if (deps.core.state.disposed || ticket !== deps.core.state.epoch) throw new DOMException('Stale', 'AbortError');
+        const data = convert(raw);
+        if (readOnly) mftModuleState.cache.set(path, {
+          time: Date.now(),
+          data
+        });
+        while (mftModuleState.cache.size > 12) mftModuleState.cache.delete(mftModuleState.cache.keys().next().value);
+        return data;
+      } finally {
+        clearTimeout(deadline);
+        deps.core.state.timers.delete(deadline);
+        mftModuleState.viewRequests.delete(c);
+        if (mftModuleState.request === c) mftModuleState.request = null;
+        if (mftModuleState.inflight.get(path) === entry) mftModuleState.inflight.delete(path);
+      }
+    };
+    entry.promise = run();
+    if (shareable) mftModuleState.inflight.set(path, entry);
+    return entry.promise;
   }
-  
+
   async function jsonRequest(path, method = 'GET', data, signal, fresh = false) {
     const res = await fetch('/api' + path, {
       signal,
@@ -507,6 +519,7 @@ function createData(deps) {
     } },
     { order: 65, run() {
       mftModuleState.cache.clear();
+      mftModuleState.inflight.clear();
     } }
   ];
   return { state: mftModuleState, initialize, cleanup, resourceFetchWrapper, compact, get, jsonRequest };
@@ -796,11 +809,7 @@ function createNavigation(deps) {
         deps.chats.state.chatMode = item.mode || deps.chats.state.chatMode;
         deps.adapter.prepareChat(a);
         if (!item.fromNotification || !deps.notifications.nativeNotificationAction(item.id, 'onNavigate')) a.setActiveChatId(item.id);
-        await waitEngine(() => {
-          const composer = document.querySelector(`[data-chat-composer][data-chat-id="${CSS.escape(item.id)}"]`);
-          const mode = document.querySelector(`[data-chat-mode="${CSS.escape(item.mode || 'conversation')}"]`);
-          return !document.querySelector('[data-component="ChatArea.RestoringChat"]') && mode && (composer || deps.adapter.surfaceHasChatId(mode, item.id));
-        }, signal);
+        await waitEngine(() => deps.adapter.roomReady(item.id, item.mode || 'conversation'), signal);
         if (signal.aborted) return;
         mftModuleState.roomId = item.id;
         finishRoute('chat');
@@ -822,7 +831,8 @@ function createNavigation(deps) {
         }
         if (signal.aborted) return;
         if (start) {
-          const previousRoomId = deps.adapter.chatSurface()?.id || null;
+          const active = deps.adapter.activeSession();
+          const previousRoomId = active.known ? active.id : deps.adapter.chatSurface()?.id || null;
           a.setActiveChatId(null);
           mftModuleState.routeIntent = 'start';
           deps.ui.state.html.classList.remove('mft-transition');
@@ -834,7 +844,7 @@ function createNavigation(deps) {
             characterId: item.id,
             characterName: item.name
           });
-          deps.mounts.watchStart(signal, previousRoomId);
+          deps.launch.begin(signal, previousRoomId);
         } else {
           const navigate = deps.adapter.engineNavigator();
           if (navigate) navigate({
@@ -1074,7 +1084,8 @@ function createHistory(deps) {
   
   function onBack(event) {
     if (Date.now() < mftModuleState.exitUntil && deps.ui.state.root.dataset.native !== 'true' && deps.navigation.state.view === 'home') return;
-    if ((deps.navigation.state.routeIntent === 'start' || deps.navigation.state.routeIntent === 'extension') && document.querySelector('[role="dialog"],.mari-modal')) return;
+    if (deps.navigation.state.routeIntent === 'start') return;
+    if (deps.navigation.state.routeIntent === 'extension' && document.querySelector('[role="dialog"],.mari-modal')) return;
     if (deps.navigation.state.expectedEnginePops && Date.now() < deps.navigation.state.expectedEnginePopUntil) {
       deps.navigation.state.expectedEnginePops--;
       return;
@@ -1239,8 +1250,7 @@ function createAvatars(deps) {
       deps.ui.state.main.scrollTop = deps.navigation.state.restoreScrollTarget.scroll;
       deps.navigation.state.restoreScrollTarget = null;
     }
-    mftModuleState.imageObserver?.disconnect();
-    mftModuleState.imageObserver = new IntersectionObserver(entries => {
+    if (!mftModuleState.imageObserver) mftModuleState.imageObserver = new IntersectionObserver(entries => {
       for (const e of entries) if (e.isIntersecting) {
         const im = e.target;
         im.src = im.dataset.src;
@@ -1463,6 +1473,52 @@ function createCatalog(deps) {
     return s;
   }
   
+  // Regroup cards without recreating loaded portraits or click handlers.
+  function groupedSections(rows, groups, persona = false) {
+    const main = deps.ui.state.main;
+    const previous = [...main.querySelectorAll(persona ? '.persona-folder' : '.shelf:not(.daily-pick)')];
+    const pool = new Map();
+    for (const block of previous) for (const node of block.querySelectorAll(persona ? '[data-persona-id]' : '[data-character-id]')) {
+      const id = persona ? node.dataset.personaId : node.dataset.characterId;
+      if (!pool.has(id)) pool.set(id, []);
+      pool.get(id).push(node);
+    }
+    const grouped = new Set(), sections = [];
+    for (const group of groups) {
+      let ids = persona ? group.personaIds : group.characterIds;
+      try { if (typeof ids === 'string') ids = JSON.parse(ids); } catch { ids = []; }
+      const members = new Set(Array.isArray(ids) ? ids.map(String) : []);
+      const items = rows.filter(c => members.has(String(c.id)));
+      if (!items.length) continue;
+      items.forEach(c => grouped.add(String(c.id)));
+      sections.push([group.name || '이름 없는 폴더', items, false]);
+    }
+    const unfiled = rows.filter(c => !grouped.has(String(c.id)));
+    if (unfiled.length) sections.unshift([persona ? '페르소나' : '캐릭터', unfiled, true]);
+    const fragment = document.createDocumentFragment();
+    for (const [title, items, unfiled] of sections) {
+      const block = deps.ui.state.el('section', persona ? 'persona-folder' : 'shelf ' + (unfiled ? 'unfiled' : 'home-folder'));
+      block.append(deps.ui.state.el('h2', '', title));
+      const grid = deps.ui.state.el('div', persona ? 'gallery' : 'rail');
+      for (const c of items) {
+        let node = pool.get(String(c.id))?.shift();
+        if (!node && !persona) node = card(c);
+        if (!node) {
+          node = deps.ui.button('', () => detail(c), 'gallery-card');
+          node.dataset.personaId = c.id;
+          node.append(deps.avatars.avatar(c.avatarPath, c.name, 'art', c.avatarCrop), deps.ui.state.el('strong', 'card-name', c.name));
+          if (c.title) node.append(deps.ui.state.el('p', 'card-title', c.title));
+          if (c.tags.length) node.append(deps.ui.state.el('p', 'tags', c.tags.map(t => '#' + t).join(' ')));
+        }
+        grid.append(node);
+      }
+      block.append(grid);
+      fragment.append(block);
+    }
+    previous.forEach(node => node.remove());
+    main.insertBefore(fragment, main.querySelector('.pager'));
+  }
+
   function dailySection(c) {
     const sectionNode = section('오늘 당신을 만나러 온 캐릭터입니다.', [c]);
     sectionNode.classList.add('daily-pick');
@@ -1547,7 +1603,11 @@ function createCatalog(deps) {
         deps.avatars.observeImages();
         return;
       }
-      const [p, homeGroups] = await Promise.all([deps.data.get('/characters/catalog?' + new URLSearchParams({
+      let homeGroups = null;
+      const groupsPromise = !mftModuleState.query && !mftModuleState.filter
+        ? deps.data.get('/characters/groups/list', ticket, x => Array.isArray(x) ? x : []).catch(() => []).then(groups => homeGroups = groups)
+        : Promise.resolve(homeGroups = []);
+      const p = await deps.data.get('/characters/catalog?' + new URLSearchParams({
         limit: '12',
         offset: String(mftModuleState.pageOffset),
         sort: 'newest',
@@ -1558,37 +1618,16 @@ function createCatalog(deps) {
       }), ticket, x => ({
         items: (x.items || []).map(deps.data.compact),
         hasMore: !!x.hasMore
-      })), !mftModuleState.query && !mftModuleState.filter ? deps.data.get('/characters/groups/list', ticket, x => Array.isArray(x) ? x : []).catch(e => {
-        if (e.name === 'AbortError') throw e;
-        return [];
-      }) : Promise.resolve([])]);
+      }));
       if (ticket !== deps.core.state.epoch) return;
       loading.remove();
       if (!p.items.length) deps.ui.state.main.append(deps.ui.state.el('h2', '', '아직 캐릭터가 없어요'), deps.ui.state.el('p', 'muted', '검색어를 바꾸거나 제작에서 캐릭터를 추가해 주세요.'));else if (mftModuleState.query || mftModuleState.filter) deps.ui.state.main.append(section(mftModuleState.query ? '검색 결과' : '즐겨찾는 캐릭터', p.items));else {
-        const groups = homeGroups;
-        if (ticket !== deps.core.state.epoch) return;
-        const grouped = new Set();
-        for (const group of groups) {
-          let ids = group.characterIds;
-          try {
-            if (typeof ids === 'string') ids = JSON.parse(ids);
-          } catch {
-            ids = [];
-          }
-          const members = p.items.filter(c => Array.isArray(ids) && ids.map(String).includes(c.id));
-          if (!members.length) continue;
-          members.forEach(c => grouped.add(c.id));
-          const block = section(group.name || '이름 없는 폴더', members);
-          block.classList.add('home-folder');
-          deps.ui.state.main.append(block);
-        }
-        const unfiled = p.items.filter(c => !grouped.has(c.id));
-        if (unfiled.length) {
-          const block = section('캐릭터', unfiled);
-          block.classList.add('unfiled');
-          const first = deps.ui.state.main.querySelector('.home-folder');
-          if (first) first.before(block);else deps.ui.state.main.append(block);
-        }
+        groupedSections(p.items, homeGroups || []);
+        if (homeGroups === null) groupsPromise.then(groups => {
+          if (ticket !== deps.core.state.epoch || deps.core.state.disposed) return;
+          groupedSections(p.items, groups);
+          deps.avatars.observeImages();
+        });
       }
       const pager = deps.ui.state.el('div', 'pager');
       if (mftModuleState.pageOffset) pager.append(deps.ui.button('이전 캐릭터', () => {
@@ -1663,52 +1702,24 @@ function createCatalog(deps) {
     };
     deps.ui.state.main.append(search, deps.ui.button('새 페르소나 · 관리', () => deps.navigation.openNative('personas'), 'quiet'));
     try {
-      const [data, groups] = await Promise.all([deps.data.get('/characters/personas/list?' + new URLSearchParams({
+      let groups = null;
+      const groupsPromise = deps.data.get('/characters/persona-groups/list', ticket, x => Array.isArray(x) ? x : []).catch(() => []).then(value => groups = value);
+      const data = await deps.data.get('/characters/personas/list?' + new URLSearchParams({
         limit: '24',
         offset: String(mftModuleState.personaOffset),
         search: mftModuleState.personaSearch
-      }), ticket), deps.data.get('/characters/persona-groups/list', ticket, x => Array.isArray(x) ? x : []).catch(e => {
-        if (e.name === 'AbortError') throw e;
-        return [];
-      })]);
+      }), ticket);
       if (ticket !== deps.core.state.epoch) return;
-      const rows = Array.isArray(data) ? data : data.items || [],
-        grouped = new Set();
-      const show = (title, members) => {
-        if (!members.length) return;
-        const sectionNode = deps.ui.state.el('section', 'persona-folder');
-        if (title) sectionNode.append(deps.ui.state.el('h2', '', title));
-        const grid = deps.ui.state.el('div', 'gallery');
-        for (const r of members) {
-          const c = {
-            ...deps.data.compact(r),
-            isPersona: true
-          };
-          const b = deps.ui.button('', () => detail(c), 'gallery-card');
-          b.dataset.personaId = c.id;
-          b.append(deps.avatars.avatar(r.avatarPath || r.avatarUrl, c.name, 'art', r.avatarCrop || r.data?.extensions?.avatarCrop), deps.ui.state.el('strong', 'card-name', c.name));
-          if (c.title) b.append(deps.ui.state.el('p', 'card-title', c.title));
-          if (c.tags.length) b.append(deps.ui.state.el('p', 'tags', c.tags.map(t => '#' + t).join(' ')));
-          grid.append(b);
-        }
-        sectionNode.append(grid);
-        deps.ui.state.main.append(sectionNode);
-        return sectionNode;
-      };
-      for (const group of groups) {
-        let ids = group.personaIds;
-        try {
-          if (typeof ids === 'string') ids = JSON.parse(ids);
-        } catch {
-          ids = [];
-        }
-        const members = rows.filter(r => Array.isArray(ids) && ids.includes(r.id));
-        members.forEach(r => grouped.add(r.id));
-        show(group.name || '이름 없는 폴더', members);
-      }
-      const unfiled = show('페르소나', rows.filter(r => !grouped.has(r.id)));
-      const first = deps.ui.state.main.querySelector('.persona-folder');
-      if (unfiled && first !== unfiled) first.before(unfiled);
+      const rows = (Array.isArray(data) ? data : data.items || []).map(r => ({
+        ...deps.data.compact(r), isPersona: true,
+        avatarCrop: r.avatarCrop || r.data?.extensions?.avatarCrop
+      }));
+      groupedSections(rows, groups || [], true);
+      if (groups === null) groupsPromise.then(value => {
+        if (ticket !== deps.core.state.epoch || deps.core.state.disposed) return;
+        groupedSections(rows, value, true);
+        deps.avatars.observeImages();
+      });
       const pager = deps.ui.state.el('div', 'pager');
       if (mftModuleState.personaOffset) pager.append(deps.ui.button('이전', () => {
         mftModuleState.personaOffset = Math.max(0, mftModuleState.personaOffset - 24);
@@ -2475,10 +2486,20 @@ function createAdapter(deps) {
     return false;
   }
   
-  function chatSurface() {
+  function activeSession() {
+    try { return { known: true, id: localStorage.getItem('marinara-active-chat-id') || null }; }
+    catch { return { known: false, id: null }; }
+  }
+
+  function chatSurface(expectedId) {
+    if (expectedId === null) return null;
     for (const surface of document.querySelectorAll('[data-chat-mode]')) {
+      if (surface.closest('[hidden],[aria-hidden="true"]')) continue;
       const composer = surface.querySelector('[data-chat-composer][data-chat-id]');
-      if (composer?.dataset.chatId) return { surface, id: composer.dataset.chatId, mode: surface.dataset.chatMode };
+      const explicit = composer?.dataset.chatId;
+      if (explicit && (!expectedId || explicit === expectedId)) return { surface, id: explicit, mode: surface.dataset.chatMode };
+      if (expectedId && surfaceHasChatId(surface, expectedId)) return { surface, id: expectedId, mode: surface.dataset.chatMode };
+      if (expectedId) continue;
       let id = null;
       eachHook(surface, value => {
         const candidate = value?.activeChatId || value?.chatId || value?.chat?.id;
@@ -2488,6 +2509,24 @@ function createAdapter(deps) {
       if (id) return { surface, id, mode: surface.dataset.chatMode };
     }
     return null;
+  }
+
+  function roomReady(id, mode) {
+    const active = activeSession();
+    if (active.known && active.id !== id) return false;
+    if (document.querySelector('[data-component="ChatArea.RestoringChat"]')) return false;
+    const chat = chatSurface(id);
+    if (chat && (!mode || chat.mode === mode)) return true;
+    // Setup / world-intro screens have no composer or data-chat-mode. Match their actual room props.
+    if (mode !== 'game') return false;
+    const center = document.querySelector('[data-component="CenterContent"]');
+    const candidates = [...document.querySelectorAll('[data-component="GameSetupWizard"],[data-component="GameSurface.MessagesLoading"]')];
+    let level = center ? [...center.children] : [];
+    for (let depth = 0; depth < 3 && candidates.length < 48; depth++) {
+      candidates.push(...level.slice(0, 48 - candidates.length));
+      level = level.flatMap(n => [...n.children]).slice(0, 24);
+    }
+    return candidates.some(n => surfaceHasChatId(n, id));
   }
 
   function prepareChat(a) {
@@ -2624,7 +2663,7 @@ function createAdapter(deps) {
   const cleanup = [
 
   ];
-  return { state: mftModuleState, initialize, cleanup, nativeTarget, engineActions, surfaceHasChatId, chatSurface, prepareChat, personaCropForImage, engineNavigator, eachHook, liveBubble };
+  return { state: mftModuleState, initialize, cleanup, nativeTarget, engineActions, surfaceHasChatId, chatSurface, activeSession, roomReady, prepareChat, personaCropForImage, engineNavigator, eachHook, liveBubble };
 }
 
 // Source: src/features/notifications.js
@@ -3369,73 +3408,17 @@ function createMounts(deps) {
     centerObserver: undefined,
     notificationMountObserver: undefined,
     resumeTimer: null,
-    resumeAt: 0,
-    startObserver: null,
-    startCancelTimer: null,
-    startSignal: null,
-    startPreviousId: null,
-    startSawDialog: false
+    resumeAt: 0
   };
 
   function checkEngineHome() {
     if (deps.core.state.disposed || deps.navigation.state.bridgeBusy) return;
     if (deps.ui.state.root.dataset.native === 'true' && deps.navigation.state.routeIntent === 'chat') deps.convo.bindSplits();
-    if (deps.navigation.state.routeIntent === 'start') checkStart();
+    if (deps.navigation.state.routeIntent === 'start') deps.launch.reconcile();
+    if (deps.navigation.state.routeIntent === 'chat') deps.launch.checkExit();
     // Native settings/extensions may render asynchronously. Never guess that a temporary blank means Home.
   }
   
-  function stopStart() {
-    mftModuleState.startObserver?.disconnect();
-    mftModuleState.startObserver = null;
-    clearTimeout(mftModuleState.startCancelTimer);
-    mftModuleState.startCancelTimer = null;
-    mftModuleState.startSignal?.removeEventListener('abort', stopStart);
-    mftModuleState.startSignal = null;
-  }
-
-  function checkStart() {
-    if (deps.core.state.disposed || deps.navigation.state.routeIntent !== 'start') { stopStart(); return; }
-    const blocking = [...document.querySelectorAll('[role="dialog"],.mari-modal,[data-component="NewChatConnectionGate"]')].some(deps.ui.state.visible);
-    if (blocking) mftModuleState.startSawDialog = true;
-    const chat = deps.adapter.chatSurface();
-    const fresh = chat && chat.id !== mftModuleState.startPreviousId;
-    const restoring = document.querySelector('[data-component="ChatArea.RestoringChat"]');
-    if (fresh && !blocking && !restoring) {
-      deps.navigation.state.roomId = chat.id;
-      deps.chats.state.chatMode = chat.mode || deps.chats.state.chatMode;
-      stopStart();
-      deps.navigation.finishRoute('chat');
-      return;
-    }
-    // Closing the mode chooser without creating a room returns to the original card.
-    if (!blocking && !fresh && !restoring && mftModuleState.startSawDialog) {
-      if (!mftModuleState.startCancelTimer) mftModuleState.startCancelTimer = setTimeout(() => {
-        mftModuleState.startCancelTimer = null;
-        const next = deps.adapter.chatSurface();
-        if (deps.navigation.state.routeIntent === 'start' && !(next && next.id !== mftModuleState.startPreviousId) && !document.querySelector('[role="dialog"],.mari-modal,[data-component="ChatArea.RestoringChat"]')) {
-          stopStart();
-          deps.gestures.returnFromNative();
-        }
-      }, 500);
-    } else {
-      clearTimeout(mftModuleState.startCancelTimer);
-      mftModuleState.startCancelTimer = null;
-    }
-  }
-
-  function watchStart(signal, previousId) {
-    stopStart();
-    mftModuleState.startPreviousId = previousId;
-    mftModuleState.startSawDialog = false;
-    mftModuleState.startSignal = signal;
-    if (signal?.aborted) return;
-    signal?.addEventListener('abort', stopStart, { once: true });
-    mftModuleState.startObserver = new MutationObserver(checkStart);
-    // Temporary, event-driven observer also sees dialogs portaled outside AppShell.
-    mftModuleState.startObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-chat-id', 'data-chat-mode', 'aria-hidden', 'hidden'] });
-    checkStart();
-  }
-
   function bindShell(attempt = 0) {
     const shell = document.querySelector('[data-component="AppShell"]');
     if (!shell) {
@@ -3539,7 +3522,6 @@ function createMounts(deps) {
     } }
   ];
   const cleanup = [
-    { order: 74, run() { stopStart(); } },
     { order: 36, run() {
       mftModuleState.notificationMountObserver?.disconnect();
     } },
@@ -3560,7 +3542,7 @@ function createMounts(deps) {
       clearTimeout(mftModuleState.resumeTimer);
     } }
   ];
-  return { state: mftModuleState, initialize, cleanup, checkEngineHome, bindShell, visibility, resumeActivity, watchStart, checkStart, stopStart };
+  return { state: mftModuleState, initialize, cleanup, checkEngineHome, bindShell, visibility, resumeActivity };
 }
 
 // Source: src/ui/markdown.js
@@ -3829,7 +3811,16 @@ function createPreviews(deps) {
         drain();
       }
     }
-    const byId = new Map(deps.chats.state.roomRows.filter(c => !c.preview).map(c => [c.id, c]));
+    const byId = new Map(deps.chats.state.roomRows.filter(c => !c.preview).map(c => [String(c.id), c]));
+    const targets = [];
+    for (const node of deps.ui.state.main.querySelectorAll('[data-preview-id]')) {
+      const c = byId.get(node.dataset.previewId);
+      if (!c) continue;
+      const text = mftModuleState.previewCache.get(c.id + ':' + (c.lastMessageAt || ''));
+      if (text !== undefined) { c.preview = text; node.textContent = text || '아직 메시지가 없어요.'; }
+      else targets.push(node);
+    }
+    if (!targets.length) return;
     mftModuleState.previewObserver = new IntersectionObserver(entries => {
       for (const e of entries) if (e.isIntersecting) {
         mftModuleState.previewObserver.unobserve(e.target);
@@ -3842,10 +3833,7 @@ function createPreviews(deps) {
       root: deps.ui.state.main,
       rootMargin: '30px'
     });
-    for (const [id] of byId) {
-      const n = deps.ui.state.main.querySelector(`[data-preview-id="${CSS.escape(id)}"]`);
-      if (n) mftModuleState.previewObserver.observe(n);
-    }
+    for (const node of targets) mftModuleState.previewObserver.observe(node);
   }
 
   const initialize = [
@@ -3970,13 +3958,14 @@ function createUpdates(deps) {
     chatRefreshBurst: undefined
   };
 
-  function invalidateChats() {
+  function invalidateChats(id) {
     for (const key of deps.data.state.cache.keys()) if (key.startsWith('/chats')) deps.data.state.cache.delete(key);
-    deps.previews.state.previewCache.clear();
+    if (id) { for (const key of deps.previews.state.previewCache.keys()) if (key.startsWith(id + ':')) deps.previews.state.previewCache.delete(key); }
+    else deps.previews.state.previewCache.clear();
   }
   
-  function queueChatRefresh() {
-    invalidateChats();
+  function queueChatRefresh(id) {
+    invalidateChats(id);
     mftModuleState.chatRevision++;
     if (deps.core.state.disposed || document.hidden || deps.navigation.state.bridgeBusy || deps.ui.state.root.dataset.native === 'true' || deps.navigation.state.view !== 'chats') return;
     mftModuleState.chatRefreshBurst ||= Date.now();
@@ -4016,7 +4005,10 @@ function createUpdates(deps) {
       })).filter(r => r.chat.mode === deps.chats.state.chatMode && (!all || !deps.chats.state.folderFilter || (deps.chats.state.folderFilter === 'unfiled' ? !r.chat.folderId : r.chat.folderId === deps.chats.state.folderFilter)));
       const listed = [...deps.ui.state.main.querySelectorAll('.chat-row')];
       const ids = new Set(listed.map(n => n.dataset.roomId));
-      if (selected.slice(0, Math.max(30, listed.length)).some(r => !ids.has(String(r.chat.id))) || listed.some(n => !selected.some(r => String(r.chat.id) === n.dataset.roomId))) {
+      const selectedIds = new Set(selected.map(r => String(r.chat.id)));
+      const rendered = new Map(listed.map(n => [n.dataset.roomId, n]));
+      const storedRows = new Map(deps.chats.state.roomRows.map(c => [String(c.id), c]));
+      if (selected.slice(0, Math.max(30, listed.length)).some(r => !ids.has(String(r.chat.id))) || listed.some(n => !selectedIds.has(n.dataset.roomId))) {
         deps.navigation.state.restoreScrollTarget = {
           view: 'chats',
           scroll: deps.ui.state.main.scrollTop
@@ -4026,12 +4018,13 @@ function createUpdates(deps) {
       }
       for (const c of deps.previews.state.previewRequests) c.abort();
       const list = deps.ui.state.main.querySelector('.chat-list');
+      let cursor = list?.firstElementChild;
       for (const {
         chat: c,
         latest
       } of selected) {
-        const row = deps.ui.state.main.querySelector(`[data-room-id="${CSS.escape(String(c.id))}"]`),
-          stored = deps.chats.state.roomRows.find(r => r.id === String(c.id));
+        const row = rendered.get(String(c.id)),
+          stored = storedRows.get(String(c.id));
         if (!row || !stored) continue;
         Object.assign(stored, {
           unreadCount: c.unreadCount,
@@ -4039,12 +4032,19 @@ function createUpdates(deps) {
         });
         stored.name = c.name || stored.name;
         stored.lastMessageAt = c.lastMessageAt || c.updatedAt || '';
-        row.querySelector('strong').textContent = stored.name;
+        const name = row.querySelector('strong');
+        if (name.textContent !== stored.name) name.textContent = stored.name;
         if (latest?.content !== undefined) {
           stored.preview = String(latest.content).slice(0, 140);
-          row.querySelector('[data-preview-id]').textContent = stored.preview || '아직 메시지가 없어요.';
+          const preview = row.querySelector('[data-preview-id]');
+          const text = stored.preview || '아직 메시지가 없어요.';
+          if (preview.textContent !== text) preview.textContent = text;
         } else stored.preview = '';
-        if (list && row.parentElement) list.append(row.parentElement);
+        if (list && row.parentElement) {
+          const item = row.parentElement;
+          if (item === cursor) cursor = cursor.nextElementSibling;
+          else list.insertBefore(item, cursor || null);
+        }
       }
       deps.previews.fillPreviews(deps.chats.state.roomRows, ticket);
       deps.notifications.syncUnreadBadges(deps.notifications.unreadSnapshot(deps.notifications.notificationSnapshot()));
@@ -4079,7 +4079,7 @@ function createUpdates(deps) {
         const feed = event.query?.state?.data?.recentChats;
         if (Array.isArray(feed)) deps.chats.ingestChats(feed.filter(r => r?.chat).map(r => deps.chats.normalizedChat(r.chat, r.latestMessage)));
         deps.notifications.scheduleNotifications();
-        queueChatRefresh();
+        queueChatRefresh(key[0] === 'chats' && key[1] === 'messages' && typeof key[2] === 'string' ? key[2] : undefined);
       }
     });
   }
@@ -5197,6 +5197,95 @@ function createHelp(deps) {
   return { state, initialize, cleanup, show };
 }
 
+// Source: src/engine/launch.js
+/** Native launch lifecycle: one transaction per launch, authoritative room identity. */
+function createLaunch(deps) {
+  const state = { observer: null, signal: null, previousId: null, selectedMode: null, phase: 'idle', sawSetup: false, closing: false, settleTimer: null, deadline: null };
+  const dialogs = '[role="dialog"],.mari-modal,[data-new-chat-connection-gate]';
+  function stop() {
+    state.observer?.disconnect(); state.observer = null;
+    clearTimeout(state.settleTimer); clearTimeout(state.deadline);
+    state.settleTimer = state.deadline = null;
+    state.signal?.removeEventListener('abort', stop); state.signal = null;
+    document.removeEventListener('click', onClick, true);
+    if (state.phase !== 'ready') state.phase = 'idle';
+  }
+  function leave() { stop(); deps.gestures.returnFromNative(); }
+  function onClick(event) {
+    const button = event.target.closest?.('button');
+    if (!button || button.disabled) return;
+    const chooser = button.closest('[data-component="ChatModeSelectorModal"]');
+    if (chooser) {
+      const index = [...chooser.querySelectorAll('button')].indexOf(button);
+      state.selectedMode = ['conversation', 'roleplay', 'game'][index] || null;
+      state.phase = 'creating';
+      return;
+    }
+    const dialog = button.closest(dialogs);
+    if (!dialog) return;
+    const close = button.querySelector('svg.lucide-x') || /^(취소|닫기|cancel|close|×|x)$/i.test((button.getAttribute('aria-label') || button.textContent).trim());
+    if (close) {
+      state.closing = true;
+      state.phase = 'closing';
+      // Let the original handler delete or keep its room first. No setter or click proxy.
+      clearTimeout(state.settleTimer);
+      state.settleTimer = setTimeout(() => { state.settleTimer = null; reconcile(); }, 700);
+    }
+  }
+  function reconcile() {
+    if (deps.core.state.disposed || deps.navigation.state.routeIntent !== 'start') { stop(); return; }
+    const visible = [...document.querySelectorAll(dialogs)].filter(deps.ui.state.visible);
+    const chooser = visible.some(n => n.querySelector('[data-component="ChatModeSelectorModal"]') || n.matches('[data-component="ChatModeSelectorModal"]'));
+    if (visible.length && !chooser) { state.sawSetup = true; if (!state.closing) state.phase = 'setup'; }
+    const active = deps.adapter.activeSession();
+    const chat = deps.adapter.chatSurface(active.known ? active.id : undefined);
+    const id = active.known ? active.id : chat?.id;
+    const fresh = id && id !== state.previousId;
+    if (state.closing && active.known && !active.id) {
+      // Empty game setup was deleted. A stale loading surface must not keep this route alive.
+      leave(); return;
+    }
+    if (visible.length) return;
+    if (!fresh) return; // React/Lazy transitions and creation can be arbitrarily slow; absence is not cancellation.
+    if (document.querySelector('[data-component="ChatArea.RestoringChat"],[data-component="GameSurface.MessagesLoading"]')) { state.phase = 'opening'; return; }
+    if (state.closing && state.settleTimer) return;
+    // Game's initial/start screens do not always expose data-chat-mode or a composer.
+    if (!state.sawSetup) return;
+    deps.navigation.state.roomId = id;
+    deps.chats.state.chatMode = chat?.mode || state.selectedMode || deps.chats.state.chatMode;
+    state.phase = 'ready'; stop();
+    deps.navigation.finishRoute('chat');
+  }
+  function begin(signal, previousId) {
+    stop(); state.signal = signal; state.previousId = previousId;
+    state.phase = 'choosing'; state.selectedMode = null; state.sawSetup = false; state.closing = false;
+    if (signal?.aborted) { stop(); return; }
+    signal?.addEventListener('abort', stop, { once: true });
+    document.addEventListener('click', onClick, true);
+    state.observer = new MutationObserver(reconcile);
+    state.observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-chat-id','data-chat-mode','aria-hidden','hidden'] });
+    state.deadline = setTimeout(() => {
+      if (deps.navigation.state.routeIntent !== 'start' || state.phase === 'choosing' || state.phase === 'setup') return;
+      deps.ui.notice('설정이나 방 열기가 끝나지 않았어요. 아래 버튼으로 돌아갈 수 있어요.');
+      const back = deps.ui.button('캐릭터로 돌아가기', leave, 'button');
+      deps.ui.state.status.append(back);
+    }, 30000);
+    reconcile();
+  }
+  function checkExit() {
+    if (deps.navigation.state.routeIntent !== 'chat' || deps.navigation.state.bridgeBusy) return;
+    const active = deps.adapter.activeSession();
+    if (active.known && !active.id && ![...document.querySelectorAll(dialogs)].some(deps.ui.state.visible)) deps.gestures.returnFromNative();
+  }
+  const initialize = [
+
+  ];
+  const cleanup = [
+    { order: 74, run() { stop(); } }
+  ];
+  return { state, initialize, cleanup, begin, reconcile, stop, onClick, checkExit };
+}
+
 
 function startApplication() {
   if (document.getElementById('mft-root')) return null;
@@ -5229,6 +5318,7 @@ function startApplication() {
   modules.settings = createSettings(modules);
   modules.bootstrap = createBootstrap(modules);
   modules.help = createHelp(modules);
+  modules.launch = createLaunch(modules);
   modules.lifecycle = createLifecycle(modules);
   modules.lifecycle.configure(modules);
   marinara.onCleanup(modules.lifecycle.dispose);
