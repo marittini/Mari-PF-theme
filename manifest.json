@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "마리나라 플랫폼화",
-    "version": "0.31.1",
-    "description": "초보자용 Markdown 도움말과 설치환경을 포함한 오류 질문 안내 추가.",
+    "version": "0.31.2",
+    "description": "캐릭터 대화 시작의 순정 모드 선택·옵션 설정·방 진입 흐름 복구.",
     "runtime": "client",
     "capabilities": [
       "full_page_access"
