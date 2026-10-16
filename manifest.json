@@ -3,8 +3,8 @@
   "version": 1,
   "config": {
     "name": "마리나라 플랫폼화",
-    "version": "0.35",
-    "description": "홈 검색 영역을 온라인 봇카드 찾아보기 진입 버튼으로 변경.",
+    "version": "0.44",
+    "description": "내 메시지 번역 추천, 유저노트 연결·해제 개선, 페르소나 관리 버튼 및 도움말 정리.",
     "runtime": "client",
     "capabilities": [
       "full_page_access"
